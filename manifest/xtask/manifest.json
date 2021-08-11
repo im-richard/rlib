@@ -1,0 +1,14 @@
+{
+	"name":             "XTask",
+	"author":           "richard",
+	"script":           "4094",
+	"type":             "addon",
+	"description":      "achievements",
+	"homepage":         "https://gmodstore.com/scripts/view/4094",
+	"docs":             "https://xtask.rlib.io",
+	"version":          "v4.4.1.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Feb 17, 2021",
+	"workshop":         "2319135099",
+        "rw":               "100%"
+}

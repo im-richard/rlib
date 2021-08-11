@@ -1,0 +1,14 @@
+{
+	"name":             "Arivia",
+	"author":           "richard",
+	"script":           "1679",
+	"type":             "addon",
+	"description":      "f4 menu",
+	"homepage":         "https://gmodstore.com/scripts/view/1679",
+	"docs":             "https://arivia.rlib.io",
+	"version":          "v3.0.0.6",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 21, 2021",
+	"workshop":         "2290446815",
+        "rw":               "100%"
+}

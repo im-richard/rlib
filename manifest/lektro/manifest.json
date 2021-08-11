@@ -1,0 +1,14 @@
+{
+	"name":             "Lektro",
+	"author":           "richard",
+	"script":           "6407",
+	"type":             "addon",
+	"description":      "motd & escape screen",
+	"homepage":         "https://gmodstore.com/scripts/view/6407",
+	"docs":             "https://lektro.rlib.io",
+	"version":          "v3.5.0.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 23, 2021",
+	"workshop":         "2313879797",
+        "rw":               "100%"
+}

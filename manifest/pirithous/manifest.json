@@ -1,0 +1,14 @@
+{
+	"name":             "Pirithous",
+	"author":           "richard",
+	"script":           "4209",
+	"type":             "addon",
+	"description":      "on-screen keybinds help",
+	"homepage":         "https://gmodstore.com/scripts/view/4209",
+	"docs":             "https://pirithous.rlib.io",
+	"version":          "v3.6.0.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 22, 2021",
+	"workshop":         "2319113217",
+        "rw":               "100%"
+}

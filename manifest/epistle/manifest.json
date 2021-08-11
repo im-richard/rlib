@@ -1,0 +1,14 @@
+{
+	"name":             "Epistle",
+	"author":           "richard",
+	"script":           "4697",
+	"type":             "addon",
+	"description":      "motd",
+	"homepage":         "https://gmodstore.com/scripts/view/4697",
+	"docs":             "https://epistle.rlib.io",
+	"version":          "v2.2.1.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 24, 2021",
+	"workshop":         "2313881160",
+        "rw":               "100%"
+}
