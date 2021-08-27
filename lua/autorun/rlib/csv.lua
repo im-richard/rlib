@@ -525,6 +525,59 @@ function base.oort:PrepareLog( bForced )
 end
 
 /*
+*   setup
+*/
+
+function base:Setup( )
+
+    /*
+    *   writedata > history
+    *
+    *   outputs the current startup to data/rlib
+    */
+
+    local ind_pos           = 0
+    local data              = { }
+    data.history            = { }
+    data.startups           = 0
+
+    local path_hist = storage.mft:getpath( 'data_history' )
+    if file.Exists( path_hist, 'DATA' ) then
+        local gdata = util.JSONToTable( file.Read( path_hist, 'DATA' ) )
+        if gdata then
+            for k, v in pairs( gdata.history ) do
+                data.history[ k ] = v
+                ind_pos = ind_pos + 1
+            end
+        end
+    end
+
+    ind_pos                 = ind_pos + 1
+    data.startups           = ind_pos
+
+    data.history[ ind_pos ] = os.time( )
+
+    local history_sz        = file.Size( path_hist, 'DATA' )
+    sys.startups            = ind_pos
+    sys.history_sz          = calc.fs.size( history_sz ) or 0
+    sys.history_ct          = history_sz and 1 or 0
+
+    file.Write( path_hist, util.TableToJSON( data ) )
+
+    /*
+    *   global
+    */
+
+    SetGlobalString( 'rlib_sess', sys.startups )
+
+    /*
+    *   log
+    */
+
+    base:log( RLIB_LOG_SYSTEM, 'Server starting up ...' )
+end
+
+/*
 *   udm > modules
 *
 *   requires manifest table from rcore.modules table > base.modules.mod_table

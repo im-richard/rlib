@@ -671,7 +671,6 @@ local function prepare( id, data, bSilence )
         return
     end
 
-    id          = call_id( id )
     local obj   = index[ id ]
 
     if not istable( obj ) then

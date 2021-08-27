@@ -151,45 +151,6 @@ function base.calls:register( parent, src )
 end
 
 /*
-*   calls > load
-*
-*   takes all registered net calls and loads them to server
-*
-*   :   (bool) bPrefix
-*       true adds lib prefix at front of all network entries
-*       'rlib.network_string_id'
-*
-*   :   (str) affix
-*       bPrefix must be true, determines what prefix to add to
-*       the front of a netnw string. if none provided, lib prefix
-*       will be used
-*
-*   @param  : bool bPrefix
-*   @param  : str affix
-*/
-
-function base.calls:load( bPrefix, affix )
-    log( 6, lang( 'calls_register_nlib' ) )
-
-    rhook.run.rlib( 'rlib_calls_pre' )
-
-    if not base._rcalls[ 'net' ] then
-        base._rcalls[ 'net' ] = { }
-        log( 6, lang( 'calls_register_tbl' ) )
-    end
-
-    if SERVER then
-        self:Catalog( )
-    end
-
-    if rnet then
-        rhook.run.gmod( 'rlib_rnet_register' )
-    end
-
-    rhook.run.rlib( 'rlib_calls_post' )
-end
-
-/*
 *   calls > validation
 *
 *   checks a provided call id to see if it is registered within base._rcalls
