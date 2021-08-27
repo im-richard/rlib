@@ -587,19 +587,6 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   rlib > system
-    */
-
-    base.sys.uptime         = CurTime( )
-    base.sys.initialized    = false
-
-    /*
-    *   setup
-    */
-
-    base:Setup( )
-
-    /*
     *   @exec   : fn rlib.calls:register( )
     *   @exec   : fn rlib.resources:register( )
     *
@@ -609,6 +596,13 @@ loaded and are now ready to install additional modules.
 
     base.calls:register     ( parent, base.c )
     base.resources:register ( parent, base.r )
+
+    /*
+    *   rlib > system
+    */
+
+    base.sys.uptime         = CurTime( )
+    base.sys.initialized    = false
 
     /*
     *   hook > rlib post loader

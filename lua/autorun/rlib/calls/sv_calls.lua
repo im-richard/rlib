@@ -1,27 +1,18 @@
 /*
-*   @module         : rlib
-*   @docs           : https://rlib.io
+*   @package        : rlib
+*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
+*   @copyright      : (C) 2018 - 2020
+*   @since          : 1.0.0
+*   @website        : https://rlib.io
+*   @docs           : https://docs.rlib.io
 *
-*   YOU MAY NOT REDISTRIBUTE THESE FILES WITHOUT PERMISSION FROM THE DEVELOPER.
+*   MIT License
 *
-*   IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
-*   LISTED ABOVE.
-*
-*   THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
-*   ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
-*   THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
-*
-*   BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
-*   OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
-*   YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
-*
-*   UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
-*   ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
-*   REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
-*   OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
-*   OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
-*   EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /*
@@ -30,6 +21,7 @@
 
 local base                  = rlib
 local mf                    = base.manifest
+local pf                    = mf.prefix
 
 /*
 *   localized rlib routes
@@ -41,48 +33,15 @@ local helper                = base.h
 *   Localized translation func
 */
 
-local function ln( ... )
+local function lang( ... )
     return base:lang( ... )
 end
 
 /*
-*   calls > load
-*
-*   takes all registered net calls and loads them to server
-*
-*   :   (bool) bPrefix
-*       true adds lib prefix at front of all network entries
-*       'rlib.network_string_id'
-*
-*   :   (str) affix
-*       bPrefix must be true, determines what prefix to add to
-*       the front of a netnw string. if none provided, lib prefix
-*       will be used
-*
-*   @param  : bool bPrefix
-*   @param  : str affix
+*   simplifiy funcs
 */
 
-function base.calls:load( bPrefix, affix )
-    base:log( 6, ln( 'calls_register_nlib' ) )
-
-    rhook.run.rlib( 'rlib_calls_pre' )
-
-    if not base._rcalls[ 'net' ] then
-        base._rcalls[ 'net' ] = { }
-        base:log( RLIB_LOG_RNET, ln( 'calls_register_tbl' ) )
-    end
-
-    if SERVER then
-        self:Catalog( )
-    end
-
-    if rnet then
-        rhook.run.gmod( 'rlib_rnet_register' )
-    end
-
-    rhook.run.rlib( 'rlib_calls_post' )
-end
+local function log( ... ) base:log( ... ) end
 
 /*
 *   calls > catalog
@@ -104,10 +63,10 @@ end
 
 function base.calls:Catalog( bPrefix, affix )
     for v in helper.get.data( base._rcalls[ 'net' ] ) do
-        local aff       = isstring( affix ) and affix or mf.prefix
-        local id        = bPrefix and tostring( aff .. v[ 1 ] ) or tostring( v[ 1 ] )
+        local aff   = isstring( affix ) and affix or pf
+        local id    = bPrefix and tostring( aff .. v[ 1 ] ) or tostring( v[ 1 ] )
 
         util.AddNetworkString( id )
-        base:log( 1, ln( 'rnet_added', id ) )
+        log( RLIB_LOG_RNET, lang( 'rnet_added', id ) )
     end
 end
