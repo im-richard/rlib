@@ -69,7 +69,7 @@ local function cid( id, suffix )
     affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
+    id              = id:gsub( '[%p%c%s]', '.' )
 
     return string.format( '%s%s', affix, id )
 end
@@ -574,7 +574,7 @@ function base:lang( str, ... )
     local selg  = self.settings and self.settings.lang or 'en'
     str         = not { ... } and str:gsub( '_', ' ' ) or str
 
-    return string.format( self.language[ selg ][ str ] or str, ... )
+    return ( self.language and string.format( self.language[ selg ][ str ], ... ) ) or str
 end
 
 /*

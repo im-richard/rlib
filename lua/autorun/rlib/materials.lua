@@ -65,20 +65,6 @@ local function log( ... )
 end
 
 /*
-    prefix > create id
-*/
-
-local function cid( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
-    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
-
-    id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
-
-    return string.format( '%s%s', affix, id )
-end
-
-/*
     material ( global )
 
     @param  : str mat

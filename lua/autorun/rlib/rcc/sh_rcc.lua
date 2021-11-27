@@ -536,7 +536,8 @@ local function rcc_base( pl, cmd, args )
 
         -- clrs all commands that match lib name a different clr from others
         local clr_cmd = clr_w
-        if string.match( id, script ) or string.match( id, pf ) then
+
+        if string.match( id, mf.basecmd ) or string.match( id, pf ) then
             clr_cmd = clr_p
         elseif rcore and string.match( id, rcore.manifest.prefix ) then
             clr_cmd = Color( 0, 255, 0 )

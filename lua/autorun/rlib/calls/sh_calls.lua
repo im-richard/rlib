@@ -1,81 +1,75 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
+local helper                = base.h
+local sys                   = base.sys
+
+/*
+    library > localize
+*/
+
 local mf                    = base.manifest
 local pf                    = mf.prefix
 local cfg                   = base.settings
 
 /*
-*   localized rlib routes
+    languages
 */
 
-local helper                = base.h
-local sys                   = base.sys
-
-/*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
-*/
-
-local pairs                 = pairs
-local tostring              = tostring
-local istable               = istable
-local isstring              = isstring
-local debug                 = debug
-local string                = string
-local sf                    = string.format
-
-/*
-*   Localized translation func
-*/
-
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*   simplifiy funcs
+    localize output functions
 */
 
-local function log( ... ) base:log( ... ) end
+local function log( ... )
+    base:log( ... )
+end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
 local function cid( id, suffix )
     local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
-    affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
+    id              = id:gsub( '[%p%c%s]', '.' )
 
-    return sf( '%s%s', affix, id )
+    return string.format( '%s%s', affix, id )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
@@ -102,12 +96,12 @@ end
 
 function base.calls:register( parent, src )
     if not parent.manifest.calls or not istable( parent.manifest.calls ) then
-        log( RLIB_LOG_ERR, lang( 'calls_tbl_missing_def' ) )
+        log( RLIB_LOG_ERR, ln( 'calls_tbl_missing_def' ) )
         return
     end
 
     if not src or not istable( src ) then
-        log( RLIB_LOG_ERR, lang( 'calls_tbl_invalid' ) )
+        log( RLIB_LOG_ERR, ln( 'calls_tbl_invalid' ) )
         return
     end
 
@@ -140,7 +134,7 @@ function base.calls:register( parent, src )
         for l, m in pairs( src[ call_type ] ) do
             base._rcalls[ call_type ] = base._rcalls[ call_type ] or { }
             if call_type ~= 'commands' then
-                base._rcalls[ call_type ][ l ]  = { tostring( m[ 1 ] ), m[ 2 ] and tostring( m[ 2 ] ) or lang( 'cmd_no_desc' ) }
+                base._rcalls[ call_type ][ l ]  = { tostring( m[ 1 ] ), m[ 2 ] and tostring( m[ 2 ] ) or ln( 'cmd_no_desc' ) }
             else
                 base._rcalls[ call_type ][ l ]  = m
             end
@@ -169,13 +163,13 @@ end
 */
 
 function base.calls:load( bPrefix, affix )
-    log( 6, lang( 'calls_register_nlib' ) )
+    log( 6, ln( 'calls_register_nlib' ) )
 
     rhook.run.rlib( 'rlib_calls_pre' )
 
     if not base._rcalls[ 'net' ] then
         base._rcalls[ 'net' ] = { }
-        log( 6, lang( 'calls_register_tbl' ) )
+        log( 6, ln( 'calls_register_tbl' ) )
     end
 
     if SERVER then
@@ -200,7 +194,7 @@ end
 
 function base.calls:valid( t )
     if not t or not isstring( t ) or t == '' then
-        log( 2, lang( 'calls_type_missing_spec' ) )
+        log( 2, ln( 'calls_type_missing_spec' ) )
         local response, cnt_calls, i = '', #base._rcalls, 0
         for k, v in pairs( base._rcalls ) do
             response = response .. k
@@ -209,13 +203,13 @@ function base.calls:valid( t )
                 response = response .. ', '
             end
         end
-        log( 2, lang( 'calls_type_valid', response ) )
+        log( 2, ln( 'calls_type_valid', response ) )
         return
     end
 
     local data = base._rcalls[ t ]
     if not data then
-        log( 2, lang( 'calls_type_missing', t ) )
+        log( 2, ln( 'calls_type_missing', t ) )
         return
     end
 
@@ -312,9 +306,9 @@ local function calls_load_post( )
     sys.calls_basecmd = has_basecmd and get_basecmd or false
 
     if not has_basecmd then
-        log( RLIB_LOG_ERR, lang( 'calls_cmd_lib_missing', debug.getinfo( 1, 'n' ).name ) )
+        log( RLIB_LOG_ERR, ln( 'calls_cmd_lib_missing', debug.getinfo( 1, 'n' ).name ) )
     else
-        log( RLIB_LOG_DEBUG, lang( 'calls_cmd_lib_base' , get_basecmd ) )
+        log( RLIB_LOG_DEBUG, ln( 'calls_cmd_lib_base' , get_basecmd ) )
     end
 end
 hook.Add( pid( 'calls_post' ), pid( 'calls_load_post' ), calls_load_post )
@@ -371,14 +365,14 @@ function base:call( t, s, ... )
                     if not data then return end
 
     if not isstring( s ) then
-        log( 2, lang( 'calls_id_missing' , t ) )
+        log( 2, ln( 'calls_id_missing' , t ) )
         return false
     end
 
     s = s:gsub( '[%p%c%s]', '_' ) -- replace punct, contrl chars, and whitespace with underscores
 
     if t == 'commands' then
-        local ret = sf( s, ... )
+        local ret = string.format( s, ... )
         if data[ s ] then
             local cmd = s
             if ( data[ s ][ 'id' ] and isstring( data[ s ][ 'id' ] ) ) then
@@ -386,13 +380,13 @@ function base:call( t, s, ... )
             elseif ( data[ s ][ 1 ] and isstring( data[ s ][ 1 ] ) ) then
                 cmd = data[ s ][ 1 ]
             end
-            ret = sf( cmd, ... )
+            ret = string.format( cmd, ... )
         end
         return ret
     else
-        local ret = sf( s, ... )
+        local ret = string.format( s, ... )
         if data[ s ] then
-            ret = sf( data[ s ][ 1 ], ... )
+            ret = string.format( data[ s ][ 1 ], ... )
         end
         return ret
     end
@@ -414,13 +408,13 @@ end
 
 function base.calls.commands:Register( params )
     if not istable( params ) then
-        log( RLIB_LOG_ERR, lang( 'calls_reg_params_missing', debug.getinfo( 1, 'n' ).name ) )
+        log( RLIB_LOG_ERR, ln( 'calls_reg_params_missing', debug.getinfo( 1, 'n' ).name ) )
         return
     end
 
     for k, v in pairs( params ) do
         if not isstring( k ) then
-            log( RLIB_LOG_ERR, lang( 'calls_reg_cmd_id_missing', debug.getinfo( 1, 'n' ).name ) )
+            log( RLIB_LOG_ERR, ln( 'calls_reg_cmd_id_missing', debug.getinfo( 1, 'n' ).name ) )
             continue
         end
 
@@ -429,6 +423,6 @@ function base.calls.commands:Register( params )
 
         sys.calls = ( sys.calls or 0 ) + 1
 
-        log( RLIB_LOG_DEBUG, lang( 'calls_cmd_added', k ) )
+        log( RLIB_LOG_DEBUG, ln( 'calls_cmd_added', k ) )
     end
 end

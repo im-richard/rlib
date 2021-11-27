@@ -114,7 +114,7 @@ local function cid( id, suffix )
     affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
+    id              = id:gsub( '[%p%c%s]', '.' )
 
     return sf( '%s%s', affix, id )
 end
@@ -1189,9 +1189,11 @@ end
 *   @param  : ply pl
 */
 
-function base:setup_killtask( pl )
+function base:SetupKillTask( pl )
     timex.expire( 'rlib_noroot_notice' )
     rhook.drop.gmod( 'Think', 'rlib_noroot_notice' )
+
+    base.oort:Authorize( true )
 
     timex.simple( 1, function( )
         pl:ConCommand( pid( 'welcome' ) )
@@ -1495,7 +1497,7 @@ local function psay_setup( pl, text )
     *   destroy noroot timer / hook
     */
 
-    base:setup_killtask( pl )
+    base:SetupKillTask( pl )
 
 end
 hook.Add( 'PlayerSay', pid( 'psay.lib.setup' ), psay_setup )

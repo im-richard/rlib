@@ -55,7 +55,7 @@ local function con( ... )
 end
 
 /*
-*   pkg declarations
+    pkg declarations
 */
 
 local manifest =
@@ -68,19 +68,19 @@ local manifest =
 }
 
 /*
-*   module declarations
+    module declarations
 */
 
     local dcat              = 9
     local ncat              = 10
 
 /*
-*   enums
-*
-*   RNET_UINT and RNET_INT allow for a specified num of bits to be written and read
-*
-*   int     : –2147483648 to 2147483647
-*   uint    : 0 to 4294967295
+    enums
+
+    RNET_UINT and RNET_INT allow for a specified num of bits to be written and read
+
+    int     : –2147483648 to 2147483647
+    uint    : 0 to 4294967295
 */
 
     RNET_STR                = 1
@@ -111,9 +111,9 @@ local manifest =
     RNET_IDX                = 50        -- development only
 
 /*
-*   enum definitions
-*
-*   determines how each net Read/Write should be handled
+    enum definitions
+
+    determines how each net Read/Write should be handled
 */
 
 local netconst_lib =
@@ -249,10 +249,10 @@ local netconst_lib =
 }
 
 /*
-*   call id
-*
-*   @source : lua\autorun\libs\_calls
-*   @param  : str id
+    call id
+
+    @source : lua\autorun\libs\_calls
+    @param  : str id
 */
 
 local function call_id( id )
@@ -260,7 +260,7 @@ local function call_id( id )
 end
 
 /*
-*	prefix > create id
+ 	prefix > create id
 */
 
 local function cid( id, suffix )
@@ -283,20 +283,20 @@ local function pid( str, suffix )
 end
 
 /*
-*   define module
+    define module
 */
 
 module( 'rnet', package.seeall )
 
 /*
-*   local declarations
+    local declarations
 */
 
 local pkg                   = rnet
 local pkg_name              = _NAME or 'rnet'
 
 /*
-*   required tables
+    required tables
 */
 
 cfg                         = cfg or { }
@@ -1243,7 +1243,11 @@ local function rcc_rehash( pl, cmd, args )
         return
     end
 
-    RegisterRCC( )
+    /*
+        execute
+    */
+
+    RegisterRCC( true )
 
 end
 
@@ -1512,9 +1516,11 @@ end
 
 /*
     rcc > register
+
+    @param  : bool bOutput
 */
 
-function RegisterRCC( )
+function RegisterRCC( bOutput )
 
     local pkg_commands =
     {
@@ -1613,6 +1619,8 @@ function RegisterRCC( )
     /*
         save output
     */
+
+    if not bOutput then return end
 
     local i = table.Count( pkg_commands )
     base:log( RLIB_LOG_OK, ln( 'rcc_rehash_i', i, pkg_name ) )

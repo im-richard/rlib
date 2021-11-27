@@ -54,7 +54,7 @@ local function cid( id, suffix )
     affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
+    id              = id:gsub( '[%p%c%s]', '.' )
 
     return string.format( '%s%s', affix, id )
 end

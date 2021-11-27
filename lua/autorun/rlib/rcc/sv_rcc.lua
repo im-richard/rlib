@@ -1458,7 +1458,7 @@ local function rcc_setup( pl, cmd, args )
             net.WriteTable  ( access.admins )
             net.Broadcast   ( )
 
-            base:setup_killtask( )
+            base:SetupKillTask( )
         end
     end
 
