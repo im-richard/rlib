@@ -40,9 +40,45 @@ local mod, pf       	    = base.modules:req( 'base' )
 local cfg               	= base.modules:cfg( mod )
 
 /*
-    ulx > override
-
-    adds additional functionality to ulx/ulib
+*   Localized translation func
 */
 
-    cfg.ulx_override    = true
+local function ln( ... )
+    return base:translate( mod, ... )
+end
+
+/*
+    register net libraries
+*/
+
+local function rnet_register( pl )
+
+    /*
+        permission > rnet refresh
+    */
+
+    if ( ( helper.ok.ply( pl ) or base.con:Is( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+
+    /*
+        update time
+    */
+
+    rnet.new        ( 'base_sys_time_upd'       )
+        rnet.add    ( 'time',       RNET_DATE   )
+        rnet.add    ( 'midnight',   RNET_DATE   )
+    rnet.run        (                           )
+
+    /*
+        concommand > reload
+    */
+
+    if helper.ok.ply( pl ) or base.con:Is( pl ) then
+        base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', mod.name )
+        if not base.con.Is( pl ) then
+            base.msg:target( pl, mod.name, 'rnet module successfully rehashed.' )
+        end
+    end
+
+end
+rhook.new.rlib( 'base_rnet_register', rnet_register )
+rcc.new.rlib( 'base_rnet_reload', rnet_register )

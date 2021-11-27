@@ -1,6 +1,6 @@
 /*
     @library        : rlib
-    @module         : base
+    @module         : workshop
     @docs           : https://docs.rlib.io
 
     IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
@@ -28,7 +28,6 @@
 */
 
 local base                  = rlib
-local storage               = base.s
 local helper                = base.h
 local access                = base.a
 
@@ -36,13 +35,32 @@ local access                = base.a
     module
 */
 
-local mod, pf       	    = base.modules:req( 'base' )
+local mod, pf       	    = base.modules:req( 'workshop' )
 local cfg               	= base.modules:cfg( mod )
 
 /*
-    ulx > override
-
-    adds additional functionality to ulx/ulib
+    register net libraries
 */
 
-    cfg.ulx_override    = true
+local function rnet_register( pl )
+
+    /*
+        permission > rnet refresh
+    */
+
+    if ( ( helper.ok.ply( pl ) or base.con:Is( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+
+    /*
+        concommand > reload
+    */
+
+    if helper.ok.ply( pl ) or base.con:Is( pl ) then
+        base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', mod.name )
+        if not base.con.Is( pl ) then
+            base.msg:target( pl, mod.name, 'rnet module successfully rehashed.' )
+        end
+    end
+
+end
+rhook.new.rlib( 'workshop_rnet_register', rnet_register )
+rcc.new.rlib( 'workshop_rnet_reload', rnet_register )

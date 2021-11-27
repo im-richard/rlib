@@ -1,19 +1,26 @@
 /*
-*   @package        : rcore
-*   @module         : base
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (c) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @module         : base
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
@@ -68,25 +75,38 @@
 *   calls :: commands
 */
 
-    MODULE.calls.commands = { }
+    MODULE.calls.commands =
+    {
+        [ 'base_rnet_reload' ]              = { 'base.rnet.reload' },
+    }
 
 /*
 *   calls :: hooks
 */
 
-    MODULE.calls.hooks = { }
+    MODULE.calls.hooks =
+    {
+        [ 'base_rnet_register' ]            = { 'base.rnet.register' },
+    }
 
 /*
 *   calls :: net
 */
 
-    MODULE.calls.net = { }
+    MODULE.calls.net =
+    {
+        [ 'base_sys_time_upd' ]             = { 'base.sys.time.upd' },
+    }
 
 /*
 *   calls :: timers
 */
 
-    MODULE.calls.timers = { }
+    MODULE.calls.timers =
+    {
+        [ 'base_sv_sys_runtime' ]           = { 'base.sv.sys.runtime' },
+        [ 'base_sv_sys_loader' ]            = { 'base.sv.sys.loader' },
+    }
 
 /*
 *   resources :: particles
