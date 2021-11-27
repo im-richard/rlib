@@ -1,55 +1,63 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
+local access                = base.a
+local helper                = base.h
 local font                  = base.f
-local mf                    = base.manifest
 
 /*
-*   Localized glua routes
+    library > localize
 */
 
 local _f                    = surface.CreateFont
 
 /*
-*	prefix ids
+    prefix ids
 */
 
 local function pref( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
+    local state = ( isstring( suffix ) and suffix ) or ( base and base.manifest.prefix ) or false
     return base.get:pref( str, state )
 end
 
 /*
-*	font > reg
-*
-*   registers new font with no prefix at the beginning. whatever id is
-*   provided is what will be used.
-*
-*   @param  : str id
-*   @param  : str name
-*   @param  : int sz
-*   @param  : int weight
-*   @param  : bool bShadow
-*   @param  : bool bExt
+ 	font > reg
+
+    registers new font with no prefix at the beginning. whatever id is
+    provided is what will be used.
+
+    @param  : str id
+    @param  : str name
+    @param  : int sz
+    @param  : int weight
+    @param  : bool bShadow
+    @param  : bool bExt
 */
 
 function font.reg( id, name, sz, wt, bShadow, bExt, bSym )
@@ -57,18 +65,18 @@ function font.reg( id, name, sz, wt, bShadow, bExt, bSym )
 end
 
 /*
-*	fonts > new
-*
-*   registers new font with prefix attahed to beginning of font id string
-*
-*   @param  : str, tbl mod
-*   @param  : str id
-*   @param  : str name
-*   @param  : int sz
-*   @param  : int weight
-*   @param  : bool bShadow
-*   @param  : bool bExt
-*   @param  : bool bSym
+ 	fonts > new
+
+    registers new font with prefix attahed to beginning of font id string
+
+    @param  : str, tbl mod
+    @param  : str id
+    @param  : str name
+    @param  : int sz
+    @param  : int weight
+    @param  : bool bShadow
+    @param  : bool bExt
+    @param  : bool bSym
 */
 
 function font.new( mod, id, name, sz, wt, bShadow, bExt, bSym )
@@ -79,17 +87,17 @@ function font.new( mod, id, name, sz, wt, bShadow, bExt, bSym )
 end
 
 /*
-*	fonts > get
-*
-*   returns font id
-*   all ids have rlib_suffix appended to the front
-*
-*   @example:   general_name
-*               rlib.general.name
-*
-*   @param  : str, tbl mod
-*   @param  : str id
-*   @return : str
+ 	fonts > get
+
+    returns font id
+    all ids have rlib_suffix appended to the front
+
+    @example:   general_name
+                rlib.general.name
+
+    @param  : str, tbl mod
+    @param  : str id
+    @return : str
 */
 
 function font.get( mod, id )
@@ -100,18 +108,38 @@ function font.get( mod, id )
 end
 
 /*
-*    fonts > rlib
+    new lib font
 */
 
+local _new                  = font.new
+
+/*
+    fonts > register
+*/
+
+local function fonts_register( pl )
+
     /*
-    *    fonts > uclass
+        perm > reload
+    */
+
+        if ( ( helper.ok.ply( pl ) or base.con:Is( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+
+    /*
+        fonts > scale
+    */
+
+        local fs            = RScale( 0.4 )
+
+    /*
+        fonts > uclass
     */
 
         _f( pref( 'ucl_font_def' ),                     { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
         _f( pref( 'ucl_tippy' ),                        { size = 15, weight = 200, antialias = true, shadow = false, font = 'Roboto Light' } )
 
     /*
-    *    fonts > design
+        fonts > design
     */
 
         _f( pref( 'design_dialog_title' ),	            { size = 36, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
@@ -136,14 +164,14 @@ end
         _f( pref( 'design_push_ico' ),                  { size = 40, weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
 
     /*
-    *    fonts > elements
+        fonts > elements
     */
 
         _f( pref( 'elm_tab_name' ),                     { size = 15, weight = 200, antialias = true, font = 'Raleway Light' } )
         _f( pref( 'elm_text' ),                         { size = 17, weight = 400, antialias = true, font = 'Segoe UI Light' } )
 
     /*
-    *    fonts > lang
+        fonts > lang
     */
 
         _f( pref( 'lang_close' ),                       { size = 24, weight = 800, antialias = true, font = 'Roboto' } )
@@ -153,7 +181,7 @@ end
         _f( pref( 'lang_item' ),                        { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
 
     /*
-    *    fonts > mviewer
+        fonts > mviewer
     */
 
         _f( pref( 'mdlv_exit' ),                        { size = 40, weight = 800, antialias = true, font = 'Roboto' } )
@@ -169,7 +197,7 @@ end
         _f( pref( 'mdlv_copyclip' ),                    { size = 14, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
 
     /*
-    *    fonts > servinfo
+        fonts > servinfo
     */
 
         _f( pref( 'diag_icon' ),                        { size = 24, weight = 100, antialias = true, font = 'Roboto Light' } )
@@ -183,7 +211,7 @@ end
         _f( pref( 'diag_resizer' ),                     { size = 24, weight = 100, antialias = true, font = 'Roboto Light' } )
 
     /*
-    *   fonts > welcome
+        fonts > welcome
     */
 
         _f( pref( 'welcome_exit' ),                     { size = 36, weight = 800, antialias = true, font = 'Roboto Light' } )
@@ -195,3 +223,17 @@ end
         _f( pref( 'welcome_btn' ),                      { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
         _f( pref( 'welcome_data' ),                     { size = 12, weight = 200, antialias = true, font = 'Roboto Light' } )
         _f( pref( 'welcome_fx' ),                       { size = 150, weight = 100, antialias = true, font = 'Roboto Light' } )
+
+    /*
+        concommand > reload
+    */
+
+        if helper.ok.ply( pl ) or base.con:Is( pl ) then
+            base:log( 4, '[ %s ] reloaded fonts', mod.name )
+            if not base.con.Is( pl ) then
+                base.msg:target( pl, mod.name, 'reloaded fonts' )
+            end
+        end
+
+end
+hook.Add( 'rlib.fonts.register', '_lib_fonts_register', fonts_register )

@@ -1,72 +1,77 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
-local prefix            = mf.prefix
-local script            = mf.name
-local cfg               = base.settings
+local base                  = rlib
+local helper                = base.h
+local design                = base.d
+local ui                    = base.i
+local access                = base.a
+local cvar                  = base.v
 
 /*
-*   Localized rlib routes
+    library > localize
 */
 
-local helper            = base.h
-local design            = base.d
-local ui                = base.i
-local access            = base.a
-local cvar              = base.v
+local cfg                   = base.settings
+local mf                    = base.manifest
+local prefix                = mf.prefix
+local script                = mf.name
 
 /*
-*   Localized lua funcs
-*
-*   absolutely hate having to do this, but for squeezing out every bit of performance, we need to.
+    lua > localize
 */
 
-local pairs             = pairs
-local istable           = istable
-local isnumber          = isnumber
-local Color             = Color
-local vgui              = vgui
-local surface           = surface
-local string            = string
-local sf                = string.format
+local sf                    = string.format
+local log                   = base.log
+local route                 = base.msg.route
 
 /*
-*   Localized translation func
+    localize output functions
 */
 
-local function lang( ... )
+local function log( ... )
+    base:log( ... )
+end
+
+local function route( ... )
+    base.msg:route( ... )
+end
+
+/*
+    languages
+*/
+
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*   simplifiy funcs
-*/
-
-local function log( ... ) base:log( ... ) end
-
-/*
-*	prefix :: create id
+    prefix > create id
 */
 
 local function cid( id, suffix )
@@ -80,7 +85,7 @@ local function cid( id, suffix )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
@@ -334,10 +339,10 @@ function access:initialize( perms )
     if not perms then perms = base.permissions end
 
     local cat   = perms[ 'index' ] and perms[ 'index' ].category or script
-    local sw    = lang( 'perms_type_base' )
+    local sw    = ln( 'perms_type_base' )
 
     for k, v in pairs( perms ) do
-        if ( k == lang( 'perms_flag_index' ) or k == lang( 'perms_flag_setup' ) ) then continue end
+        if ( k == ln( 'perms_flag_index' ) or k == ln( 'perms_flag_setup' ) ) then continue end
         local id = isstring( v.id ) and v.id or k
 
         if serverguard then
@@ -348,7 +353,7 @@ function access:initialize( perms )
 
             id          = ( isstring( v.svg_id ) and v.svg_id ) or v.id or k
             serverguard.permission:Add( id )
-            sw          = lang( 'perms_type_sg' )
+            sw          = ln( 'perms_type_sg' )
 
         elseif SAM_LOADED and sam then
 
@@ -362,11 +367,11 @@ function access:initialize( perms )
 
             sam.permissions.add( id, cat, grp )
 
-            sw = lang( 'perms_type_sam' )
+            sw = ln( 'perms_type_sam' )
 
         end
 
-        rlib:log( RLIB_LOG_PERM, lang( 'perms_add', sw, perms[ k ].id ) )
+        rlib:log( RLIB_LOG_PERM, ln( 'perms_add', sw, perms[ k ].id ) )
     end
 
 end
@@ -387,7 +392,7 @@ local function netlib_debug_ui( )
     local msg       = net.ReadString( )
 
     cat             = cat or 1
-    msg             = msg or lang( 'debug_receive_err' )
+    msg             = msg or ln( 'debug_receive_err' )
 
     design:notify( cat, msg )
     design:bubble( msg, 5 )
@@ -443,7 +448,7 @@ local function initialize( )
             steamworks.FileInfo( l, function( res )
                 if not res or not res.title then return end
                 base.w[ l ].steamapi = { title = res.title }
-                log( RLIB_LOG_WS, lang( 'ws_registered', res.title, l ) )
+                log( RLIB_LOG_WS, ln( 'ws_registered', res.title, l ) )
             end )
         end
 
@@ -530,6 +535,6 @@ hook.Add( 'Think', pid( 'think.pl.res' ), think_pl_res )
 */
 
 local function cvar_cb_lang( name, old, new )
-    design.notify_adv( false, lang( 'lang_title' ), lang( 'lang_msg_change', new ), delay )
+    design.notify_adv( false, ln( 'lang_title' ), ln( 'lang_msg_change', new ), delay )
 end
 cvars.AddChangeCallback( 'rlib_language', cvar_cb_lang )

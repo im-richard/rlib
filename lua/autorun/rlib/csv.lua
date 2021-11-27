@@ -1,34 +1,32 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local cfg                   = base.settings
-local mf                    = base.manifest
-local pf                    = mf.prefix
-local script                = mf.name
-
-/*
-*   Localized rlib routes
-*/
-
 local helper                = base.h
 local storage               = base.s
 local access                = base.a
@@ -37,34 +35,44 @@ local cvar                  = base.v
 local sys                   = base.sys
 
 /*
-*   Localized lua funcs
-*
-*   absolutely hate having to do this, but for squeezing out every bit of performance, we need to.
+    library > localize
 */
 
-local Color                 = Color
-local pairs                 = pairs
-local ipairs                = ipairs
-local tonumber              = tonumber
-local tostring              = tostring
-local IsValid               = IsValid
-local istable               = istable
-local isfunction            = isfunction
-local isnumber              = isnumber
-local isstring              = isstring
-local file                  = file
-local debug                 = debug
-local util                  = util
-local table                 = table
-local os                    = os
-local coroutine             = coroutine
-local string                = string
+local cfg                   = base.settings
+local mf                    = base.manifest
+local pf                    = mf.prefix
+local script                = mf.name
+
+/*
+    lua > localize
+*/
+
 local sf                    = string.format
 local ts                    = tostring
 local execq                 = RunString
 
 /*
-*   debug path
+    localize output functions
+*/
+
+local function con( ... )
+    base:console( ... )
+end
+
+local function log( ... )
+    base:log( ... )
+end
+
+local function route( ... )
+    base.msg:route( ... )
+end
+
+local function direct( ... )
+    base.msg:direct( ... )
+end
+
+/*
+    debug paths
 */
 
 local path_alogs            = mf.paths[ 'dir_alogs' ]
@@ -74,7 +82,7 @@ local path_server           = mf.paths[ 'dir_server' ]
 local path_obf              = mf.paths[ 'dir_obf' ]
 
 /*
-*   localized http.fetch
+    oort > fetch
 */
 
 local function oort( ... )
@@ -82,7 +90,7 @@ local function oort( ... )
 end
 
 /*
-*   localized http.post
+    oort > post
 */
 
 local function oort_post( ... )
@@ -90,7 +98,7 @@ local function oort_post( ... )
 end
 
 /*
-*   Localized translation func
+    languages
 */
 
 local function ln( ... )
@@ -98,10 +106,10 @@ local function ln( ... )
 end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
-local function pref( id, suffix )
+local function cid( id, suffix )
     local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
     affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
 
@@ -112,12 +120,12 @@ local function pref( id, suffix )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return pref( str, state )
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
+    return cid( str, state )
 end
 
 /*
@@ -153,15 +161,6 @@ local net_register =
 for k, v in pairs( net_register ) do
     util.AddNetworkString( v )
 end
-
-/*
-*   simplifiy funcs
-*/
-
-local function con      ( ... ) base:console( ... ) end
-local function log      ( ... ) base:log( ... ) end
-local function route    ( ... ) base.msg:route( ... ) end
-local function direct   ( ... ) base.msg:direct( ... ) end
 
 /*
 *   metatable > ply

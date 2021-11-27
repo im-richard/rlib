@@ -1,39 +1,32 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                          = rlib
-local mf                            = base.manifest
-local prefix                        = mf.prefix
-local cfg                           = base.settings
-
-/*
-*   simplifiy funcs
-*/
-
-local function log( ... ) base:log( ... ) end
-
-/*
-*   Localized rlib routes
-*/
-
 local helper                        = base.h
 local design                        = base.d
 local ui                            = base.i
@@ -42,29 +35,20 @@ local font                          = base.f
 local res                           = base.resources
 
 /*
-*   Localized lua funcs
-*
-*   absolutely hate having to do this, but for squeezing out every bit of performance, we need to.
+    library > localize
 */
 
-local pairs                         = pairs
-local type                          = type
-local tostring                      = tostring
-local IsValid                       = IsValid
-local istable                       = istable
-local isfunction                    = isfunction
-local isnumber                      = isnumber
-local IsColor                       = IsColor
-local Color                         = Color
-local ScreenScale                   = ScreenScale
-local gui                           = gui
-local vgui                          = vgui
-local table                         = table
-local math                          = math
-local surface                       = surface
-local draw                          = draw
-local string                        = string
-local sf                            = string.format
+local cfg                           = base.settings
+local mf                            = base.manifest
+local pf                            = mf.prefix
+
+/*
+    localize output functions
+*/
+
+local function log( ... )
+    base:log( ... )
+end
 
 /*
 *   helper > predefined materials
@@ -1282,7 +1266,7 @@ function ui:getpnl( id, mod )
     local _cache    = id
 
     id              = helper.str:clean( id )
-    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or prefix
+    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or pf
     base.p          = istable( base.p ) and base.p or { }
 
     local name      = res:exists( mod, 'pnl', id )
@@ -1317,7 +1301,7 @@ function ui:register( id, mod, panel, desc )
     end
 
     id              = helper.str:clean( id )
-    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or prefix
+    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or pf
     base.p          = istable( base.p ) and base.p or { }
 
     local name      = rlib:resource( mod, 'pnl', id )
@@ -1354,7 +1338,7 @@ function ui:load( id, mod )
     end
 
     id              = helper.str:clean( id )
-    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or prefix
+    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or pf
 
     local name      = rlib:resource( mod, 'pnl', id )
 
@@ -1388,7 +1372,7 @@ function ui:call( id, mod )
     end
 
     id              = helper.str:clean( id )
-    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or prefix
+    mod             = ( isstring( mod ) and mod ) or ( istable( mod ) and mod.id ) or pf
 
     local name      = rlib:resource( mod, 'pnl', id )
 
@@ -1416,7 +1400,7 @@ function ui:unregister( id, mod )
         return false
     end
 
-    mod = isstring( mod ) and mod or prefix
+    mod = isstring( mod ) and mod or pf
 
     if not istable( base.p ) then
         log( 2, lang( 'inf_unreg_tbl_invalid' ) )
@@ -1598,7 +1582,7 @@ end
 */
 
 function ui:fonts_register( suffix, face, bShadow, scale )
-    suffix          = isstring( suffix ) and suffix or prefix
+    suffix          = isstring( suffix ) and suffix or pf
     face            = isstring( face ) and face or pid( 'ucl_font_def' )
     bShadow         = bShadow or false
     scale           = isnumber( scale ) and scale or self:scale( )
@@ -1633,10 +1617,10 @@ function ui:fonts_register( suffix, face, bShadow, scale )
 
     for sz, sz_name in pairs( font_sz ) do
         local calc_sz   = sz * scale
-        local name      = sf( '%s%s', suffix, sz_name )
+        local name      = string.format( '%s%s', suffix, sz_name )
         surface.CreateFont( name, { font = face, size = calc_sz, shadow = bShadow, antialias = true } )
         for wg, wg_name in pairs( weights ) do
-            name        = sf( '%s%s_%s', suffix, sz_name, wg_name )
+            name        = string.format( '%s%s_%s', suffix, sz_name, wg_name )
             surface.CreateFont( name, { font = face, size = calc_sz, weight = wg_name, shadow = bShadow, antialias = true } )
         end
     end
@@ -1825,6 +1809,10 @@ local uclass = { }
 
         if pnl._Declare then
             pnl:_Declare( )
+        end
+
+        if pnl._Mats then
+            pnl:_Mats( )
         end
 
         if pnl._Colorize then
@@ -2236,10 +2224,7 @@ local uclass = { }
         if not isfunction( fn ) then return end
 
         local name = 'DoClick'
-        local orig = pnl[ name ]
-
         pnl[ name ] = function( s, ... )
-            if isfunction( orig ) then orig( s, ... ) end
             fn( s, ... )
         end
     end
@@ -2418,6 +2403,27 @@ local uclass = { }
     uclass.otch       = uclass.ontxtchg
 
     /*
+    *   uclass > OnLoseFocus
+    *
+    *   @alias  : losefocus, otlf
+    *
+    *   @param  : func fn
+    */
+
+    function uclass.losefocus( pnl, fn )
+        if not isfunction( fn ) then return end
+
+        local name = 'OnLoseFocus'
+        local orig = pnl[ name ]
+
+        pnl[ name ] = function( s, ... )
+            if isfunction( orig ) then orig( s, ... ) end
+            fn( s, ... )
+        end
+    end
+    uclass.otlf     = uclass.losefocus
+
+    /*
     *   uclass > DTextEntry > noedit
     *
     *   supplying bNoEdit will automatically reset text each time text changed.
@@ -2457,6 +2463,15 @@ local uclass = { }
 
     function uclass.lbllock( pnl )
         pnl:SetEditable( false )
+    end
+
+    /*
+    *   uclass > DTextEntry > SetEditable
+    */
+
+    function uclass.editable( pnl, b )
+        local bool = helper:val2bool( b )
+        pnl:SetEditable( bool )
     end
 
     /*
@@ -2558,10 +2573,7 @@ local uclass = { }
         if not isfunction( fn ) then return end
 
         local name = 'OpenMenu'
-        local orig = pnl[ name ]
-
         pnl[ name ] = function( ... )
-            if isfunction( orig ) then orig( ... ) end
             fn( ... )
         end
     end
@@ -3213,57 +3225,6 @@ local uclass = { }
     end
 
     /*
-    *   uclass > SetPos
-    *
-    *   positions based on table index / key
-    *
-    *   @param  : int x
-    *   @param  : int y
-    */
-
-    function uclass.pos_table_x( pnl, x, y )
-        x = isnumber( x ) and x or 0
-        y = isnumber( y ) and y or isnumber( x ) and x or 0
-        x = x * ( pnl.pos_ind or 0 )
-        pnl:SetPos( x, y )
-    end
-
-    /*
-    *   uclass > SetPos
-    *
-    *   positions based on table index / key
-    *
-    *   @param  : int x
-    *   @param  : int y
-    */
-
-    function uclass.pos_table_y( pnl, x, y )
-        x = isnumber( x ) and x or 0
-        y = isnumber( y ) and y or isnumber( x ) and x or 0
-        y = y * ( pnl.pos_ind or 0 )
-        pnl:SetPos( x, y )
-    end
-
-    /*
-    *   uclass > insert to table
-    *
-    *   @param  : func fn
-    *   @param  : tbl tbl
-    *   @param  : int pos
-    */
-
-    function uclass.insert( pnl, tbl, pos )
-        if not istable( tbl ) then return end
-        local where = 0
-        if isnumber( pos ) then
-            where = table.insert( tbl, pos, pnl )
-        else
-            where = table.insert( tbl, pnl )
-        end
-        pnl.pos_ind = where
-    end
-
-    /*
     *   uclass > SetSpaceX
     *
     *   @alias  : space_x
@@ -3319,6 +3280,57 @@ local uclass = { }
     function uclass.dspace( pnl, amt )
         amt = isnumber( amt ) and amt or 0
         pnl:SetSpacing( amt )
+    end
+
+    /*
+    *   uclass > SetPos
+    *
+    *   positions based on table index / key
+    *
+    *   @param  : int x
+    *   @param  : int y
+    */
+
+    function uclass.pos_table_x( pnl, x, y )
+        x = isnumber( x ) and x or 0
+        y = isnumber( y ) and y or isnumber( x ) and x or 0
+        x = x * ( pnl.pos_ind or 0 )
+        pnl:SetPos( x, y )
+    end
+
+    /*
+    *   uclass > SetPos
+    *
+    *   positions based on table index / key
+    *
+    *   @param  : int x
+    *   @param  : int y
+    */
+
+    function uclass.pos_table_y( pnl, x, y )
+        x = isnumber( x ) and x or 0
+        y = isnumber( y ) and y or isnumber( x ) and x or 0
+        y = y * ( pnl.pos_ind or 0 )
+        pnl:SetPos( x, y )
+    end
+
+    /*
+    *   uclass > insert to table
+    *
+    *   @param  : func fn
+    *   @param  : tbl tbl
+    *   @param  : int pos
+    */
+
+    function uclass.insert( pnl, tbl, pos )
+        if not istable( tbl ) then return end
+        local where = 0
+        if isnumber( pos ) then
+            where = table.insert( tbl, pos, pnl )
+        else
+            where = table.insert( tbl, pnl )
+        end
+        pnl.pos_ind = where
     end
 
     /*
@@ -3561,18 +3573,6 @@ local uclass = { }
     *   @param  : str str
     */
 
-    function uclass.setfont( pnl, str )
-        str = isstring( str ) and str or pid( 'ucl_font_def' )
-        pnl:SetFont( str )
-    end
-    uclass.font = uclass.setfont
-
-    /*
-    *   uclass > DLabel, DTextEntry > SetFont
-    *
-    *   @param  : str face
-    */
-
     function uclass.setfont( pnl, face )
         face = isstring( face ) and face or pid( 'ucl_font_def' )
         pnl:SetFont( face )
@@ -3619,6 +3619,23 @@ local uclass = { }
     function uclass.face( pnl, mod, str )
         str         = isstring( str ) and str or pid( 'ucl_font_def' )
         local _f    = font.get( mod, str )
+
+        pnl:SetFont( _f )
+    end
+
+    /*
+    *   uclass > DLabel, DTextEntry > Face
+    *
+    *   @note   : supports rlib fonts or regular string fontname
+    *   @note   : replaces uclass.face
+    *
+    *   @param  : str face
+    *   @param  : str, tbl mod
+    */
+
+    function uclass.rface( pnl, face, mod )
+        local fnt       = isstring( face ) and face or pid( 'ucl_font_def' )
+        local _f        = ( mod and font.get( mod, face ) ) or fnt
 
         pnl:SetFont( _f )
     end
@@ -3954,7 +3971,7 @@ local uclass = { }
     */
 
     function uclass.center_h( pnl, flt )
-        flt = isnumber( flt ) and flt or 0.5
+        flt = flt or 0.5
         pnl:CenterHorizontal( flt )
     end
 
@@ -3968,7 +3985,7 @@ local uclass = { }
     */
 
     function uclass.center_v( pnl, flt )
-        flt = isnumber( flt ) and flt or 0.5
+        flt = flt or 0.5
         pnl:CenterVertical( flt )
     end
 
@@ -3982,12 +3999,14 @@ local uclass = { }
     *           : text color. Uses the Color structure.
     */
 
-    function uclass.textclr( pnl, clr )
+    function uclass.textclr( pnl, clr, bThink )
         clr = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
         pnl:SetTextColor( clr )
 
-        pnl[ 'Think' ] = function( s, ... )
-            s:SetTextColor( clr )
+        if bThink then
+            pnl[ 'Think' ] = function( s, ... )
+                s:SetTextColor( clr )
+            end
         end
     end
 
@@ -5605,7 +5624,7 @@ local uclass = { }
                                     :draw( function( s, w, h )
                                         design.rbox( 4, 0, 0, sz_w, 25, clr_out )
                                         design.rbox( 4, 1, 1, sz_w - 2, 25 - 2, clr_box )
-                                        local resp      = not bUF8f and sf( '%s %s' , helper.get:utf8char( cfg.tips.clrs.utf ), str ) or sf( '%s' , str )
+                                        local resp      = not bUF8f and string.format( '%s %s' , helper.get:utf8char( cfg.tips.clrs.utf ), str ) or string.format( '%s' , str )
                                         local align     = not bUF8f and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
                                         local pos       = not bUF8f and 15 or ( w / 2 )
                                         draw.SimpleText( resp, pid( 'ucl_tippy' ), pos, ( 25 / 2 ), clr_text, align, TEXT_ALIGN_CENTER )

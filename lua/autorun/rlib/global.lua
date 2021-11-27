@@ -22,8 +22,6 @@
     EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
-SAP                         = SAP or { }
-
 /*
     libraries
 */
@@ -31,6 +29,12 @@ SAP                         = SAP or { }
 local base                  = rlib
 local access                = base.a
 local helper                = base.h
+
+/*
+    SAP
+*/
+
+SAP                         = SAP or { }
 
 /*
     sap > registered

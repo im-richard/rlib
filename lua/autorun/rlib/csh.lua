@@ -1,98 +1,78 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
-local prefix            = mf.prefix
-local script            = mf.name
-local cfg               = base.settings
+local base                  = rlib
+local helper                = base.h
+local storage               = base.s
+local access                = base.a
+local tools                 = base.t
+local sys                   = base.sys
 
 /*
-*   localized rlib routes
+    library > localize
 */
 
-local helper            = base.h
-local storage           = base.s
-local access            = base.a
-local tools             = base.t
-local sys               = base.sys
-local timex             = timex
+local cfg                   = base.settings
+local mf                    = base.manifest
+local prefix                = mf.prefix
+local script                = mf.name
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
+    lua > localize
 */
 
-local Color             = Color
-local pairs             = pairs
-local ipairs            = ipairs
-local error             = error
-local print             = print
-local setmetatable      = setmetatable
-local Vector            = Vector
-local Angle             = Angle
-local Entity            = Entity
-local GetConVar         = GetConVar
-local tonumber          = tonumber
-local tostring          = tostring
-local IsValid           = IsValid
-local istable           = istable
-local isfunction        = isfunction
-local isentity          = isentity
-local isnumber          = isnumber
-local isstring          = isstring
-local type              = type
-local Color             = Color
-local util              = util
-local table             = table
-local os                = os
-local coroutine         = coroutine
-local player            = player
-local math              = math
-local string            = string
-local sf                = string.format
+local sf                    = string.format
 
 /*
-*   simplifiy funcs
+    localize output functions
 */
 
-local function log( ... ) base:log( ... ) end
-local function route( ... ) base.msg:route( ... ) end
+local function log( ... )
+    base:log( ... )
+end
+
+local function route( ... )
+    base.msg:route( ... )
+end
 
 /*
-*   Localized translation func
+    languages
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
-local function pref( id, suffix )
+local function cid( id, suffix )
     local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or prefix
     affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
 
@@ -103,12 +83,12 @@ local function pref( id, suffix )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and prefix ) or false
-    return pref( str, state )
+    return cid( str, state )
 end
 
 /*
@@ -118,9 +98,9 @@ end
 *   knowing what to type in order to turn something on, so here is a solution, with some added humor.
 */
 
-local options_yes       = { 'true', '1', 'on', 'yes', 'enable', 'enabled', 'sure', 'agree', 'confirm' }
-local options_no        = { 'false', '0', 'off', 'no', 'disable', 'disabled', 'nah', 'disagree', 'decline' }
-local options_huh       = { 'kinda', 'sorta', 'tomorrow', 'maybe' }
+local options_yes           = { 'true', '1', 'on', 'yes', 'enable', 'enabled', 'sure', 'agree', 'confirm' }
+local options_no            = { 'false', '0', 'off', 'no', 'disable', 'disabled', 'nah', 'disagree', 'decline' }
+local options_huh           = { 'kinda', 'sorta', 'tomorrow', 'maybe' }
 
 /*
 *   helper > print table
@@ -316,7 +296,7 @@ end
 
 function helper.ok.sid32( sid )
     if not sid then return end
-    if sid:lower( ) == lang( 'sys_user_type' ):lower( ) then return true end
+    if sid:lower( ) == ln( 'sys_user_type' ):lower( ) then return true end
     return sid:match( '^STEAM_%d:%d:%d+$' ) ~= nil
 end
 
@@ -1418,8 +1398,8 @@ end
 function access:hasperm( pl, perm, bThrowErr )
     perm = isstring( perm ) and perm or 'rlib_root'
     if not access:validate( pl, perm ) then
-        local str_perm = perm and tostring( perm ) or lang( 'action_requested' )
-        base.msg:route( pl, false, script, lang( 'perms_invalid' ), cfg.cmsg.clrs.target, str_perm )
+        local str_perm = perm and tostring( perm ) or ln( 'action_requested' )
+        base.msg:route( pl, false, script, ln( 'perms_invalid' ), cfg.cmsg.clrs.target, str_perm )
         return false
     end
     return true
@@ -1439,8 +1419,8 @@ end
 
 function access:deny_permission( pl, mod, perm )
     mod = istable( mod ) and mod.name or isstring( mod ) and mod
-    local str_perm = perm and tostring( perm ) or lang( 'action_requested' )
-    route( pl, false, mod, lang( 'perms_invalid' ), cfg.cmsg.clrs.target, str_perm )
+    local str_perm = perm and tostring( perm ) or ln( 'action_requested' )
+    route( pl, false, mod, ln( 'perms_invalid' ), cfg.cmsg.clrs.target, str_perm )
     return false
 end
 
@@ -1459,7 +1439,7 @@ end
 
 function access:deny_consoleonly( pl, mod, perm )
     mod = istable( mod ) and isstring( mod.name ) and mod.name or isstring( mod ) and mod or tostring( mod )
-    local str_perm = perm and tostring( perm ) or lang( 'action_requested' )
+    local str_perm = perm and tostring( perm ) or ln( 'action_requested' )
     route( pl, false, mod, 'command', cfg.cmsg.clrs.target, str_perm, cfg.cmsg.clrs.msg, 'must be executed', cfg.cmsg.clrs.target_sec, 'server-side only' )
     return false
 end
@@ -1479,7 +1459,7 @@ end
 
 function access:deny_console( pl, mod, perm )
     mod = istable( mod ) and isstring( mod.name ) and mod.name or isstring( mod ) and mod or tostring( mod )
-    local str_perm = perm and tostring( perm ) or lang( 'action_requested' )
+    local str_perm = perm and tostring( perm ) or ln( 'action_requested' )
     route( pl, false, mod, 'command ', cfg.cmsg.clrs.target, str_perm, cfg.cmsg.clrs.msg, 'must be called by valid player and not by', cfg.cmsg.clrs.target_sec, 'console' )
     return false
 end
@@ -2434,7 +2414,7 @@ end
 
 function helper:sortedkeys( src, sortf )
     if not istable( src ) then
-        log( 2, lang( 'sort_badtable' ) )
+        log( 2, ln( 'sort_badtable' ) )
         return
     end
 
@@ -2482,7 +2462,7 @@ function helper.switch( tbl )
             if isfunction( f ) then
                 f( x, self )
             else
-                error( lang( 'case_nofunc', tostring( x ) ) )
+                error( ln( 'case_nofunc', tostring( x ) ) )
             end
         end
     end
@@ -2723,7 +2703,7 @@ function helper.util:toggle( val )
         elseif ( table.HasValue( options_no, val ) ) then
             return false
         elseif ( table.HasValue( options_huh, val ) ) then
-            log( 1, lang( 'convert_toggle_idiot' ) )
+            log( 1, ln( 'convert_toggle_idiot' ) )
             return false
         else
             return false
@@ -2771,7 +2751,7 @@ function helper.util:humanbool( val, bOnOff )
         elseif ( table.HasValue( options_no, val ) ) then
             return not bOnOff and b2s_false or b2h_false
         elseif ( table.HasValue( options_huh, val ) ) then
-            log( 1, lang( 'convert_toggle_idiot' ) )
+            log( 1, ln( 'convert_toggle_idiot' ) )
             return not bOnOff and b2s_false or b2h_false
         else
             return not bOnOff and b2s_false or b2h_false
@@ -2857,7 +2837,7 @@ end
 
 function base.msg:struct( scope, subcat, ... )
     if not cfg or not cfg.cmsg then
-        log( 2, lang( 'cmsg_missing' ) )
+        log( 2, ln( 'cmsg_missing' ) )
         return
     end
 
@@ -2892,7 +2872,7 @@ end
 
 function base.msg:server( pl, subcat, ... )
     if not cfg or not cfg.cmsg then
-        log( 2, lang( 'cmsg_missing' ) )
+        log( 2, ln( 'cmsg_missing' ) )
         return false
     end
 
@@ -2934,7 +2914,7 @@ end
 
 function base.msg:target( pl, subcat, ... )
     if not cfg or not cfg.cmsg then
-        log( 2, lang( 'cmsg_missing' ) )
+        log( 2, ln( 'cmsg_missing' ) )
         return
     end
 
@@ -3106,9 +3086,9 @@ end
 
 function helper.util:sid32_64( sid )
     if not sid or not helper.ok.sid32( sid ) then
-        local ret = lang( 'util_nil' )
+        local ret = ln( 'util_nil' )
         if sid and sid ~= nil then ret = sid end
-        log( 2, lang( 'util_s32_noconvert', ret ) )
+        log( 2, ln( 'util_s32_noconvert', ret ) )
         return false
     end
 
@@ -3149,9 +3129,9 @@ end
 
 function helper.util:sid64_32( sid, x )
     if not sid or tonumber( sid ) == nil then
-        local ret = lang( 'util_nil' )
+        local ret = ln( 'util_nil' )
         if sid and sid ~= nil then ret = sid end
-        log( 2, lang( 'util_s64_noconvert', ret ) )
+        log( 2, ln( 'util_s64_noconvert', ret ) )
         return false
     end
 
@@ -3249,7 +3229,7 @@ end
 
 function helper.who:rpjob( name )
     if not RPExtraTeams then
-        log( 2, lang( 'hlp_who_rp_notable' ) )
+        log( 2, ln( 'hlp_who_rp_notable' ) )
         return false
     end
 

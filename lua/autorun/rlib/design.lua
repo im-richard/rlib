@@ -1,86 +1,77 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local mf                    = base.manifest
-local prefix                = mf.prefix
-local cfg                   = base.settings
 local helper                = base.h
 local design                = base.d
 local ui                    = base.i
-local materials             = base.m
+local mats                  = base.m
 local font                  = base.f
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every bit of performance, we need to.
+    library > localize
 */
 
-local ipairs                = ipairs
-local tostring              = tostring
-local IsValid               = IsValid
-local istable               = istable
-local isnumber              = isnumber
-local IsColor               = IsColor
-local Color                 = Color
-local Material              = Material
-local gui                   = gui
-local input                 = input
-local string                = string
-local table                 = table
-local math                  = math
-local surface               = surface
-local draw                  = draw
-local render                = render
+local cfg                   = base.settings
+local mf                    = base.manifest
+local pf                    = mf.prefix
+
+/*
+    lua > localize
+*/
 
 local mat_def               = Material( 'pp/colour' )
 
 /*
-*   Localized translation func
+    languages
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*	prefix ids
+    prefix
 */
 
 local function pref( str, suffix )
     local state = not suffix and mod or isstring( suffix ) and suffix or false
-    return rlib.get:pref( str, state )
+    return base.get:pref( str, state )
 end
 
 /*
-*   design > sub
+    design > sub
 */
 
 design.rcir                 = design.rcir or { }
 
 /*
-*   constants
-*
-*   text align
+    constants > text align
 */
 
 RLIB_TALIGN_L               = 4
@@ -97,9 +88,9 @@ RLIB_TALIGN_B               = 2
 */
 
 local function push_clean_storage( )
-    for k, v in pairs( rlib.push ) do
+    for k, v in pairs( base.push ) do
         if v and ui:visible( v ) and k < 9 and tostring( v ) ~= '[NULL Panel]' then continue end
-        rlib.push[ k ] = nil
+        base.push[ k ] = nil
     end
 end
 
@@ -119,8 +110,8 @@ local function push_loc_slot( obj )
     local pos_new = 180
 
     for i = 1, 8, 1 do
-        if rlib.push[ i ] then
-            local id    = rlib.push[ i ]
+        if base.push[ i ] then
+            local id    = base.push[ i ]
             pos_new     = pos_new + id:GetTall( )
             pos_new     = pos_new + 5
             continue
@@ -385,7 +376,7 @@ end
 */
 
 function design.mat( x, y, w, h, mat, clr )
-    local src   = materials:ok( mat ) and mat or istable( mat ) and mat.material or isstring( mat ) and mat
+    local src   = mats:ok( mat ) and mat or istable( mat ) and mat.material or isstring( mat ) and mat
     src         = isstring( src ) and Material( src, 'noclamp smooth' ) or src or mat_def
     clr         = clr or Color( 255, 255, 255, 255 )
 
@@ -409,7 +400,7 @@ end
 */
 
 function design.imat( x, y, w, h, mat, clr )
-    local src   = materials:ok( mat ) and mat or false
+    local src   = mats:ok( mat ) and mat or false
                 if not src then return end
 
     clr         = clr or Color( 255, 255, 255, 255 )
@@ -455,7 +446,7 @@ end
 
 function design.imat_r( x, y, w, h, r, mat, clr )
     r       = isnumber( r ) and r or 0
-    mat     = materials:ok( mat ) and mat or false
+    mat     = mats:ok( mat ) and mat or false
             if not mat then return end
 
     clr     = clr or Color( 255, 255, 255, 255 )
@@ -1529,7 +1520,7 @@ end
 function design.rcir.line( pnl, mat, clr, rotate )
     if not pnl then return end
 
-    mat         = materials:ok( mat ) and mat or nil
+    mat         = mats:ok( mat ) and mat or nil
     clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
     rotate      = isnumber( rotate ) and rotate or 0
 
@@ -1734,7 +1725,7 @@ function design:notify( mtype, msg, dur, startpos, bFull )
     *   destroy existing
     */
 
-    ui:destroy_visible( rlib.notify )
+    ui:destroy_visible( base.notify )
 
     /*
     *   mtype colorization
@@ -1813,7 +1804,7 @@ function design:notify( mtype, msg, dur, startpos, bFull )
     */
 
     if ui:ok( obj ) then
-        rlib.notify = obj
+        base.notify = obj
 
         obj:MoveTo( pos_w, pos_h, 0.5, 0, -1, function( )
             obj:MoveTo( pos_w, pos_m2, 0.5, dur, -1, function( )
@@ -1845,7 +1836,7 @@ function design.notify_adv( icon, title, message, delay )
     if not title then return end
     if not message then return end
 
-    local timer_id                  = prefix .. 'notice.timer'
+    local timer_id                  = pf .. 'notice.timer'
                                     timex.expire( timer_id )
 
     /*
@@ -1868,11 +1859,11 @@ function design.notify_adv( icon, title, message, delay )
     *   kill timers, hooks, and the panel to cancel the entire active notice action
     */
 
-    hook.Add( 'Think', prefix .. 'design.key.cancel', function( )
+    hook.Add( 'Think', pf .. 'design.key.cancel', function( )
         if input.IsKeyDown( KEY_TAB ) and ui:visible( ui.notifyadv ) then
             timex.expire( timer_id )
-            hook.Remove( 'Think', prefix .. 'design.key.cancel' )
-            hook.Remove( 'ScoreboardShow', prefix .. 'design.key.cancel.scoreboard' )
+            hook.Remove( 'Think', pf .. 'design.key.cancel' )
+            hook.Remove( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard' )
             ui:dispatch( ui.notifyadv )
         end
     end )
@@ -1888,7 +1879,7 @@ function design.notify_adv( icon, title, message, delay )
     *   the default one ENUM:( KEY_TAB )
     */
 
-    hook.Add( 'ScoreboardShow', prefix .. 'design.key.cancel.scoreboard', function( )
+    hook.Add( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard', function( )
         if ui:ok( ui.notifyadv ) and input.IsKeyDown( KEY_TAB ) then
             return false
         end
@@ -1959,7 +1950,7 @@ function design.notify_adv( icon, title, message, delay )
                                         local clr_txt = cfg.dialogs.clrs.primary_text
                                         design.txt( title, w / 2, h / 2 - 13, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_title' ), 1, 1 )
                                         design.txt( message, w / 2, h / 2 + 17, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_msg' ), 1, 1 )
-                                        design.txt( lang( 'dialog_key_close', key_convert ), w / 2, h - h * .10 / 2 + 15, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_qclose' ), 1, 1 )
+                                        design.txt( ln( 'dialog_key_close', key_convert ), w / 2, h - h * .10 / 2 + 15, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_qclose' ), 1, 1 )
 
                                         local time          = math.Remap( CurTime( ) - m_ctime, 0, delay, w, 0 )
                                         local blk_w         = time * 0.20
@@ -1988,8 +1979,8 @@ function design.notify_adv( icon, title, message, delay )
         if timex.exists( timer_id ) and not bForce then return end
         timex.create( timer_id, delay + 1, 1, function( )
             timex.expire( timer_id )
-            hook.Remove( 'Think', prefix .. 'design.key.cancel' )
-            hook.Remove( 'ScoreboardShow', prefix .. 'design.key.cancel.scoreboard' )
+            hook.Remove( 'Think', pf .. 'design.key.cancel' )
+            hook.Remove( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard' )
             ui:dispatch( ui.notifyadv )
         end )
     end
@@ -2014,7 +2005,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     *   destroy existing
     */
 
-    ui:destroy_visible( rlib.bubble )
+    ui:destroy_visible( base.bubble )
 
     /*
     *   check
@@ -2118,7 +2109,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     */
 
     if ui:ok( obj ) then
-        rlib.bubble = obj
+        base.bubble = obj
 
         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) - obj:GetTall( ) - 5, 0.5, 0, -1, function( )
             obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, dur, -1, function( )
@@ -2146,7 +2137,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     *   destroy existing
     */
 
-    ui:destroy_visible( rlib.bubble )
+    ui:destroy_visible( base.bubble )
 
     /*
     *   check
@@ -2291,7 +2282,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     */
 
     if ui:ok( obj ) then
-        rlib.bubble = obj
+        base.bubble = obj
 
         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) - obj:GetTall( ) - 5, 0.5, 0, -1, function( )
             obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, dur, -1, function( )
@@ -2321,7 +2312,7 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     *   destroy existing
     */
 
-    rlib.push                       = istable( rlib.push ) and rlib.push or { }
+    base.push                       = istable( base.push ) and base.push or { }
 
     /*
     *   check
@@ -2503,7 +2494,7 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
 
         obj:SetPos                  ( ScrW( ), pos                )
         obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 15, pos, 0.5, 0, -1, function( )
-                                        rlib.push[ where ] = obj
+                                        base.push[ where ] = obj
                                         obj:MoveTo( ScrW( ), pos, 0.5, dur, -1, function( )
                                             ui:dispatch( obj )
                                         end )
@@ -2532,7 +2523,7 @@ function design:inform( mtype, msg, title, dur )
     *   destroy existing
     */
 
-    ui:dispatch( rlib.notify )
+    ui:dispatch( base.notify )
 
     /*
     *   mtype colorization
@@ -2558,7 +2549,7 @@ function design:inform( mtype, msg, title, dur )
         mtype, msg = 2, 'an error occured'
     end
 
-    title                           = isstring( title ) and title or lang( 'notify_title_def' )
+    title                           = isstring( title ) and title or ln( 'notify_title_def' )
     dur                             = isnumber( dur ) and dur or 10
 
     local message                   = helper.str:crop( msg, ui:cscale( true, 220, 250, 260, 250, 260, 260, 270 ), pref( 'design_dialog_sli_msg' ) )
@@ -2685,7 +2676,7 @@ function design:inform( mtype, msg, title, dur )
     */
 
     if ui:ok( obj ) then
-        rlib.notify = obj
+        base.notify = obj
 
         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, 200, 0.5, 0, -1, function( )
             obj:MoveTo( ScrW( ), 200, 0.5, dur, -1, function( )
@@ -2874,7 +2865,7 @@ function design.rsay( msg, clr, dur, fade )
         local dtime = CurTime( ) - start
 
         if dtime > dur then
-            hook.Remove( 'HUDPaint', prefix .. 'rsay.draw' )
+            hook.Remove( 'HUDPaint', pf .. 'rsay.draw' )
             return
         end
 
@@ -2898,11 +2889,11 @@ function design.rsay( msg, clr, dur, fade )
         end
     end
 
-    hook.Add( 'HUDPaint', prefix .. 'rsay.draw', rsay_draw )
+    hook.Add( 'HUDPaint', pf .. 'rsay.draw', rsay_draw )
 end
 
 /*
-*   netlib > rsay
+    netlib > rsay
 */
 
 local function netlib_rsay( )
@@ -2912,6 +2903,5 @@ local function netlib_rsay( )
     local fade      = net.ReadInt( 8 )
 
     design.rsay( msg, clr, dur, fade )
-
 end
 net.Receive( 'rlib.rsay', netlib_rsay )

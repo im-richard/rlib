@@ -1,58 +1,44 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2020 - 2020
-*   @since          : 3.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local mf                    = base.manifest
-local pf                    = mf.prefix
-local cfg                   = base.settings
-
-/*
-*   localized rlib routes
-*/
-
 local helper                = base.h
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
+    library > localize
 */
 
-local pairs                 = pairs
-local GetConVar             = GetConVar
-local tonumber              = tonumber
-local IsValid               = IsValid
-local istable               = istable
-local isnumber              = isnumber
-local isstring              = isstring
-local type                  = type
-local debug                 = debug
-local util                  = util
-local table                 = table
-local string                = string
-local sf                    = string.format
+local cfg                   = base.settings
+local mf                    = base.manifest
+local pf                    = mf.prefix
 
 /*
-*   Localized translation func
+    languages
 */
 
 local function ln( ... )
@@ -60,10 +46,12 @@ local function ln( ... )
 end
 
 /*
-*   simplifiy funcs
+    localize output functions
 */
 
-local function log( ... ) base:log( ... ) end
+local function log( ... )
+    base:log( ... )
+end
 
 /*
 *   get > name
@@ -102,7 +90,7 @@ local function log( ... ) base:log( ... ) end
 *   @param  : tbl, str mnfst
 *   @param  : bool bLibReq
 *   @return : tbl
-*           : major, minor, patch
+*             major, minor, patch
 */
 
     function base.get:version( mnfst, bLibReq )
@@ -152,7 +140,7 @@ local function log( ... ) base:log( ... ) end
             return mnfst.version
         elseif istable( mnfst.version ) then
             local major, minor, patch, build = mnfst.version.major or mnfst.version[ 1 ] or 1, mnfst.version.minor or mnfst.version[ 2 ] or 0, mnfst.version.patch or mnfst.version[ 3 ] or 0, mnfst.build or mnfst.version[ 4 ] or 0
-            return sf( '%i%s%i%s%i%s%i', major, char, minor, char, patch, char, build )
+            return string.format( '%i%s%i%s%i%s%i', major, char, minor, char, patch, char, build )
         end
 
         return '1.0.0.0'
@@ -176,7 +164,7 @@ local function log( ... ) base:log( ... ) end
             return mnfst.version
         elseif istable( mnfst.version ) then
             local major, minor, patch, build = mnfst.version.major or mnfst.version[ 1 ] or 1, mnfst.version.minor or mnfst.version[ 2 ] or 0, mnfst.version.patch or mnfst.version[ 3 ] or 0, mnfst.build or mnfst.version[ 4 ] or 0
-            return sf( '%i%s%i%s%i%s%s', major, char, minor, char, patch, char, build )
+            return string.format( '%i%s%i%s%i%s%s', major, char, minor, char, patch, char, build )
         end
 
         return '1.0.0.0'
@@ -200,7 +188,7 @@ local function log( ... ) base:log( ... ) end
             return src
         elseif istable( src ) then
             local major, minor, patch, build = src.major or src[ 1 ] or 1, src.minor or src[ 2 ] or 0, src.patch or src[ 3 ] or 0, src.build or src[ 4 ] or 0
-            return sf( '%i.%i.%i.%i', major, minor, patch, build )
+            return string.format( '%i.%i.%i.%i', major, minor, patch, build )
         end
 
         return '1.0.0.0'
@@ -369,7 +357,7 @@ local function log( ... ) base:log( ... ) end
         gm_base         = ( istable( DarkRP ) and ln( 'sys_gm_darkrp' ) ) or gm_base
 
         if bCombine then
-            gm_name     = sf( '%s [ %s ]', gm_name, gm_base )
+            gm_name     = string.format( '%s [ %s ]', gm_name, gm_base )
         end
 
         if bClean then
@@ -392,9 +380,9 @@ local function log( ... ) base:log( ... ) end
                         if not ip then return end
 
         port            = port or '27015'
-        local cs        = util.CRC( sf( '%s:%s', ip, port ) )
+        local cs        = util.CRC( string.format( '%s:%s', ip, port ) )
 
-        return sf( '%x', cs )
+        return string.format( '%x', cs )
     end
 
 /*
@@ -475,12 +463,12 @@ local function log( ... ) base:log( ... ) end
 
     function base.get:pref( id, suffix )
         local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
-        affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+        affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
         id              = isstring( id ) and id or 'noname'
         id              = id:gsub( '[%p%c%s]', '.' )
 
-        return sf( '%s%s', affix, id )
+        return string.format( '%s%s', affix, id )
     end
 
 /*
@@ -505,12 +493,12 @@ local function log( ... ) base:log( ... ) end
 
     function base.get:prefli( id, suffix )
         local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
-        affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+        affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
         id              = isstring( id ) and id or 'noname'
         id              = id:gsub( '[%c%s]', '.' )
 
-        return sf( '%s%s', affix, id )
+        return string.format( '%s%s', affix, id )
     end
 
 /*

@@ -1,31 +1,42 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2020 - 2020
-*   @since          : 3.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-rlib                        = rlib or { }
 local base                  = rlib
+
+/*
+    library > localize
+*/
+
 local mf                    = base.manifest
 local pf                    = mf.prefix
 
 /*
-*   enums :: logging
+    enums :: logging
 */
 
     RLIB_LOG_INFO                   = 1
@@ -48,18 +59,19 @@ local pf                    = mf.prefix
     RLIB_LOG_FASTDL                 = 18
     RLIB_LOG_SILENCED               = 19
     RLIB_LOG_OORT                   = 20
+    RLIB_LOG_PLY                    = 21
 
 /*
-*   enums :: uconn
+    enums :: uconn
 */
 
     RLIB_UCONN_CN                   = 1
     RLIB_UCONN_DC                   = 2
 
 /*
-*   define > rgb6 assignments
-*
-*   these are for in-game use so its ok to use any color.
+    define > rgb6 assignments
+
+    these are for in-game use so its ok to use any color.
 */
 
     base._def.lc_rgb =
@@ -84,12 +96,13 @@ local pf                    = mf.prefix
         [ RLIB_LOG_FASTDL ]         = Color( 55, 55, 55 ),          -- grey
         [ RLIB_LOG_SILENCED ]       = Color( 184, 59, 59 ),         -- red
         [ RLIB_LOG_OORT ]           = Color( 184, 59, 59 ),         -- red
+        [ RLIB_LOG_PLY ]            = Color( 52, 152, 219 ),        -- blue
     }
 
 /*
-*   define > rgb assignments > uconn
-*
-*   these are for in-game use so its ok to use any color.
+    define > rgb assignments > uconn
+
+    these are for in-game use so its ok to use any color.
 */
 
     base._def.lc_rgb_uconn =
@@ -99,10 +112,10 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > rgb6 assignments
-*
-*   returns the correct assigned rgb value for log
-*   limited to the 6 rgb [ 3 primary - 3 pigments ]
+    define > rgb6 assignments
+
+    returns the correct assigned rgb value for log
+    limited to the 6 rgb [ 3 primary - 3 pigments ]
 */
 
     base._def.lc_rgb6 =
@@ -127,13 +140,14 @@ local pf                    = mf.prefix
         [ RLIB_LOG_FASTDL ]         = Color( 255, 0, 255 ),         -- purple
         [ RLIB_LOG_SILENCED ]       = Color( 255, 0, 0 ),           -- red
         [ RLIB_LOG_OORT ]           = Color( 255, 0, 0 ),           -- red
+        [ RLIB_LOG_PLY ]            = Color( 52, 152, 219 ),        -- blue
     }
 
 /*
-*   define > rgb6 assignments > uconn
-*
-*   returns the correct assigned rgb value for log
-*   limited to the 6 rgb [ 3 primary - 3 pigments ]
+    define > rgb6 assignments > uconn
+
+    returns the correct assigned rgb value for log
+    limited to the 6 rgb [ 3 primary - 3 pigments ]
 */
 
     base._def.lc_rgb6_uconn =
@@ -143,15 +157,15 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > titles > debug
-*
-*   different types of messages. these will be attached to the beginning of both console
-*   and konsole msgs.
-*
-*   certain enums will not trigger msgs to be sent to the console unless debug mode is
-*   enabled on the server when the msg is sent.
-*
-*   @ex     : [Info] <player> has joined
+    define > titles > debug
+
+    different types of messages. these will be attached to the beginning of both console
+    and konsole msgs.
+
+    certain enums will not trigger msgs to be sent to the console unless debug mode is
+    enabled on the server when the msg is sent.
+
+    @ex     : [Info] <player> has joined
 */
 
     base._def.debug_titles =
@@ -176,12 +190,13 @@ local pf                    = mf.prefix
         [ RLIB_LOG_FASTDL ]         = 'fastdl',
         [ RLIB_LOG_SILENCED ]       = 'silenced',
         [ RLIB_LOG_OORT ]           = 'oort',
+        [ RLIB_LOG_PLY ]            = 'action',
     }
 
 /*
-*   define > titles > uconn
-*
-*   different types of user connection types.
+    define > titles > uconn
+
+    different types of user connection types.
 */
 
     base._def.debug_titles_uconn =
@@ -191,10 +206,10 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > scopes
-*
-*   used through core functionality to determine what scope a function or process should have.
-*   simply converts the scope id to a human readable string.
+    define > scopes
+
+    used through core functionality to determine what scope a function or process should have.
+    simply converts the scope id to a human readable string.
 */
 
     base._def.scopes =
@@ -205,9 +220,9 @@ local pf                    = mf.prefix
     }
 
 /*
-*	define > utf8
-*
-*	list of utf8 icons
+ 	define > utf8
+
+ 	list of utf8 icons
 */
 
     base._def.utf8 =
@@ -254,13 +269,13 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > cvars > element ignore list
-*
-*   list of data types to ignore
-*   typically used in combination with rlib.v:Setup
-*
-*   @assoc  : rlib_cl :: rlib.v:Setup( )
-*
+    define > cvars > element ignore list
+
+    list of data types to ignore
+    typically used in combination with rlib.v:Setup
+
+    @assoc  : rlib_cl :: rlib.v:Setup( )
+
 */
 
     base._def.elements_ignore =
@@ -272,9 +287,9 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > cvars
-*
-*   cvars for library
+    define > cvars
+
+    cvars for library
 */
 
     base._def.xcr =
@@ -287,9 +302,9 @@ local pf                    = mf.prefix
     }
 
 /*
-*	define > keybinds > combos
-*
-*	list of keybind ENUM to STR
+    define > keybinds > combos
+
+    list of keybind ENUM to STR
 */
 
     base._def.keys_cbo =
@@ -303,9 +318,9 @@ local pf                    = mf.prefix
     }
 
 /*
-*	define > keybinds
-*
-*	list of keybind ENUM to STR
+    define > keybinds
+
+    list of keybind ENUM to STR
 */
 
     base._def.keybinds =
@@ -417,7 +432,7 @@ local pf                    = mf.prefix
     }
 
 /*
-*   define > builds
+    define > builds
 */
 
     base._def.builds =
@@ -428,7 +443,7 @@ local pf                    = mf.prefix
     }
 
 /*
-*	define > materials
+ 	define > materials
 */
 
 if CLIENT then

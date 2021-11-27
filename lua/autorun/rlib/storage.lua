@@ -1,82 +1,71 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2019 - 2020
-*   @since          : 2.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local mf                    = base.manifest
-local prefix                = mf.prefix
-
-/*
-*   localized rlib routes
-*/
-
 local helper                = base.h
 local storage               = base.s
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
+    library > localize
 */
 
-local pairs                 = pairs
-local ipairs                = ipairs
-local tostring              = tostring
-local istable               = istable
-local isstring              = isstring
-local file                  = file
-local debug                 = debug
-local util                  = util
-local string                = string
-local sf                    = string.format
+local mf                    = base.manifest
+local pf                    = mf.prefix
 
 /*
-*   Localized translation func
+    languages
 */
 
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
-local function pref( id, suffix )
-    local affix = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or prefix
-    affix = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
+local function cid( id, suffix )
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
+    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
-    id = isstring( id ) and id or 'noname'
-    id = id:gsub( '[%c%s]', '.' )
+    id              = isstring( id ) and id or 'noname'
+    id              = id:gsub( '[%c%s]', '.' )
 
     return string.format( '%s%s', affix, id )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return pref( str, state )
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
+    return cid( str, state )
 end
 
 /*
@@ -146,10 +135,10 @@ end
 */
 
 function storage.garbage( id, trash )
-    id = id or lang( 'unknown' )
+    id = id or ln( 'unknown' )
 
     if not trash or not istable( trash ) then
-        rlib:log( 2, lang( 'garbage_err', id ) )
+        rlib:log( 2, ln( 'garbage_err', id ) )
         return
     end
 
@@ -159,7 +148,7 @@ function storage.garbage( id, trash )
         i = i + 1
     end
 
-    rlib:log( 6, lang( 'garbage_cleaned', i, id ) )
+    rlib:log( 6, ln( 'garbage_cleaned', i, id ) )
 end
 
 /*
@@ -210,20 +199,20 @@ function storage.dir.newstruct( parent, sub, sub2 )
     if CLIENT then return end
 
     if not parent then
-        rlib:log( 6, lang( 'datafolder_missing' ) )
+        rlib:log( 6, ln( 'datafolder_missing' ) )
         return false
     end
 
     local fol_parent = tostring( parent )
 
     if not helper:bIsAlphaNum( fol_parent ) then
-        rlib:log( 2, lang( 'datafolder_inv_chars' ) )
+        rlib:log( 2, ln( 'datafolder_inv_chars' ) )
         return false
     end
 
     if not file.Exists( fol_parent, 'DATA' ) then
         file.CreateDir( fol_parent )
-        rlib:log( 6, lang( 'datafolder_add', fol_parent ) )
+        rlib:log( 6, ln( 'datafolder_add', fol_parent ) )
     end
 
     if not sub then return end
@@ -231,13 +220,13 @@ function storage.dir.newstruct( parent, sub, sub2 )
     local fol_sub = tostring( sub )
 
     if not helper:bIsAlphaNum( fol_sub ) then
-        rlib:log( 2, lang( 'datafolder_sub_inv_chars' ) )
+        rlib:log( 2, ln( 'datafolder_sub_inv_chars' ) )
         return false
     end
 
     if not file.Exists( fol_parent .. '/' .. fol_sub, 'DATA' ) then
         file.CreateDir( fol_parent .. '/' .. fol_sub )
-        rlib:log( 6, lang( 'datafolder_sub_add', fol_sub ) )
+        rlib:log( 6, ln( 'datafolder_sub_add', fol_sub ) )
     end
 
     if not sub2 then return end
@@ -245,13 +234,13 @@ function storage.dir.newstruct( parent, sub, sub2 )
     local fol_sub2 = tostring( sub2 )
 
     if not helper:bIsAlphaNum( fol_sub2 ) then
-        rlib:log( 2, lang( 'datafolder_sub_inv_chars' ) )
+        rlib:log( 2, ln( 'datafolder_sub_inv_chars' ) )
         return false
     end
 
     if not file.Exists( fol_parent .. '/' .. fol_sub .. '/' .. fol_sub2, 'DATA' ) then
         storage.dir.create( fol_parent .. '/' .. fol_sub .. '/' .. fol_sub2 )
-        rlib:log( 6, lang( 'datafolder_sub_add', fol_sub2 ) )
+        rlib:log( 6, ln( 'datafolder_sub_add', fol_sub2 ) )
     end
 
 end
@@ -894,7 +883,7 @@ end
 
 function storage.glon.get( mod, id, fi, bCombine, bReadOnly )
     if not glon then
-        rlib:log( 2, lang( 'glon_missing' ) )
+        rlib:log( 2, ln( 'glon_missing' ) )
         return
     end
 
@@ -1019,12 +1008,12 @@ end
 
 function storage.glon.save( data, path )
     if not glon then
-        rlib:log( 2, lang( 'glon_missing' ) )
+        rlib:log( 2, ln( 'glon_missing' ) )
         return
     end
 
     if not istable( data ) then
-        rlib:log( 2, lang( 'glon_save_err_data' ) )
+        rlib:log( 2, ln( 'glon_save_err_data' ) )
         return
     end
 
@@ -1035,7 +1024,7 @@ function storage.glon.save( data, path )
 
     file.Write( path, glon.encode( data ) )
 
-    rlib:log( 6, lang( 'glon_save', path ) )
+    rlib:log( 6, ln( 'glon_save', path ) )
 end
 
 /*
@@ -1056,7 +1045,7 @@ end
 
 function storage.glon.read( path )
     if not glon then
-        rlib:log( 2, lang( 'glon_missing' ) )
+        rlib:log( 2, ln( 'glon_missing' ) )
         return false
     end
 
@@ -1066,7 +1055,7 @@ function storage.glon.read( path )
     end
 
     if not file.Exists( path, 'DATA' ) then
-        rlib:log( 2, lang( 'glon_err_path', path ) )
+        rlib:log( 2, ln( 'glon_err_path', path ) )
         return false
     end
 

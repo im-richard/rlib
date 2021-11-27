@@ -1,102 +1,87 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
-local prefix            = mf.prefix
-local script            = mf.name
-local cfg               = base.settings
+local base                  = rlib
+local helper                = base.h
+local cvar                  = base.v
+local sys                   = base.sys
 
 /*
-*   localized rlib routes
+    library > localize
 */
 
-local helper            = base.h
-local cvar              = base.v
-local sys               = base.sys
+local cfg                   = base.settings
+local mf                    = base.manifest
+local pf                    = mf.prefix
+local script                = mf.name
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
+    languages
 */
 
-local Color             = Color
-local pairs             = pairs
-local ipairs            = ipairs
-local error             = error
-local print             = print
-local IsValid           = IsValid
-local istable           = istable
-local isfunction        = isfunction
-local isentity          = isentity
-local isnumber          = isnumber
-local isstring          = isstring
-local type              = type
-local debug             = debug
-local table             = table
-local os                = os
-local player            = player
-local string            = string
-local sf                = string.format
-
-/*
-*   Localized translation func
-*/
-
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*	prefix :: create id
+    localize output functions
+*/
+
+local function log( ... )
+    base:log( ... )
+end
+
+local function route( ... )
+    base.msg:route( ... )
+end
+
+/*
+    prefix > create id
 */
 
 local function cid( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or prefix
-    affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
+    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
     id              = id:gsub( '[%c%s]', '.' )
 
-    return sf( '%s%s', affix, id )
+    return string.format( '%s%s', affix, id )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and prefix ) or false
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
     return cid( str, state )
 end
-
-/*
-*   simplifiy funcs
-*/
-
-local function log( ... )   base:log( ... ) end
-local function route( ... ) base.msg:route( ... ) end
 
 /*
 *   checks if server initialized
@@ -213,12 +198,12 @@ end
 
 function base:log_send( cat, msg )
     cat         = isnumber( cat ) and cat or 1
-    msg         = sf( '%s', msg )
+    msg         = string.format( '%s', msg )
 
-    local c1    = sf( '%-9s', os.date( '%I:%M:%S' ) )
-    local c2    = sf( '%-12s', '[' .. base._def.debug_titles[ cat ] .. ']' )
-    local c3    = sf( '%-3s', '|' )
-    local c4    = sf( '%-30s', msg )
+    local c1    = string.format( '%-9s', os.date( '%I:%M:%S' ) )
+    local c2    = string.format( '%-12s', '[' .. base._def.debug_titles[ cat ] .. ']' )
+    local c3    = string.format( '%-3s', '|' )
+    local c4    = string.format( '%-30s', msg )
 
     if cat ~= 8 then
         MsgC( Color( 0, 255, 0 ), '[' .. script .. '] ', Color( 255, 255, 255 ), c1, base._def.lc_rgb6[ cat ] or base._def.lc_rgb6[ 1 ] or Color( 255, 255, 255 ), c2, Color( 255, 0, 0 ), c3, Color( 255, 255, 255 ), c4 .. '\n' )
@@ -254,7 +239,7 @@ end
 
 local function log_netmsg( cat, msg, ... )
     cat     = isnumber( cat ) and cat or 1
-    msg     = isstring( msg ) and msg or lang( 'msg_invalid' )
+    msg     = isstring( msg ) and msg or ln( 'msg_invalid' )
 
     if SERVER then
         msg = msg .. table.concat( { ... } , ', ' )
@@ -282,7 +267,7 @@ end
 function base:log( cat, msg, ... )
     local args  = { ... }
     cat         = isnumber( cat ) and cat or 0
-    msg         = isstring( msg ) and msg or lang( 'msg_invalid' )
+    msg         = isstring( msg ) and msg or ln( 'msg_invalid' )
 
     /*
     *   cat 0 returns blank line
@@ -296,7 +281,7 @@ function base:log( cat, msg, ... )
 
     if ( cat == RLIB_LOG_RNET and ( not rnet or not rnet.cfg or not rnet.cfg.debug ) ) then return end
 
-    local resp, msg = pcall( sf, msg, unpack( args ) )
+    local resp, msg = pcall( string.format, msg, unpack( args ) )
 
     if SERVER and msg and ( cat ~= RLIB_LOG_INFO and cat ~= RLIB_LOG_OK and cat ~= RLIB_LOG_RNET ) then
         base:ulog( 'dir_logs', cat, msg )
@@ -355,9 +340,9 @@ end
 function base:log_net( cat, msg, ... )
     local args  = { ... }
     cat         = isnumber( cat ) and cat or 1
-    msg         = isstring( msg ) and msg or lang( 'msg_invalid' )
+    msg         = isstring( msg ) and msg or ln( 'msg_invalid' )
 
-    local resp, msg = pcall( sf, msg, unpack( args ) )
+    local resp, msg = pcall( string.format, msg, unpack( args ) )
     if resp then
         log_netmsg( cat, msg )
     else
@@ -449,9 +434,9 @@ function base:console( pl, ... )
     table.insert( args, '\n' )
 
     if not cache or cache == ' ' or cache == 's' or cache == 0 then
-        local msg = lang( 'sym_sp' )
+        local msg = ln( 'sym_sp' )
         if cache == ' ' then
-            msg = sf( ' %s', lang( 'sym_sp' ) )
+            msg = string.format( ' %s', ln( 'sym_sp' ) )
         end
         args = { msg }
         table.insert( args, '\n' )
@@ -522,10 +507,10 @@ function base:resource( mod, t, s, ... )
     mod     = ( isstring( mod ) and istable( rcore.modules[ mod ] ) and rcore.modules[ mod ] ) or ( istable( mod ) and mod )
     s       = s:gsub( '[%p%c%s]', '_' ) -- replace punct, contrl chars, and whitespace with underscores
 
-    local ret = sf( s, ... )
+    local ret = string.format( s, ... )
     if istable( mod ) then
         if data and data[ mod.id ] and data[ mod.id ][ s ] then
-            ret = sf( data[ mod.id ][ s ][ 1 ], ... )
+            ret = string.format( data[ mod.id ][ s ][ 1 ], ... )
         end
     else
         ret = s
@@ -571,7 +556,7 @@ function base:translate( mod, str, ... )
 
     str = not { ... } and str:gsub( '_', ' ' ) or str
 
-    return sf( resp or str, ... )
+    return string.format( resp or str, ... )
 end
 
 /*
@@ -589,7 +574,7 @@ function base:lang( str, ... )
     local selg  = self.settings and self.settings.lang or 'en'
     str         = not { ... } and str:gsub( '_', ' ' ) or str
 
-    return sf( self.language[ selg ][ str ] or str, ... )
+    return string.format( self.language[ selg ][ str ] or str, ... )
 end
 
 /*
@@ -630,7 +615,7 @@ end
 */
 
 function base.get:Rpm( pkg )
-    local url = not pkg and 'https://rpm.rlib.io' or sf( 'https://rpm.rlib.io/index.php?pkg=%s', pkg )
+    local url = not pkg and 'https://rpm.rlib.io' or string.format( 'https://rpm.rlib.io/index.php?pkg=%s', pkg )
 
     http.Fetch( url, function( body, len, headers, code )
         if code ~= 200 or len < 5 then return end
@@ -643,11 +628,11 @@ function base.get:Rpm( pkg )
 end
 
 /*
-*   sys :: get connections
-*
-*   returns number of total connections to server
-*
-*   @return : int
+    sys :: get connections
+
+    returns number of total connections to server
+
+    @return : int
 */
 
 function base.sys:GetConnections( )
@@ -655,11 +640,11 @@ function base.sys:GetConnections( )
 end
 
 /*
-*   sys :: get startups
-*
-*   returns number of startups
-*
-*   @return : int
+    sys :: get startups
+
+    returns number of startups
+
+    @return : int
 */
 
 function base.sys:GetStartups( )
@@ -667,11 +652,11 @@ function base.sys:GetStartups( )
 end
 
 /*
-*   sys :: get start time
-*
-*   returns number of seconds taken to startup server
-*
-*   @return : str
+    sys :: get start time
+
+    returns number of seconds taken to startup server
+
+    @return : str
 */
 
 function base.sys:StartupTime( )
@@ -679,12 +664,12 @@ function base.sys:StartupTime( )
 end
 
 /*
-*   sys :: fps
-*
-*   returns fps
-*
-*   @param  : bool bRound
-*   @return : str
+    sys :: fps
+
+    returns fps
+
+    @param  : bool bRound
+    @return : str
 */
 
 function base.sys:GetFPS( bRound )
@@ -694,11 +679,11 @@ function base.sys:GetFPS( bRound )
 end
 
 /*
-*   sys > throw error
-*
-*   @oaram  : ply pl
-*   @param  : str msg
-*   @return : bool
+    sys > throw error
+
+    @oaram  : ply pl
+    @param  : str msg
+    @return : bool
 */
 
 function base.sys:ThrowErr( pl, msg )
@@ -708,9 +693,9 @@ function base.sys:ThrowErr( pl, msg )
 end
 
 /*
-*   sys :: debug
-*
-*   toggles debug mode
+    sys :: debug
+
+    toggles debug mode
 */
 
 function base.sys:Debug( ... )
@@ -718,7 +703,7 @@ function base.sys:Debug( ... )
     local args = { ... }
 
     /*
-    *   functionality
+        functionality
     */
 
     local time_id           = 'rlib_debug_delay'
@@ -730,52 +715,52 @@ function base.sys:Debug( ... )
         if param_status then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, lang( 'debug_enabled_already', remains ) )
+                log( RLIB_LOG_DEBUG, ln( 'debug_enabled_already', remains ) )
                 return
             end
 
             if dur and not helper:bIsNum( dur ) then
-                log( 2, lang( 'debug_err_duration' ) )
+                log( RLIB_LOG_ERR, ln( 'debug_err_duration' ) )
                 return
             end
 
             cfg.debug.enabled = true
-            log( 4, lang( 'debug_set_enabled_dur', dur ) )
+            log( RLIB_LOG_DEBUG, ln( 'debug_set_enabled_dur', dur ) )
 
             timex.create( time_id, dur, 1, function( )
-                log( 4, lang( 'debug_auto_disable' ) )
+                log( RLIB_LOG_DEBUG, ln( 'debug_auto_disable' ) )
                 cfg.debug.enabled = false
             end )
         else
             timex.expire( time_id )
             cfg.debug.enabled = false
-            log( 4, lang( 'debug_set_disabled' ) )
+            log( RLIB_LOG_DEBUG, ln( 'debug_set_disabled' ) )
         end
     else
         if cfg.debug.enabled then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, lang( 'debug_enabled_time', remains ) )
+                log( RLIB_LOG_DEBUG, ln( 'debug_enabled_time', remains ) )
             else
-                log( 4, lang( 'debug_enabled' ) )
+                log( RLIB_LOG_DEBUG, ln( 'debug_enabled' ) )
             end
             return
         else
-            log( 1, lang( 'debug_disabled' ) )
+            log( RLIB_LOG_INFO, ln( 'debug_disabled' ) )
         end
 
-        log( 1, lang( 'debug_help_info_1' ) )
-        log( 1, lang( 'debug_help_info_2' ) )
+        log( 1, ln( 'debug_help_info_1' ) )
+        log( 1, ln( 'debug_help_info_2' ) )
     end
 
 end
 
 /*
-*   rlib :: xcr :: run
-*
-*   executes numerous processes both client and server
-*
-*   @parent : hook, Initialize
+    rlib :: xcr :: run
+
+    executes numerous processes both client and server
+
+    @parent : hook, Initialize
 */
 
 local function xcr_run( )

@@ -1,65 +1,36 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2019 - 2020
-*   @since          : 3.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local mf                    = base.manifest
-
-/*
-*   localized rlib routes
-*/
-
 local helper                = base.h
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
-*/
-
-local istable               = istable
-local isfunction            = isfunction
-local isnumber              = isnumber
-local isstring              = isstring
-local debug                 = debug
-local util                  = util
-local table                 = table
-local math                  = math
-local string                = string
-local sf                    = string.format
-
-/*
-*   Localized cmd func
-*
-*   @source : lua\autorun\libs\calls
-*   @param  : str t
-*   @param  : varg { ... }
-*/
-
-local function call( t, ... )
-    return base:call( t, ... )
-end
-
-/*
-*   Localized translation func
+    languages
 */
 
 local function ln( ... )
@@ -67,27 +38,27 @@ local function ln( ... )
 end
 
 /*
-*	prefix ids
+    prefix > get id
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
+    local state = ( isstring( suffix ) and suffix ) or ( base and base.manifest.prefix ) or false
     return base.get:pref( str, state )
 end
 
 /*
-*   emeta
+    emeta
 */
 
 local emeta                 = FindMetaTable( 'Entity' )
 
 /*
-*	emeta > what > get
-*
-*   returns ent id or class name
-*
-*	@param	: bool bEID
-*	@return	: str
+ 	emeta > what > get
+
+    returns ent id or class name
+
+ 	@param	: bool bEID
+ 	@return	: str
 */
 
 function emeta:what( bEID )
@@ -96,38 +67,38 @@ function emeta:what( bEID )
 end
 
 /*
-*	emeta > generate id
-*
-*   returns an id based on the ent
-*   useful for ent specific timer ids, etc.
-*
-*   @ex     : timer_id = ent:gid( 'val', false || true )
-*   @res    : val.rlib_ent_class
-*           : val.1678
-*
-*	@param	: str suffix
-*   @param  : bool bUseSteam
-*	@return	: str
+ 	emeta > generate id
+
+    returns an id based on the ent
+    useful for ent specific timer ids, etc.
+
+    @ex     : timer_id = ent:gid( 'val', false || true )
+    @res    : val.rlib_ent_class
+            : val.1678
+
+ 	@param	: str suffix
+    @param  : bool bUseSteam
+ 	@return	: str
 */
 
 function emeta:gid( suffix, bUseEntID )
     if not self:IsValid( ) then return end
     local id = ( bUseEntID and self:EntIndex( ) ) or self:GetClass( )
-    return sf( '%s.%s', suffix, tostring( id ) )
+    return string.format( '%s.%s', suffix, tostring( id ) )
 end
 
 /*
-*   emeta > association id
-*
-*   makes an id based on the specified ent class
-*       : special chars     => [ . ]
-*       : spaces            => [ _ ]
-*
-*   @ex     : timer_id = ent:aid( 'timer', 'frostshell'  )
-*   @res    : timer.frostshell.ent_class_name
-*
-*   @param  : varg { ... }
-*   @return : str
+    emeta > association id
+
+    makes an id based on the specified ent class
+        : special chars     => [ . ]
+        : spaces            => [ _ ]
+
+    @ex     : timer_id = ent:aid( 'timer', 'frostshell'  )
+    @res    : timer.frostshell.ent_class_name
+
+    @param  : varg { ... }
+    @return : str
 */
 
 function emeta:aid( ... )

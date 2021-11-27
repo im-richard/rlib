@@ -327,6 +327,7 @@ base.language =
         stats_total                         = 'total',
         stats_total_cnt                     = '%i total',
         status_col_admins                   = 'admins',
+        status_col_rnet_id                  = 'rnet id',
         status_col_branch                   = 'branch',
         status_col_calls                    = 'calls',
         status_col_basecmd                  = 'command base',
