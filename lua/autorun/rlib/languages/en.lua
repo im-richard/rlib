@@ -101,6 +101,7 @@ base.language =
         lib_devop_cmds_t                    = '» COMMANDS » Faults',
         lib_devop_check_pass                = 'No issues found',
         rcc_commands_rehash                 = 'RCC commands rehashed',
+        rcc_rehash_i                        = 'Successfully reloaded %i rcc commands » [ %s ]',
         access_recognized                   = ' I recognize you as',
         access_ugroup_dev                   = 'developer',
         access_ugroup_owner                 = 'owner',

@@ -1409,10 +1409,32 @@ function base:Register( path, mod, b_isext )
     *   create storage tables > server
     */
 
-    if SERVER and smt.MODULE.storage_sv and istable( smt.MODULE.storage_sv ) then
+    if SERVER and istable( smt.MODULE.storage_sv ) then
         for k, v in pairs( smt.MODULE.storage_sv ) do
             self.modules[ mod_id ][ k ] = v
             rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
+        end
+    end
+
+    /*
+    *   add single
+    */
+
+    if SERVER and istable( smt.MODULE.addsingle ) then
+        for k, v in ipairs( smt.MODULE.addsingle ) do
+            resource.AddSingleFile( v )
+            rlib:log( RLIB_LOG_FASTDL, '+ file [ %s ]', v )
+        end
+    end
+
+    /*
+    *   addfile
+    */
+
+    if SERVER and istable( smt.MODULE.addfile ) then
+        for k, v in ipairs( smt.MODULE.addfile ) do
+            resource.AddFile( v )
+            rlib:log( RLIB_LOG_FASTDL, '+ single [ %s ]', v )
         end
     end
 
@@ -1435,7 +1457,8 @@ function base:Register( path, mod, b_isext )
     */
 
     if SERVER and smt.MODULE.logging then
-        storage.dir.newstruct( rlib.manifest.name, 'modules', mod_id )
+        local path = string.format( '%s/%s', storage.mft:getpath( 'dir_modules' ), mod_id )
+        storage.dir.create( path )
     end
 
     /*
@@ -1445,10 +1468,11 @@ function base:Register( path, mod, b_isext )
     if SERVER and smt.MODULE.datafolder and istable( smt.MODULE.datafolder ) then
         for v in helper.get.data( smt.MODULE.datafolder ) do
             if not v.parent then continue end
-            storage.dir.newstruct( v.parent )
+            storage.dir.create( v.parent )
 
             if not v.sub then continue end
-            storage.dir.newstruct( v.parent, v.sub )
+            local path = string.format( '%s/%s', v.parent, v.sub )
+            storage.dir.create( path )
         end
     end
 
@@ -1485,7 +1509,7 @@ function base:Register( path, mod, b_isext )
     self:autoloader_modules( path, mod_id, b_isext )
 
     /*
-    *   check demo mode
+        check demo mode
     */
 
     if smt.MODULE.demo or smt.MODULE.demomode then
@@ -1493,17 +1517,23 @@ function base:Register( path, mod, b_isext )
     end
 
     /*
-    *   register > rnet
+        register > rnet
     */
 
     if rnet then
-        rhook.run.gmod( pid( 'rnet_register', mod_id ) )
+        timex.simple( 1, function( )
+            local name = pid( 'rnet_register', mod_id )
+            if not rhook.exists( name ) then
+                rlib:log( RLIB_LOG_ERR, 'missing rnet hook for module [ %s ] [ %s ]', mod_id, name )
+            end
+            rhook.run.gmod( name )
+        end )
     end
 
     /*
-    *   register > materials ( v1 )
-    *
-    *   will be deprecated in a future update
+        register > materials ( v1 )
+
+        will be deprecated in a future update
     */
 
     if CLIENT and smt.MODULE.materials then
@@ -1511,7 +1541,7 @@ function base:Register( path, mod, b_isext )
     end
 
     /*
-    *   register > materials ( v2 )
+        register > materials ( v2 )
     */
 
     if CLIENT and smt.MODULE.mats then
@@ -1519,13 +1549,22 @@ function base:Register( path, mod, b_isext )
     end
 
     /*
-    *   register > fonts
+        register > fonts
     */
 
     if CLIENT then
         local name = pid( 'fonts_register', mod_id )
+        if not rhook.exists( name ) then
+            rlib:log( RLIB_LOG_ERR, 'missing font registration hook for module [ %s ]', mod_id )
+        end
         rhook.run.rlib( name )
     end
+
+    /*
+        cleanup temp global
+    */
+
+    _G[ mod_id ] = nil
 
 end
 rhook.new.rlib( 'rcore_modules_register', base.Register )

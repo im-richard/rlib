@@ -1,35 +1,58 @@
 /*
-*   @package        : rlib
-*   @module         : rnet
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.1.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : rnet
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
+local helper                = base.h
+local access                = base.a
+
+/*
+    library > localize
+*/
+
 local mf                    = base.manifest
 local sf                    = string.format
 
 /*
-*   lib includes
+    languages
 */
 
-local helper                = base.h
-local access                = base.a
+local function ln( ... )
+    return base:lang( ... )
+end
+
+/*
+    localize output functions
+*/
+
+local function con( ... )
+    base:console( ... )
+end
 
 /*
 *   pkg declarations
@@ -226,14 +249,6 @@ local netconst_lib =
 }
 
 /*
-*   Localized translation func
-*/
-
-local function lang( ... )
-    return base:lang( ... )
-end
-
-/*
 *   call id
 *
 *   @source : lua\autorun\libs\_calls
@@ -248,23 +263,23 @@ end
 *	prefix > create id
 */
 
-local function pref( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or mf.prefix
+local function cid( id, suffix )
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
     affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
-    id              = id:gsub( '[%c%s]', '.' )
+    id              = id:gsub( '[%p%c%s]', '.' )
 
     return string.format( '%s%s', affix, id )
 end
 
 /*
-*	prefix > handle
+    prefix > get id
 */
 
 local function pid( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return pref( str, state )
+    return cid( str, state )
 end
 
 /*
@@ -287,43 +302,43 @@ local pkg_name              = _NAME or 'rnet'
 cfg                         = cfg or { }
 sys                         = sys or { }
 
-index                       = index or { }
-directory                   = directory or { }
-session                     = session or { }
-execute                     = execute or { }
-routing                     = routing or { }
-routing.save                = routing.save or { }
+index                       = index         or { }
+directory                   = directory     or { }
+session                     = session       or { }
+execute                     = execute       or { }
+routing                     = routing       or { }
+routing.save                = routing.save  or { }
 send                        = { }
 
 /*
-*   net > debugging
-*
-*   determines if debugging mode is enabled
+    net > debugging
+
+    determines if debugging mode is enabled
 */
 
 cfg.debug                   = cfg.debug or false
 
 /*
-*   returns directory table
+    returns directory table
 */
 
-function get_directory( )
+function getDirectory( )
     return istable( directory ) and directory or { }
 end
 
 /*
-*   returns index table
+    returns index table
 */
 
-function get_index( )
+function getIndex( )
     return istable( index ) and index or { }
 end
 
 /*
-*   reroute network functions
-*
-*   @param  : func old_fn
-*   @param  : func new_fn
+    reroute network functions
+
+    @param  : func old_fn
+    @param  : func new_fn
 */
 
 local function act_route( old_fn, new_fn )
@@ -337,14 +352,14 @@ local function act_route( old_fn, new_fn )
 end
 
 /*
-*   rnet > reroute
-*
-*   redirects netlib funcs to allow for prints to output to console and for logs to catch any data
-*   being transferred
-*       : enable   rnet:route( bEnable )
-*       : disable  rnet:route( )
-*
-*   @param  : bool bEnable
+    rnet > reroute
+
+    redirects netlib funcs to allow for prints to output to console and for logs to catch any data
+    being transferred
+        : enable   rnet:route( bEnable )
+        : disable  rnet:route( )
+
+    @param  : bool bEnable
 */
 
 function rnet:route( bEnable )
@@ -416,9 +431,9 @@ function rnet:route( bEnable )
 end
 
 /*
-*   status
-*
-*   check status of routing
+    status
+
+    check status of routing
 */
 
 function route_status( )
@@ -427,12 +442,12 @@ function route_status( )
 end
 
 /*
-*   make_id
-*
-*   creates a new id for directory / index entries
-*
-*   @param  : tbl src
-*   @return : int
+    make_id
+
+    creates a new id for directory / index entries
+
+    @param  : tbl src
+    @return : int
 */
 
 local function make_id( src )
@@ -447,16 +462,16 @@ local function make_id( src )
 end
 
 /*
-*   rnet > create
-*
-*   creates a new netmsg data value
-*
-*   @ex     :   rnet.create( 'network_string' )
-*               rnet.create( call( 'net', 'network_string' ) )
-*
-*   @alias  :   new
-*
-*   @param  : str id
+    rnet > create
+
+    creates a new netmsg data value
+
+    @ex     :   rnet.create( 'network_string' )
+                rnet.create( call( 'net', 'network_string' ) )
+
+    @alias  :   new
+
+    @param  : str id
 */
 
 function create( id )
@@ -479,7 +494,7 @@ function create( id )
     local nid           = aid
     id                  = string.format( '%s.%s', id, nid )
 
-    local n_id      = make_id( index )
+    local n_id          = make_id( index )
 
     directory =
     {
@@ -493,24 +508,24 @@ end
 new = create
 
 /*
-*   rnet > write
-*
-*   used to specify a new item to pass through the netmsg
-*
-*   bits
-*       > number 1 to 32
-*           1 = bit
-*           4 = nibble
-*           8 = byte
-*           16 = short
-*           32 = long
-*
-*   @ex     :   pass string:    rnet.write( 'item_name', RNET_STR )
-*               pass int:       rnet.write( 'item_name', RNET_INT, 4 )
-*
-*   @param  : str name
-*   @param  : con enum
-*   @param  : int bits
+    rnet > write
+
+    used to specify a new item to pass through the netmsg
+
+    bits
+        > number 1 to 32
+            1 = bit
+            4 = nibble
+            8 = byte
+            16 = short
+            32 = long
+
+    @ex     :   pass string:    rnet.write( 'item_name', RNET_STR )
+                pass int:       rnet.write( 'item_name', RNET_INT, 4 )
+
+    @param  : str name
+    @param  : con enum
+    @param  : int bits
 */
 
 function write( name, enum, bits )
@@ -527,12 +542,12 @@ end
 add = write
 
 /*
-*   rnet > register
-*
-*   called after setting up a new network entry.
-*   executes before base.calls:Catalog( )
-*
-*   @ex     : rnet.register( )
+    rnet > register
+
+    called after setting up a new network entry.
+    executes before base.calls:Catalog( )
+
+    @ex     : rnet.register( )
 */
 
 function register( )
@@ -546,19 +561,19 @@ function register( )
     index[ id ] = table.Copy( directory )
     if SERVER then
         util.AddNetworkString( id )
-        base:log( RLIB_LOG_RNET, lang( 'rnet_added', id ) )
+        base:log( RLIB_LOG_RNET, ln( 'rnet_added', id ) )
     end
 end
 run = register
 
 /*
-*   rnet > read
-*
-*   fetches the specified const from net const table
-*
-*   @param  : int const
-*   @param  : int bits
-*   @return : tbl
+    rnet > read
+
+    fetches the specified const from net const table
+
+    @param  : int const
+    @param  : int bits
+    @return : tbl
 */
 
 local function read( const, bits )
@@ -567,22 +582,21 @@ local function read( const, bits )
         return false
     end
 
-    local result = netconst_lib[ const ].read( bits )
-    return result
+    return netconst_lib[ const ].read( bits )
 end
 
 /*
-*   rnet > call / get
-*
-*   requires id (str)
-*
-*   a, b are shiftable between bool / func
-*   a specifies a bool for silencing the konsole or can be specified as a function but debugging
-*   will return a response in the console
-*
-*   @param  : str id
-*   @param  : bool, func a
-*   @param  : func b
+    rnet > call / get
+
+    requires id (str)
+
+    a, b are shiftable between bool / func
+    a specifies a bool for silencing the konsole or can be specified as a function but debugging
+    will return a response in the console
+
+    @param  : str id
+    @param  : bool, func a
+    @param  : func b
 */
 
 function call( id, a, b )
@@ -591,7 +605,7 @@ function call( id, a, b )
     local action
 
     /*
-    *   check > a, b exist
+        check > a, b exist
     */
 
     if not a and not b then
@@ -608,9 +622,9 @@ function call( id, a, b )
     end
 
     /*
-    *   get net id
-    *
-    *   utilizes rlib.call
+        get net id
+
+        utilizes rlib.call
     */
 
     id                      = call_id( id )
@@ -618,7 +632,7 @@ function call( id, a, b )
     id                      = string.format( '%s.%s', id, nid )
 
     /*
-    *   a false but b provided
+        a false but b provided
     */
 
     if not a and isfunction( b ) then
@@ -655,7 +669,7 @@ end
 get = call
 
 /*
-*   rnet > get session
+    rnet > get session
 */
 
 function GetSession( )
@@ -663,13 +677,13 @@ function GetSession( )
 end
 
 /*
-*   rnet > setup
-*
-*   runs during rnet prep to setup network structure including params and read/write bit sizes (if applic)
-*
-*   @param  : con const
-*   @param  : str val
-*   @param  : int bits
+    rnet > setup
+
+    runs during rnet prep to setup network structure including params and read/write bit sizes (if applic)
+
+    @param  : con const
+    @param  : str val
+    @param  : int bits
 */
 
 local function setup( const, val, bits )
@@ -677,13 +691,13 @@ local function setup( const, val, bits )
 end
 
 /*
-*   rnet > prepare
-*
-*   data are the items that will be passed through the netmsg
-*
-*   @param  : str id
-*   @param  : tbl data
-*   @param  : bool bSilence
+    rnet > prepare
+
+    data are the items that will be passed through the netmsg
+
+    @param  : str id
+    @param  : tbl data
+    @param  : bool bSilence
 */
 
 local function prepare( id, data, bSilence )
@@ -715,17 +729,17 @@ end
 if SERVER then
 
     /*
-    *   rnet > send > player
-    *
-    *   sends netmsg to specified player
-    *
-    *   @ex     : rnet.send.player( ply, 'netmsg_str_id', { item_id = id } )
-    *           : rnet.send.player( ply, 'netmsg_str_id' )
-    *
-    *   @param  : ply pl
-    *   @param  : str id
-    *   @param  : tbl data
-    *   @param  : bool bSilence
+        rnet > send > player
+
+        sends netmsg to specified player
+
+        @ex     : rnet.send.player( ply, 'netmsg_str_id', { item_id = id } )
+                : rnet.send.player( ply, 'netmsg_str_id' )
+
+        @param  : ply pl
+        @param  : str id
+        @param  : tbl data
+        @param  : bool bSilence
     */
 
     function send.player( pl, id, data, bSilence )
@@ -760,16 +774,16 @@ if SERVER then
     end
 
     /*
-    *   rnet > send > all
-    *
-    *   sends broadcasted netmsg to all players
-    *
-    *   @ex     : rnet.send.all( 'netmsg_str_id', { item_id = id } )
-    *           : rnet.send.all( 'netmsg_str_id' )
-    *
-    *   @param  : str id
-    *   @param  : tbl data
-    *   @param  : bool bSilence
+        rnet > send > all
+
+        sends broadcasted netmsg to all players
+
+        @ex     : rnet.send.all( 'netmsg_str_id', { item_id = id } )
+                : rnet.send.all( 'netmsg_str_id' )
+
+        @param  : str id
+        @param  : tbl data
+        @param  : bool bSilence
     */
 
     function send.all( id, data, bSilence )
@@ -799,17 +813,17 @@ if SERVER then
     end
 
     /*
-    *   rnet > send > pvs
-    *
-    *   sends msg to players that can potentially see this position
-    *
-    *   @ex     : rnet.send.pvs( pos, 'netmsg_str_id', { item_id = id } )
-    *           : rnet.send.pvs( Vector( 0, 0, 0 ), 'netmsg_str_id' )
-    *
-    *   @param  : vec vec
-    *   @param  : str id
-    *   @param  : tbl data
-    *   @param  : bool bSilence
+        rnet > send > pvs
+
+        sends msg to players that can potentially see this position
+
+        @ex     : rnet.send.pvs( pos, 'netmsg_str_id', { item_id = id } )
+                : rnet.send.pvs( Vector( 0, 0, 0 ), 'netmsg_str_id' )
+
+        @param  : vec vec
+        @param  : str id
+        @param  : tbl data
+        @param  : bool bSilence
     */
 
     function send.pvs( vec, id, data, bSilence )
@@ -844,17 +858,17 @@ if SERVER then
     end
 
     /*
-    *   rnet > send > pas
-    *
-    *   adds all plys that can potentially hear sounds from this position.
-    *
-    *   @ex     : rnet.send.pas( pos, 'netmsg_str_id', { item_id = id } )
-    *           : rnet.send.pas( Vector( 0, 0, 0 ), 'netmsg_str_id' )
-    *
-    *   @param  : vec vec
-    *   @param  : str id
-    *   @param  : tbl data
-    *   @param  : bool bSilence
+        rnet > send > pas
+
+        adds all plys that can potentially hear sounds from this position.
+
+        @ex     : rnet.send.pas( pos, 'netmsg_str_id', { item_id = id } )
+                : rnet.send.pas( Vector( 0, 0, 0 ), 'netmsg_str_id' )
+
+        @param  : vec vec
+        @param  : str id
+        @param  : tbl data
+        @param  : bool bSilence
     */
 
     function send.pas( vec, id, data, bSilence )
@@ -891,15 +905,15 @@ if SERVER then
 else
 
     /*
-    *   rnet > send.server
-    *
-    *   sends netmsg to server
-    *
-    *   @ex     : rnet.send.server( 'netmsg_str_id', { item_id = id } )
-    *           : rnet.send.server( 'netmsg_str_id' )
-    *
-    *   @param  : str id
-    *   @param  : tbl data
+        rnet > send.server
+
+        sends netmsg to server
+
+        @ex     : rnet.send.server( 'netmsg_str_id', { item_id = id } )
+                : rnet.send.server( 'netmsg_str_id' )
+
+        @param  : str id
+        @param  : tbl data
     */
 
     function send.server( id, data )
@@ -928,41 +942,41 @@ else
 end
 
 /*
-*   scope > server
+    scope > server
 */
 
 if SERVER then
 
     /*
-    *   effect > add
-    *
-    *   adds a particle
-    *
-    *   @ex     : rnet.fx_add( 'particle_name', self, self:GetAngles( ), self:GetPos( ), nil, 1 )
-    *             rnet.fx_add( 'particle_name', ent, Vector( x, x, x ), Vector( x, x, x ), 'sound/path.wav', 1, 4 )
-    *             rnet.fx_add( 'particle_name', self )
-    *
-    *   @params : eff               name of particle
-    *             snd               sound file to attach
-    *             parent            parent ent
-    *             ang               vector angle
-    *             pos               vector position
-    *             attach_id         id of the attachment to be used in the way specified by the attachType
-    *             attach_type       attachment type using PATTACH_Enums
-    *                               :   0   PATTACH_ABSORIGIN
-    *                               :   1   PATTACH_ABSORIGIN_FOLLOW
-    *                               :   2   PATTACH_CUSTOMORIGIN
-    *                               :   3   PATTACH_POINT
-    *                               :   4   PATTACH_POINT_FOLLOW
-    *                               :   5   PATTACH_WORLDORIGIN
-    *
-    *   @param  : str eff
-    *   @param  : ent parent
-    *   @param  : vec ang
-    *   @param  : vec pos
-    *   @param  : str snd
-    *   @param  : int attach_id
-    *   @param  : int attach_type
+        effect > add
+
+        adds a particle
+
+        @ex     : rnet.fx_add( 'particle_name', self, self:GetAngles( ), self:GetPos( ), nil, 1 )
+                  rnet.fx_add( 'particle_name', ent, Vector( x, x, x ), Vector( x, x, x ), 'sound/path.wav', 1, 4 )
+                  rnet.fx_add( 'particle_name', self )
+
+        @params : eff               name of particle
+                  snd               sound file to attach
+                  parent            parent ent
+                  ang               vector angle
+                  pos               vector position
+                  attach_id         id of the attachment to be used in the way specified by the attachType
+                  attach_type       attachment type using PATTACH_Enums
+                                    :   0   PATTACH_ABSORIGIN
+                                    :   1   PATTACH_ABSORIGIN_FOLLOW
+                                    :   2   PATTACH_CUSTOMORIGIN
+                                    :   3   PATTACH_POINT
+                                    :   4   PATTACH_POINT_FOLLOW
+                                    :   5   PATTACH_WORLDORIGIN
+
+        @param  : str eff
+        @param  : ent parent
+        @param  : vec ang
+        @param  : vec pos
+        @param  : str snd
+        @param  : int attach_id
+        @param  : int attach_type
     */
 
     function fx_add( eff, parent, ang, pos, snd, attach_id, attach_type )
@@ -982,16 +996,16 @@ if SERVER then
     end
 
     /*
-    *   effect > remove
-    *
-    *   removes a particle
-    *
-    *   @ex     : rnet.fx_rem( self, 'particle_name', nil )
-    *             rnet.fx_rem( Vector( x, x, x ), 'particle_name', 'sound/file.wav' )
-    *
-    *   @param  : vec, ent parent
-    *   @param  : str eff
-    *   @param  : str snd
+        effect > remove
+
+        removes a particle
+
+        @ex     : rnet.fx_rem( self, 'particle_name', nil )
+                  rnet.fx_rem( Vector( x, x, x ), 'particle_name', 'sound/file.wav' )
+
+        @param  : vec, ent parent
+        @param  : str eff
+        @param  : str snd
     */
 
     function fx_rem( parent, eff, snd )
@@ -1010,15 +1024,15 @@ if SERVER then
 end
 
 /*
-*   scope > client
+    scope > client
 */
 
 if CLIENT then
 
     /*
-    *   rnet > effect > add
-    *
-    *   @param  : tbl data
+        rnet > effect > add
+
+        @param  : tbl data
     */
 
     local function fx_eff_add( data )
@@ -1043,9 +1057,9 @@ if CLIENT then
     rnet.call( 'rlib_eff_add', fx_eff_add )
 
     /*
-    *   rnet > effect > remove
-    *
-    *   @param  : tbl data
+        rnet > effect > remove
+
+        @param  : tbl data
     */
 
     local function fx_eff_rem( data )
@@ -1068,11 +1082,11 @@ if CLIENT then
 end
 
 /*
-*   rnet > source
-*
-*   returns source tbl for timers
-*
-*   @return : tbl
+    rnet > source
+
+    returns source tbl for timers
+
+    @return : tbl
 */
 
 function source( )
@@ -1080,11 +1094,21 @@ function source( )
 end
 
 /*
-*   rnet > count
-*
-*   returns a count of registered nets
-*
-*   @return : int
+    rnet > list
+
+    returns a list of all registered rnet items.
+*/
+
+function list( )
+    return getIndex( )
+end
+
+/*
+    rnet > count
+
+    returns a count of registered nets
+
+    @return : int
 */
 
 function count( )
@@ -1098,26 +1122,50 @@ function count( )
 end
 
 /*
-*   rcc > debug
-*
-*   toggles rnet debug mode
+    rcc id
+
+    creates rcc command with package name appended to the front
+    of the string.
+
+    @param  : str str
 */
 
-local function rcc_rnet_debug( pl, cmd, args )
+local function rcc_id( str )
+    str         = isstring( str ) and str ~= '' and str or false
+                if not str then return pkg_name end
+
+    return pid( str, pkg_name )
+end
+
+/*
+    rcc > debug
+
+    toggles rnet debug mode
+*/
+
+local function rcc_debug( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'rnet_debug' )
 
+    /*
+        scope
+    */
+
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, mf.ident, ccmd.id )
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
 
+    /*
+        perms
+    */
+
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, mf.ident, ccmd.id )
+        access:deny_permission( pl, mf.name, ccmd.id )
         return
     end
 
@@ -1130,71 +1178,109 @@ local function rcc_rnet_debug( pl, cmd, args )
         if param_status then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                base:log( 4, lang( 'debug_enabled_already', remains ) )
+                base:log( 4, ln( 'debug_enabled_already', remains ) )
                 return
             end
 
             if dur and not helper:bIsNum( dur ) then
-                base:log( ncat, lang( 'debug_err_duration' ) )
+                base:log( ncat, ln( 'debug_err_duration' ) )
                 return
             end
 
             cfg.debug = true
-            base:log( ncat, lang( 'debug_set_enabled_dur', dur ) )
+            base:log( ncat, ln( 'debug_set_enabled_dur', dur ) )
 
             timex.create( time_id, dur, 1, function( )
-                base:log( ncat, lang( 'debug_auto_disable' ) )
+                base:log( ncat, ln( 'debug_auto_disable' ) )
                 cfg.debug = false
             end )
         else
             timex.expire( time_id )
-            base:log( ncat, lang( 'debug_set_disabled' ) )
+            base:log( ncat, ln( 'debug_set_disabled' ) )
             cfg.debug = false
         end
     else
         if cfg.debug then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                base:log( ncat, lang( 'debug_enabled_time', remains ) )
+                base:log( ncat, ln( 'debug_enabled_time', remains ) )
             else
-                base:log( ncat, lang( 'debug_enabled' ) )
+                base:log( ncat, ln( 'debug_enabled' ) )
             end
             return
         else
-            base:log( ncat, lang( 'debug_disabled' ) )
+            base:log( ncat, ln( 'debug_disabled' ) )
         end
 
-        base:log( ncat, lang( 'rnet_debug_help_info_1' ) )
-        base:log( ncat, lang( 'rnet_debug_help_info_2' ) )
+        base:log( ncat, ln( 'rnet_debug_help_info_1' ) )
+        base:log( ncat, ln( 'rnet_debug_help_info_2' ) )
     end
 end
 
-/*
-*   rcc > refresh
-*
-*   refreshes rnet
-*/
-
-local function rcc_rnet_refresh( pl, cmd, args )
+local function rcc_rehash( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
-    local ccmd = base.calls:get( 'commands', 'rnet_refresh' )
+    local ccmd = base.calls:get( 'commands', 'rnet_rcc_rehash' )
+
+    /*
+        scope
+    */
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, mf.ident, ccmd.id )
-        return
-    end
-
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, mf.ident, ccmd.id )
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
 
     /*
-    *   reload all rnet registration hooks
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    RegisterRCC( )
+
+end
+
+/*
+    rcc > reload modules
+
+    refreshes rnet for each installed module
+*/
+
+local function rcc_modules_reload( pl, cmd, args )
+
+    /*
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rnet_rehash' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        reload all rnet registration hooks
     */
 
     if not rcore then
@@ -1203,7 +1289,7 @@ local function rcc_rnet_refresh( pl, cmd, args )
     end
 
     /*
-    *   loop rcore modules
+        loop rcore modules
     */
 
     for k, v in pairs( rcore.modules ) do
@@ -1224,71 +1310,154 @@ local function rcc_rnet_refresh( pl, cmd, args )
 end
 
 /*
-*   rcc > index
-*
-*   returns index for rnet
+    rcc > index
+
+    returns index for rnet
 */
 
-local function rcc_rnet_index( pl, cmd, args )
+local function rcc_index( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'rnet_index' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, mf.ident, ccmd.id )
-        return
-    end
+    /*
+        scope
+    */
 
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, mf.ident, ccmd.id )
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
 
     /*
-    *   functionality
+        perms
     */
 
-    local output    = sf( '\n\n [ %s ] :: %s :: index', mf.name, pkg_name )
-    base:console    ( pl, output )
-    base:console    ( pl, '\n--------------------------------------------------------------------------------------------' )
-    helper.p_table  ( index )
-    base:console    ( pl, '\n--------------------------------------------------------------------------------------------' )
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        functionality
+    */
+
+    local output        = sf( '\n\n [ %s ] :: %s :: index', mf.name, pkg_name )
+    base:console        ( pl, output )
+    base:console        ( pl, '\n--------------------------------------------------------------------------------------------' )
+    helper.p_table      ( index )
+    base:console        ( pl, '\n--------------------------------------------------------------------------------------------' )
 
 end
 
 /*
-*   rcc > reroute
-*
-*   after being activated, all net msgs sent and received will be logged in the console.
+    rcc > list
+
+    returns list of registered rnet items
 */
 
-local function rcc_rnet_router( pl, cmd, args )
+local function rcc_list( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rnet_list' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        functionality
+    */
+
+    local lst = { }
+    for k, v in pairs( getIndex( ) ) do
+        table.insert( lst, k )
+    end
+
+    con( 'c', 3 )
+    con( 'c', 0 )
+    con( 'c',       sf( '[ %s ] » [ %s ]', mf.name, pkg_name ), Color( 255, 255, 255 ), ' » Registered Items' )
+    con( 'c', 0 )
+    con( 'c', 1 )
+
+    local a1_l      = sf( '%-35s',  'Name'      )
+    local a2_l      = sf( '%-5s',  '»'          )
+    local a3_l      = sf( '%-35s',  'ID'        )
+
+    con( 'c',       Color( 255, 255, 0 ), a1_l, Color( 255, 255, 255 ), a2_l, a3_l )
+    con( 'c', 0 )
+    con( 'c', 1 )
+
+    for k, v in pairs( lst ) do
+        local a1_2      = sf( '%-35s',  v       )
+        local a2_2      = sf( '%-5s',  '»'      )
+        local a3_2      = sf( '%-35s',  k       )
+
+        con( 'c',       Color( 255, 255, 0 ), a1_2, Color( 255, 255, 255 ), a2_2, a3_2 )
+    end
+
+    con( 'c', 3 )
+
+end
+
+/*
+    rcc > reroute
+
+    after being activated, all net msgs sent and received will be logged in the console.
+*/
+
+local function rcc_router( pl, cmd, args )
+
+    /*
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'rnet_router' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, mf.ident, ccmd.id )
-        return
-    end
+    /*
+        scope
+    */
 
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, mf.ident, ccmd.id )
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
 
     /*
-    *   functionality
+        perms
     */
 
-    local arg_toggle    = args and args[ 1 ]
-    arg_toggle          = helper.util:toggle( arg_toggle )
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        functionality
+    */
+
+    local arg_toggle        = args and args[ 1 ]
+    arg_toggle              = helper.util:toggle( arg_toggle )
 
     if not rnet then
         base:log( 2, '%s module not found, cannot toggle routing', pkg_name )
@@ -1299,30 +1468,42 @@ local function rcc_rnet_router( pl, cmd, args )
 end
 
 /*
-*   rcc > base
-*
-*   base package command
+    rcc > base
+
+    base package command
 */
 
-local function rcc_rnet_base( pl, cmd, args )
+local function rcc_base( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'rnet' )
 
+    /*
+        scope
+    */
+
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, mf.ident, ccmd.id )
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
+
+    /*
+        perms
+    */
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, mf.ident, ccmd.id )
+        access:deny_permission( pl, mf.name, ccmd.id )
         return
     end
 
-    base.msg:route( pl, false, pkg_name, mf.ident .. ' package' )
+    /*
+        output
+    */
+
+    base.msg:route( pl, false, pkg_name, mf.name .. ' package' )
     base.msg:route( pl, false, pkg_name, 'v' .. rlib.get:ver2str( manifest.version ) .. ' build-' .. manifest.build )
     base.msg:route( pl, false, pkg_name, 'developed by ' .. manifest.author )
     base.msg:route( pl, false, pkg_name, manifest.desc .. '\n' )
@@ -1330,26 +1511,10 @@ local function rcc_rnet_base( pl, cmd, args )
 end
 
 /*
-*   new id
-*
-*   creates a package specific id
-*   returns only package name if str missing
-*
-*   @param  : str str
+    rcc > register
 */
 
-local function new_id( str )
-    str         = isstring( str ) and str ~= '' and str or false
-                if not str then return pkg_name end
-
-    return pid( str, pkg_name )
-end
-
-/*
-*   rcc > register
-*/
-
-local function rcc_register( )
+function RegisterRCC( )
 
     local pkg_commands =
     {
@@ -1357,89 +1522,123 @@ local function rcc_register( )
         {
             enabled     = true,
             warn        = true,
-            id          = new_id( ),
-            desc        = 'returns package information',
+            id          = rcc_id( ),
+            desc        = 'information about module',
             scope       = 2,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rnet_base( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_base( ... )
+                        end,
         },
         [ pkg_name .. '_debug' ] =
         {
             enabled     = true,
             warn        = true,
-            id          = new_id( 'debug' ),
-            desc        = 'toggles rnet debugging which must be enabled to view netmsg outputs',
+            id          = rcc_id( 'debug' ),
+            desc        = 'toggles debugging | view netmsg outputs',
             scope       = 1,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rnet_debug( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_debug( ... )
+                        end,
         },
-        [ pkg_name .. '_refresh' ] =
+        [ pkg_name .. '_rcc_rehash' ] =
         {
             enabled     = true,
             warn        = true,
-            id          = new_id( 'refresh' ),
+            id          = rcc_id( 'rcc_rehash' ),
             desc        = 'reload all module rnet registration hooks',
             scope       = 1,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rnet_refresh( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_rehash( ... )
+                        end,
+        },
+        [ pkg_name .. '_rehash' ] =
+        {
+            enabled     = true,
+            warn        = true,
+            id          = rcc_id( 'rehash' ),
+            desc        = 'reload all module rnet registration hooks',
+            scope       = 1,
+            clr         = Color( 255, 255, 0 ),
+            assoc       = function( ... )
+                            rcc_modules_reload( ... )
+                        end,
         },
         [ pkg_name .. '_router' ] =
         {
             enabled     = true,
             warn        = true,
-            id          = new_id( 'router' ),
+            id          = rcc_id( 'router' ),
             desc        = 'toggles debug mode network routing',
             scope       = 1,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rnet_router( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_router( ... )
+                        end,
         },
         [ pkg_name .. '_index' ] =
         {
             enabled     = true,
             warn        = true,
-            id          = new_id( 'index' ),
+            id          = rcc_id( 'index' ),
             desc        = 'returns rnet index',
             scope       = 1,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rnet_index( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_index( ... )
+                        end,
+        },
+        [ pkg_name .. '_list' ] =
+        {
+            enabled     = true,
+            warn        = true,
+            id          = rcc_id( 'list' ),
+            desc        = 'returns registered rnet items',
+            scope       = 1,
+            clr         = Color( 255, 255, 0 ),
+            assoc       = function( ... )
+                            rcc_list( ... )
+                        end,
         },
     }
 
+    /*
+        rcc > register
+    */
+
     base.calls.commands:Register( pkg_commands )
+
+    /*
+        save output
+    */
+
+    local i = table.Count( pkg_commands )
+    base:log( RLIB_LOG_OK, ln( 'rcc_rehash_i', i, pkg_name ) )
 end
-hook.Add( pid( 'cmd.register' ), pid( '__rnet.cmd.register' ), rcc_register )
+hook.Add( pid( 'cmd.register' ), pid( '__rnet.cmd.register' ), RegisterRCC )
 
 /*
-*   localized netlibs
+    localized netlibs
 */
 
 local function register_rnet_libs( )
+    timex.simple( 5, function( )
+        new         ( 'rlib_eff_add'     )
+            add     ( 'src', RNET_TBL    )
+        run         (                    )
 
-    timer.Simple( 5, function( )
-        create     ( 'rlib_eff_add'     )
-        write      ( 'src', RNET_TBL    )
-        register   (                    )
-
-        create     ( 'rlib_eff_rem'     )
-        write      ( 'src', RNET_TBL    )
-        register   (                    )
+        new         ( 'rlib_eff_rem'     )
+            add     ( 'src', RNET_TBL    )
+        run         (                    )
     end )
-
 end
-register_rnet_libs( )
+hook.Add( pid( 'rnet.register' ), pid( '__rnet.rnet.register' ), rcc_register )
+
 
 /*
-*   register package
+    register package
 */
 
 local function register_pkg( )
@@ -1449,7 +1648,7 @@ end
 hook.Add( pid( 'pkg.register' ), pid( '__rnet.pkg.register' ), register_pkg )
 
 /*
-*   manifest
+    manifest
 */
 
 function pkg:manifest( )
@@ -1457,7 +1656,7 @@ function pkg:manifest( )
 end
 
 /*
-*   __tostring
+    __tostring
 */
 
 function pkg:__tostring( )
@@ -1465,7 +1664,7 @@ function pkg:__tostring( )
 end
 
 /*
-*   loader
+    loader
 */
 
 function pkg:loader( class )
@@ -1475,7 +1674,7 @@ function pkg:loader( class )
 end
 
 /*
-*   __index / manifest declarations
+    __index / manifest declarations
 */
 
 pkg.__manifest =

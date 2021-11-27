@@ -291,7 +291,7 @@ function create( id, delay, repscnt, fn )
     delay       = delay or 0.1
     repscnt     = repscnt or 1
 
-    if not fn or not base:isfunc( fn ) then
+    if not isfunction( fn ) then
         log( 1, '[ %s ] :: timer created with no func', pkg_name )
         fn = function( ) end
     end
@@ -319,7 +319,7 @@ function unique( id, delay, repscnt, fn )
 
     if bExists then return end
 
-    if not fn or not base:isfunc( fn ) then
+    if not isfunction( fn ) then
         log( 1, '[ %s ] :: unique timer created with no func', pkg_name )
         fn = function( ) end
     end
@@ -346,9 +346,9 @@ uni = unique
 function simple( a, b, fn )
     local id        = isstring( a ) and a or nil
     local delay     = isnumber( b ) and b or isnumber( a ) and a or 0.1
-    local func      = base:isfunc( fn ) and fn or base:isfunc( b ) and b or nil
+    local func      = isfunction( fn ) and fn or isfunction( b ) and b or nil
 
-    if not func or not base:isfunc( func ) then
+    if not func or not isfunction( func ) then
         log( 6, '[%s] :: simple timer created with no func', pkg_name )
         func = function( ) end
     end
