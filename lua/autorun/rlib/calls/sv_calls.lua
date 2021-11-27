@@ -16,24 +16,24 @@
 */
 
 /*
-*   standard tables and localization
+    library > routes
 */
 
 local base                  = rlib
+local helper                = base.h
+
+/*
+    library > localize
+*/
+
 local mf                    = base.manifest
 local pf                    = mf.prefix
 
 /*
-*   localized rlib routes
+    language
 */
 
-local helper                = base.h
-
-/*
-*   Localized translation func
-*/
-
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
@@ -63,10 +63,13 @@ local function log( ... ) base:log( ... ) end
 
 function base.calls:Catalog( bPrefix, affix )
     for v in helper.get.data( base._rcalls[ 'net' ] ) do
-        local aff   = isstring( affix ) and affix or pf
-        local id    = bPrefix and tostring( aff .. v[ 1 ] ) or tostring( v[ 1 ] )
+        local aff       = isstring( affix ) and affix or mf.prefix
+        local id        = bPrefix and tostring( aff .. v[ 1 ] ) or tostring( v[ 1 ] )
 
-        util.AddNetworkString( id )
-        log( RLIB_LOG_RNET, lang( 'rnet_added', id ) )
+        local nid       = GetGlobalString( ('rlib_sess'), 0 )
+        local i         = string.format( '%s', id )
+
+        util.AddNetworkString( i )
+        base:log( RLIB_LOG_RNET, ln( 'rnet_added', i ) )
     end
 end

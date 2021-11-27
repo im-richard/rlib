@@ -22,8 +22,7 @@
 
 local base                  = rlib
 local mf                    = base.manifest
-local pf                    = mf.prefix
-local script                = mf.name
+local sf                    = string.format
 
 /*
 *   lib includes
@@ -51,14 +50,6 @@ local manifest =
 
     local dcat              = 9
     local ncat              = 10
-
-/*
-*   localizations
-*/
-
-    local math              = math
-    local module            = module
-    local sf                = string.format
 
 /*
 *   enums
@@ -93,6 +84,7 @@ local manifest =
     RNET_UID64              = 22        -- str                      || pl steam64
     RNET_UID64D             = 23        -- double                   || pl steam64
     RNET_DATE               = 24        -- uint32                   || timestamps
+    RNET_DATA               = 25        -- str
     RNET_IDX                = 50        -- development only
 
 /*
@@ -223,6 +215,14 @@ local netconst_lib =
         read                = function( ) return net.ReadUInt( 32 ) end,
         write               = function( val ) net.WriteUInt( val, 32 ) end,
     },
+    [ RNET_DATA ] =
+    {
+        read                = function( bits ) return net.ReadData( bits ) end,
+        write               = function( val )
+                                local compressed = util.Compress( val )
+                                net.WriteData( compressed, #compressed )
+                            end,
+    },
 }
 
 /*
@@ -241,8 +241,7 @@ end
 */
 
 local function call_id( id )
-    local ret = isfunction( rlib.call ) and rlib:call( 'net', id ) or id
-    return ret
+    return isfunction( rlib.call ) and rlib:call( 'net', id ) or id
 end
 
 /*
@@ -250,11 +249,11 @@ end
 */
 
 local function pref( id, suffix )
-    local affix = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
-    affix = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or mf.prefix
+    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
-    id = isstring( id ) and id or 'noname'
-    id = id:gsub( '[%c%s]', '.' )
+    id              = isstring( id ) and id or 'noname'
+    id              = id:gsub( '[%c%s]', '.' )
 
     return string.format( '%s%s', affix, id )
 end
@@ -264,7 +263,7 @@ end
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
+    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
     return pref( str, state )
 end
 
@@ -466,9 +465,20 @@ function create( id )
         return
     end
 
-    session[ id ]   = id
+    local aid = GetGlobalString( 'rlib_sess', 0 )
+    if tonumber( aid ) == 0 then
+        timex.simple( 1, function( )
+            create( id )
+        end )
+        return
+    end
 
-    id              = call_id( id )
+    session[ id ]       = id
+
+    id                  = call_id( id )
+    local nid           = aid
+    id                  = string.format( '%s.%s', id, nid )
+
     local n_id      = make_id( index )
 
     directory =
@@ -519,7 +529,8 @@ add = write
 /*
 *   rnet > register
 *
-*   called after setting up a new network entry
+*   called after setting up a new network entry.
+*   executes before base.calls:Catalog( )
 *
 *   @ex     : rnet.register( )
 */
@@ -535,7 +546,7 @@ function register( )
     index[ id ] = table.Copy( directory )
     if SERVER then
         util.AddNetworkString( id )
-        base:log( dcat, 'registered id [ %s ]', id )
+        base:log( RLIB_LOG_RNET, lang( 'rnet_added', id ) )
     end
 end
 run = register
@@ -584,8 +595,16 @@ function call( id, a, b )
     */
 
     if not a and not b then
-        base:log( dcat, 'canceling netmsg call -- missing params for id [ %s ]', id )
+        base:log( RLIB_LOG_ERR, 'canceling netmsg call -- missing params for id [ %s ]', id )
         return false
+    end
+
+    local aid = GetGlobalString( 'rlib_sess', 0 )
+    if tonumber( aid ) == 0 then
+        timex.simple( 1, function( )
+            call( id, a, b )
+        end )
+        return
     end
 
     /*
@@ -594,7 +613,9 @@ function call( id, a, b )
     *   utilizes rlib.call
     */
 
-    id = call_id( id )
+    id                      = call_id( id )
+    local nid               = aid
+    id                      = string.format( '%s.%s', id, nid )
 
     /*
     *   a false but b provided
@@ -667,15 +688,14 @@ end
 
 local function prepare( id, data, bSilence )
     if not isstring( id ) then
-        base:log( dcat, 'prepare :: cannot prep an invalid id' )
+        base:log( RLIB_LOG_ERR, 'prepare :: cannot prep an invalid id' )
         return
     end
 
-    id          = call_id( id )
     local obj   = index[ id ]
 
     if not istable( obj ) then
-        base:log( dcat, 'prepare [ %s ] :: cannot prep an unregistered object -- check for valid module / lib hook [ %s ]', id, 'rnet.register' )
+        base:log( RLIB_LOG_ERR, 'prepare [ %s ] :: failed prep unregistered object | %s', id, 'rnet.register' )
         return
     end
 
@@ -720,7 +740,18 @@ if SERVER then
             return
         end
 
+        local aid = GetGlobalString( 'rlib_sess', 0 )
+        if tonumber( aid ) == 0 then
+            timex.simple( 1, function( )
+                send.player( pl, id, data, bSilence )
+            end )
+            return
+        end
+
         id                  = call_id( id )
+        local nid           = aid
+        id                  = string.format( '%s.%s', id, nid )
+
         data                = istable( data ) and data or { }
         local bSilenced     = bSilence and true or false
 
@@ -748,7 +779,18 @@ if SERVER then
             return
         end
 
+        local aid = GetGlobalString( 'rlib_sess', 0 )
+        if tonumber( aid ) == 0 then
+            timex.simple( 1, function( )
+                send.all( id, data, bSilence )
+            end )
+            return
+        end
+
         id                  = call_id( id )
+        local nid           = aid
+        id                  = string.format( '%s.%s', id, nid )
+
         data                = istable( data ) and data or { }
         local bSilenced     = bSilence and true or false
 
@@ -781,6 +823,18 @@ if SERVER then
             base:log( dcat, 'bad rnet id specified\n%s', trcback )
             return
         end
+
+        local aid = GetGlobalString( 'rlib_sess', 0 )
+        if tonumber( aid ) == 0 then
+            timex.simple( 1, function( )
+                send.pvs( vec, id, data, bSilence )
+            end )
+            return
+        end
+
+        id                  = call_id( id )
+        local nid           = aid
+        id                  = string.format( '%s.%s', id, nid )
 
         data                = istable( data ) and data or { }
         local bSilenced     = bSilence and true or false
@@ -815,6 +869,18 @@ if SERVER then
             return
         end
 
+        local aid = GetGlobalString( 'rlib_sess', 0 )
+        if tonumber( aid ) == 0 then
+            timex.simple( 1, function( )
+                send.pas( vec, id, data, bSilence )
+            end )
+            return
+        end
+
+        id                  = call_id( id )
+        local nid           = aid
+        id                  = string.format( '%s.%s', id, nid )
+
         data                = istable( data ) and data or { }
         local bSilenced     = bSilence and true or false
 
@@ -843,7 +909,18 @@ else
             return
         end
 
-        data = istable( data ) and data or { }
+        local aid = GetGlobalString( 'rlib_sess', 0 )
+        if tonumber( aid ) == 0 then
+            timex.simple( 1, function( )
+                send.server( id, data )
+            end )
+            return
+        end
+
+        id                  = call_id( id )
+        local nid           = aid
+        id                  = string.format( '%s.%s', id, nid )
+        data                = istable( data ) and data or { }
 
         prepare( id, data )
         net.SendToServer( )
@@ -1035,12 +1112,12 @@ local function rcc_rnet_debug( pl, cmd, args )
     local ccmd = base.calls:get( 'commands', 'rnet_debug' )
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
+        access:deny_consoleonly( pl, mf.ident, ccmd.id )
         return
     end
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+        access:deny_permission( pl, mf.ident, ccmd.id )
         return
     end
 
@@ -1107,12 +1184,12 @@ local function rcc_rnet_refresh( pl, cmd, args )
     local ccmd = base.calls:get( 'commands', 'rnet_refresh' )
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
+        access:deny_consoleonly( pl, mf.ident, ccmd.id )
         return
     end
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+        access:deny_permission( pl, mf.ident, ccmd.id )
         return
     end
 
@@ -1161,12 +1238,12 @@ local function rcc_rnet_index( pl, cmd, args )
     local ccmd = base.calls:get( 'commands', 'rnet_index' )
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
+        access:deny_consoleonly( pl, mf.ident, ccmd.id )
         return
     end
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+        access:deny_permission( pl, mf.ident, ccmd.id )
         return
     end
 
@@ -1174,7 +1251,7 @@ local function rcc_rnet_index( pl, cmd, args )
     *   functionality
     */
 
-    local output    = sf( '\n\n [ %s ] :: %s :: index', script, pkg_name )
+    local output    = sf( '\n\n [ %s ] :: %s :: index', mf.name, pkg_name )
     base:console    ( pl, output )
     base:console    ( pl, '\n--------------------------------------------------------------------------------------------' )
     helper.p_table  ( index )
@@ -1197,12 +1274,12 @@ local function rcc_rnet_router( pl, cmd, args )
     local ccmd = base.calls:get( 'commands', 'rnet_router' )
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
+        access:deny_consoleonly( pl, mf.ident, ccmd.id )
         return
     end
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+        access:deny_permission( pl, mf.ident, ccmd.id )
         return
     end
 
@@ -1236,16 +1313,16 @@ local function rcc_rnet_base( pl, cmd, args )
     local ccmd = base.calls:get( 'commands', 'rnet' )
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
+        access:deny_consoleonly( pl, mf.ident, ccmd.id )
         return
     end
 
     if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+        access:deny_permission( pl, mf.ident, ccmd.id )
         return
     end
 
-    base.msg:route( pl, false, pkg_name, script .. ' package' )
+    base.msg:route( pl, false, pkg_name, mf.ident .. ' package' )
     base.msg:route( pl, false, pkg_name, 'v' .. rlib.get:ver2str( manifest.version ) .. ' build-' .. manifest.build )
     base.msg:route( pl, false, pkg_name, 'developed by ' .. manifest.author )
     base.msg:route( pl, false, pkg_name, manifest.desc .. '\n' )

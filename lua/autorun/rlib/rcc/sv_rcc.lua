@@ -1588,6 +1588,7 @@ local function rcc_status( pl, cmd, args )
         { id = lang( 'status_col_os' ),             val = base.get:os( ) },
         { id = lang( 'status_col_gm' ),             val = base.get:gm( true ) },
         { id = lang( 'status_col_admins' ),         val = table.Count( access.admins ) or 0 },
+        { id = lang( 'status_col_rnet_id' ),        val = GetGlobalString( 'rlib_sess') or 0 },
         { id = lang( 'status_col_calls' ),          val = lang( 'stats_reg_cnt', sys.calls or 0 ) },
         { id = lang( 'status_col_basecmd' ),        val = sys.calls_basecmd or lang( 'none' ) },
         { id = lang( 'status_col_init' ),           val = sys.initialized and lang( 'opt_yes' ) or lang( 'opt_no' ) },

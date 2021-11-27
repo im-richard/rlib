@@ -1092,6 +1092,58 @@ end
 hook.Add( 'PlayerSpawn', pid( 'pl_drawdistance' ), pl_rdo_drawdistance )
 
 /*
+*   startup
+*/
+
+function base:Startup( )
+
+    /*
+        writedata > history
+
+        outputs the current startup to data/rlib
+    */
+
+    local index             = 0
+    local data              = { }
+    data.history            = { }
+    data.startups           = 0
+
+    local path_hist = storage.mft:getpath( 'data_history' )
+    if file.Exists( path_hist, 'DATA' ) then
+        local gdata = util.JSONToTable( file.Read( path_hist, 'DATA' ) )
+        if gdata then
+            for k, v in pairs( gdata.history ) do
+                data.history[ k ] = v
+                index = index + 1
+            end
+        end
+    end
+
+    index                   = index + 1
+    data.startups           = index
+    data.history[ index ]   = os.time( )
+
+    local history_sz        = file.Size( path_hist, 'DATA' )
+    sys.startups            = index
+    sys.history_sz          = calc.fs.size( history_sz ) or 0
+    sys.history_ct          = history_sz and 1 or 0
+
+    file.Write( path_hist, util.TableToJSON( data ) )
+
+    /*
+        global
+    */
+
+    SetGlobalString( 'rlib_sess', sys.startups )
+
+    /*
+        log
+    */
+
+    base:log( RLIB_LOG_SYSTEM, 'Server starting up ...' )
+end
+
+/*
 *   rlib > setup
 *
 *   checks to see if root privledges have been assigned to the server owner

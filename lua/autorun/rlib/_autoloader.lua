@@ -1,22 +1,29 @@
 /*
-*   @package        rlib
-*   @author         Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      (C) 2018 - 2020
-*   @since          1.0.0
-*   @website        https://rlib.io
-*   @docs           https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables
+    libraries
 */
 
 rlib                        = rlib or { }
@@ -24,27 +31,28 @@ rlib.autoload               = rlib.autoload or { }
 rlib.manifest               = rlib.manifest or { }
 
 /*
-*   rlib > autoload > run
-*
-*   execute loader for rlib
-*   typically called from rcore to start the loading process of rlib itself.
-*
-*   @assoc  : _rcore_loader.lua
-*   @call   : rlib.autoload:Run( base )
-*
-*   @param  : tbl parent
+    rlib > autoload > run
+
+    execute loader for rlib
+    typically called from rcore to start the loading process of rlib itself.
+
+    @assoc  : _rcore_loader.lua
+    @call   : rlib.autoload:Run( base )
+
+    @param  : tbl parent
 */
 
 function rlib.autoload:Run( parent )
 
     /*
-    *   base definitions
+        base definitions
     */
 
     local base                      = rlib
     local mf                        = base.manifest or { }
     mf.name                         = 'rlib'
     mf.author                       = 'Richard'
+    mf.basecmd                      = 'rlib'
     mf.prefix                       = 'rlib.'
     mf.folder                       = 'autorun/rlib'
     mf.site                         = 'https://rlib.io/'
@@ -52,11 +60,11 @@ function rlib.autoload:Run( parent )
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
     mf.released                     = 1627623174
-    mf.version                      = { 3, 5, 0, 0 }
+    mf.version                      = { 3, 6, 0, 0 }
     mf.showcopyright                = true
 
     /*
-    *   packages
+        packages
     */
 
     mf.packages =
@@ -79,9 +87,7 @@ function rlib.autoload:Run( parent )
             { file = 'calls/sh_calls',          scope = 2 },
             { file = 'csv',                     scope = 1 },
             { file = 'csh',                     scope = 2 },
-            { file = 'fonts',                   scope = 3 },
             { file = 'ccl',                     scope = 3 },
-            { file = 'global',                  scope = 2 },
             { file = 'tools',                   scope = 3 },
             { file = 'commands',                scope = 1 },
             { file = 'rcc/sv_rcc_raw',          scope = 1 },
@@ -91,6 +97,8 @@ function rlib.autoload:Run( parent )
             { file = 'pmeta',                   scope = 2 },
             { file = 'emeta',                   scope = 2 },
             { file = 'uclass',                  scope = 3 },
+            { file = 'global',                  scope = 2 },
+            { file = 'fonts',                   scope = 3 },
             { file = 'design',                  scope = 3 },
         },
         pre =
@@ -109,7 +117,7 @@ function rlib.autoload:Run( parent )
     }
 
     /*
-    *   license
+        license
     */
 
     mf.license =
@@ -125,7 +133,7 @@ function rlib.autoload:Run( parent )
     }
 
     /*
-    *   astra declarations
+        astra
     */
 
     mf.astra =
@@ -159,7 +167,7 @@ function rlib.autoload:Run( parent )
     }
 
     /*
-    *   table of stored rlib paths related to be where certain data will be stored
+        table of stored rlib paths related to be where certain data will be stored
     */
 
     mf.paths =
@@ -182,20 +190,20 @@ function rlib.autoload:Run( parent )
     }
 
     /*
-    *   this table lists developers who should have access to the debugging features. this doesnt give
-    *   any special permissions that one person should not have, but is primarily used for advanced
-    *   issues submitted via gms tickets and ensures that the built-in developer console doesnt pop up
-    *   for people and annoy them
-    *
-    *   if you happen to find this table, you may add your steam64 however keep in mind that you will
-    *   see prints in-game which may get annoying real quick
-    *
-    *   to remove these annoying msgs; open the developer console with keybind SHIFT + . (period)
-    *   and in the chat-box like console, type 'exit' (without quotes). this will ensure that you
-    *   will not see these msgs until your next connection to the server.
-    *
-    *   @assoc  : access:bIsDev( )
-    *           : access:bIsRoot( )
+        this table lists developers who should have access to the debugging features. this doesnt give
+        any special permissions that one person should not have, but is primarily used for advanced
+        issues submitted via gms tickets and ensures that the built-in developer console doesnt pop up
+        for people and annoy them
+
+        if you happen to find this table, you may add your steam64 however keep in mind that you will
+        see prints in-game which may get annoying real quick
+
+        to remove these annoying msgs; open the developer console with keybind SHIFT + . (period)
+        and in the chat-box like console, type 'exit' (without quotes). this will ensure that you
+        will not see these msgs until your next connection to the server.
+
+        @assoc  : access:bIsDev( )
+                : access:bIsRoot( )
     */
 
     mf.developers =
@@ -204,50 +212,50 @@ function rlib.autoload:Run( parent )
     }
 
     /*
-    *   keep track of plugins controlled by rlib
+        keep track of plugins controlled by rlib
     */
 
     base.plugins                        = base.plugins or { }
     base.parent, base.plugins[ parent ] = parent, parent
 
     /*
-    *   these tables are associated to rlib and should be touched under any circumstance.
-    *   if you decide to modify and/or remove these, issues will arise and I am not going to help you
-    *   if that is the case.
-    *
-    *   numerous aspects of this script rely on these tables.
+        these tables are associated to rlib and should be touched under any circumstance.
+        if you decide to modify and/or remove these, issues will arise and I am not going to help you
+        if that is the case.
+
+        numerous aspects of this script rely on these tables.
     */
 
     base.settings = base.settings or { }
 
     /*
-    *   table index
-    *
-    *       base.a          : access
-    *       base.c          : calls
-    *       base.d          : design
-    *       base f          : fonts
-    *       base.h          : helpers
-    *       base.i          : interface
-    *       base.k          : konsole
-    *       base.l          : languages
-    *       base.m          : materials
-    *       base.o          : owners
-    *       base.p          : panels
-    *       base.r          : resources             ( mdl, pnl, ptc, snd )
-    *       base.s          : storage
-    *       base.t          : tools
-    *       base.v          : cvars
-    *       base.w          : workshops
-    *
-    *       base.calls      : registered calls
-    *       base.checksum   : library checksum storage
-    *       base.sys        : system
-    *       base.package    : module packages
+        table index
+
+            base.a          : access
+            base.c          : calls
+            base.d          : design
+            base f          : fonts
+            base.h          : helpers
+            base.i          : interface
+            base.k          : konsole
+            base.l          : languages
+            base.m          : materials
+            base.o          : owners
+            base.p          : panels
+            base.r          : resources             ( mdl, pnl, ptc, snd )
+            base.s          : storage
+            base.t          : tools
+            base.v          : cvars
+            base.w          : workshops
+
+            base.calls      : registered calls
+            base.checksum   : library checksum storage
+            base.sys        : system
+            base.package    : module packages
     */
 
         /*
-        *   base > create
+            base > create
         */
 
         local ind_base = { 'a', 'c', 'd', 'f', 'i', 'k', 'l', 'm', 'o', 'p', 'r', 's', 't', 'v', 'w', 'calls', 'checksum', 'con', 'cvar', '_def', 'fonts', 'modules', 'msg', 'sys', 'register', 'resources', 'package', 'alias', 'get', 'oort', 'udm' }
@@ -256,7 +264,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   calls > create
+            calls > create
         */
 
         local ind_calls = { 'commands', 'hooks', 'net', 'timers' }
@@ -265,7 +273,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   helper > create
+            helper > create
         */
 
         if istable( base.h ) then
@@ -279,7 +287,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   storage > create
+            storage > create
         */
 
         base.s = base.s or { }
@@ -289,7 +297,7 @@ function rlib.autoload:Run( parent )
         end
 
         /*
-        *   tools > create
+            tools > create
         */
 
         base.t = base.t or { }
@@ -299,7 +307,7 @@ function rlib.autoload:Run( parent )
         end
 
     /*
-    *   console output
+        console output > header
     */
 
     local con_hdr =
@@ -307,6 +315,10 @@ function rlib.autoload:Run( parent )
         '\n\n',
         [[.................................................................... ]],
     }
+
+    /*
+        console output > body
+    */
 
     local con_body =
     {
@@ -317,7 +329,11 @@ function rlib.autoload:Run( parent )
         [[[website]......... ]] .. mf.site .. [[ ]],
     }
 
-    local con_confirm =
+    /*
+        console output > tos
+    */
+
+    local con_tos =
     {
         [[
 Copyright (C) 2018 - ]] .. os.date( '%Y' ) .. [[ :: developed by ]] .. mf.author .. [[
@@ -337,10 +353,18 @@ loaded and are now ready to install additional modules.
         ]],
     }
 
+    /*
+        console output > footer
+    */
+
     local con_ftr =
     {
         [[.................................................................... ]],
     }
+
+    /*
+        console output > print
+    */
 
     if mf.showcopyright then
         for _, i in ipairs( con_hdr ) do
@@ -355,7 +379,7 @@ loaded and are now ready to install additional modules.
             MsgC( Color( 255, 255, 0 ), i .. '\n' )
         end
 
-        for _, i in ipairs( con_confirm ) do
+        for _, i in ipairs( con_tos ) do
             MsgC( Color( 255, 255, 255 ), '\n' .. i .. '\n' )
         end
 
@@ -365,7 +389,7 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   localization
+        localization
     */
 
     local cfg           = base.settings
@@ -375,7 +399,7 @@ loaded and are now ready to install additional modules.
     local acs           = AddCSLuaFile
 
     /*
-    *   load lua modules
+        load lua modules
     */
 
     local modules_lua =
@@ -394,11 +418,11 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   calls
-    *
-    *   these are definition types used within this script and should never be modified.
-    *   changing the names within this table will not simply change the name, but many parts of the
-    *   library rely on these being named properly.
+        calls
+
+        these are definition types used within this script and should never be modified.
+        changing the names within this table will not simply change the name, but many parts of the
+        library rely on these being named properly.
     */
 
     parent.manifest.calls =
@@ -411,10 +435,10 @@ loaded and are now ready to install additional modules.
     }
 
     /*
-    *   resources
-    *
-    *   used to store particles, sounds, and/or model calls
-    *   @todo   : materials will be migrated later
+        resources
+
+        used to store particles, sounds, and/or model calls
+        @todo   : materials will be migrated later
     */
 
     parent.manifest.resources =
@@ -426,19 +450,19 @@ loaded and are now ready to install additional modules.
     }
 
     /*
-    *   setup calls
+        setup calls
     */
 
     base._rcalls = { }
 
     /*
-    *   setup resources
+        setup resources
     */
 
     base._res = { }
 
     /*
-    *   parent manifest > load calls
+        parent manifest > load calls
     */
 
     for _, v in ipairs( parent.manifest.calls ) do
@@ -449,7 +473,7 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   parent manifest > load resources
+        parent manifest > load resources
     */
 
     for _, v in ipairs( parent.manifest.resources ) do
@@ -460,7 +484,7 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   local manifest > load packages > pre
+        local manifest > load packages > pre
     */
 
     for _, v in ipairs( mf.packages.pre ) do
@@ -471,23 +495,23 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   load > core packages
-    *
-    *   do not modify these under any circumstance. we need certain stuff to load first before the
-    *   recursive loader does its job. It's always nice to have a little more control.
-    *
-    *   file names for the priority system dont matter and do not have to follow the prefix
-    *   setup (sv_ sh_ cl_) since they are being defined in the string itself.
-    *
-    *   : scope ref
-    *       1       : server : sv
-    *       2       : shared : sh
-    *       3       : client : cl
-    *
-    *   : values
-    *       file    : file to inc
-    *       scope   : scope to add file to
-    *       seg     : dir of file [ excl filename ] [ def path_lib ]
+        load > core packages
+
+        do not modify these under any circumstance. we need certain stuff to load first before the
+        recursive loader does its job. It's always nice to have a little more control.
+
+        file names for the priority system dont matter and do not have to follow the prefix
+        setup (sv_ sh_ cl_) since they are being defined in the string itself.
+
+        : scope ref
+            1       : server : sv
+            2       : shared : sh
+            3       : client : cl
+
+        : values
+            file    : file to inc
+            scope   : scope to add file to
+            seg     : dir of file [ excl filename ] [ def path_lib ]
     */
 
     for _, v in ipairs( mf.packages.core ) do
@@ -528,7 +552,7 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   local manifest > load packages > post
+        local manifest > load packages > post
     */
 
     for _, v in ipairs( mf.packages.post ) do
@@ -539,7 +563,7 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   load > languages
+        load > languages
     */
 
     local path_lang     = sf( '%s/%s', mf.folder, 'languages' )
@@ -553,9 +577,9 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   load > ui elements
-    *
-    *   recursive loader for /obj/ folder to load client elements
+        load > ui elements
+
+        recursive loader for /obj/ folder to load client elements
     */
 
     local files_obj, _ = file.Find( path_lib .. '/obj/' .. '*', 'LUA' )
@@ -570,9 +594,9 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   load > interface elements
-    *
-    *   recursive loader for client interfaces
+        load > interface elements
+
+        recursive loader for client interfaces
     */
 
     local files_inf, _ = file.Find( path_lib .. '/layout/' .. '*', 'LUA' )
@@ -587,31 +611,40 @@ loaded and are now ready to install additional modules.
     end
 
     /*
-    *   @exec   : fn rlib.calls:register( )
-    *   @exec   : fn rlib.resources:register( )
-    *
-    *   @param  : tbl parent
-    *   @param  : tbl base.c
+        rlib > system
+    */
+
+    base.sys.uptime         = CurTime( )
+    base.sys.initialized    = false
+    base.sys._cache         = { }
+
+    /*
+        Startup
+    */
+
+    if SERVER then
+        base:Startup( )
+    end
+
+    /*
+        @exec   : fn rlib.calls:register( rcore, rlib.c )
+        @exec   : fn rlib.resources:register( rcore, rlib.r )
+
+        @param  : tbl parent
+        @param  : tbl base.c
     */
 
     base.calls:register     ( parent, base.c )
     base.resources:register ( parent, base.r )
 
     /*
-    *   rlib > system
-    */
-
-    base.sys.uptime         = CurTime( )
-    base.sys.initialized    = false
-
-    /*
-    *   hook > rlib post loader
+        hook > rlib post loader
     */
 
     rhook.run.rlib( 'rlib_loader_post' )
 
     /*
-    *   enable hibernation thinking
+        enable hibernation thinking
     */
 
     if SERVER then
