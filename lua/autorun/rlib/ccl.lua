@@ -535,6 +535,6 @@ hook.Add( 'Think', pid( 'think.pl.res' ), think_pl_res )
 */
 
 local function cvar_cb_lang( name, old, new )
-    design.notify_adv( false, ln( 'lang_title' ), ln( 'lang_msg_change', new ), delay )
+    design:nms( false, ln( 'lang_title' ), ln( 'lang_msg_change', new ), delay )
 end
 cvars.AddChangeCallback( 'rlib_language', cvar_cb_lang )

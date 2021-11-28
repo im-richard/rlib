@@ -86,7 +86,7 @@ local function rcc_materials_list( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -213,7 +213,7 @@ local function rcc_panels_registered( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -331,7 +331,7 @@ local function rcc_terms( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end

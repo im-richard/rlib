@@ -27,6 +27,7 @@
 */
 
 local base                  = rlib
+local access                = base.a
 local helper                = base.h
 local cvar                  = base.v
 local sys                   = base.sys
@@ -84,9 +85,9 @@ local function pid( str, suffix )
 end
 
 /*
-*   checks if server initialized
-*
-*   @return : bool
+    checks if server initialized
+
+    @return : bool
 */
 
 function base:bInitialized( )
@@ -94,16 +95,24 @@ function base:bInitialized( )
 end
 
 /*
-*   alias :: add
-*
-*   creates an alias for an object
-*
-*   @since  : v1.1.5
-*
-*   @param  : mix src
-*   @param  : str alias
-*   @param  : str desc [optional]
-*   @return : bool
+    debug mode
+*/
+
+function base:bDebug( )
+    return base.settings.debug.enabled or false
+end
+
+/*
+    alias :: add
+
+    creates an alias for an object
+
+    @since  : v1.1.5
+
+    @param  : mix src
+    @param  : str alias
+    @param  : str desc [optional]
+    @return : bool
 */
 
 function base:addalias( src, alias, desc )
@@ -116,14 +125,14 @@ function base:addalias( src, alias, desc )
 end
 
 /*
-*   alias :: get
-*
-*   gets a defined alias
-*
-*   @since  : v1.1.5
-*
-*   @param  : str alias
-*   @return : mix
+    alias :: get
+
+    gets a defined alias
+
+    @since  : v1.1.5
+
+    @param  : str alias
+    @return : mix
 */
 
 function base:getalias( alias )
@@ -136,13 +145,13 @@ function base:getalias( alias )
 end
 
 /*
-*   alias :: rem
-*
-*   removes a defined alias
-*
-*   @since  : v1.1.5
-*
-*   @param  : str alias
+    alias :: rem
+
+    removes a defined alias
+
+    @since  : v1.1.5
+
+    @param  : str alias
 */
 
 function base:remalias( alias )
@@ -151,10 +160,10 @@ function base:remalias( alias )
 end
 
 /*
-*   checks if the provide arg is a num (int)
-*
-*   @param  : mix obj
-*   @return : bool
+    checks if the provide arg is a num (int)
+
+    @param  : mix obj
+    @return : bool
 */
 
 function base:isnum( obj )
@@ -162,10 +171,10 @@ function base:isnum( obj )
 end
 
 /*
-*   checks if the provide arg is a function
-*
-*   @param  : mix obj
-*   @return : bool
+    checks if the provide arg is a function
+
+    @param  : mix obj
+    @return : bool
 */
 
 function base:isfunc( obj )
@@ -173,10 +182,10 @@ function base:isfunc( obj )
 end
 
 /*
-*   checks if the provide arg is a table
-*
-*   @param  : mix obj
-*   @return : bool
+    checks if the provide arg is a table
+
+    @param  : mix obj
+    @return : bool
 */
 
 function base:istable( obj )
@@ -184,16 +193,16 @@ function base:istable( obj )
 end
 
 /*
-*   log > send
-*
-*   takes the data that will be sent to the console and formats the way it displays in the
-*   the console using columns.
-*
-*   @assoc  : log_netmsg( )
-*   @assoc  : log_prepare( )
-*
-*   @param  : int cat
-*   @param  : str msg
+    log > send
+
+    takes the data that will be sent to the console and formats the way it displays in the
+    the console using columns.
+
+    @assoc  : log_netmsg( )
+    @assoc  : log_prepare( )
+
+    @param  : int cat
+    @param  : str msg
 */
 
 function base:log_send( cat, msg )
@@ -213,13 +222,13 @@ function base:log_send( cat, msg )
 end
 
 /*
-*   sets up a log message to be formatted
-*
-*   @assoc  : rlib:log( )
-*
-*   @param  : int cat
-*   @param  : str msg
-*   @param  : varg { ... }
+    sets up a log message to be formatted
+
+    @assoc  : rlib:log( )
+
+    @param  : int cat
+    @param  : str msg
+    @param  : varg { ... }
 */
 
 local function log_prepare( cat, msg, ... )
@@ -230,11 +239,11 @@ local function log_prepare( cat, msg, ... )
 end
 
 /*
-*   advanced logging which allows for any client-side errors to be sent to the server as well.
-*
-*   @param  : int cat
-*   @param  : str msg
-*   @param  : varg { ... }
+    advanced logging which allows for any client-side errors to be sent to the server as well.
+
+    @param  : int cat
+    @param  : str msg
+    @param  : varg { ... }
 */
 
 local function log_netmsg( cat, msg, ... )
@@ -249,19 +258,19 @@ local function log_netmsg( cat, msg, ... )
 end
 
 /*
-*   log
-*
-*   debug logs sent to console
-*   also writes any logs to a file located in data/rlib
-*
-*   when using the netmsg debugger, do not post the cat to anything other than id 9 otherwise you will
-*   cause stack errors
-*
-*   @usage  : self:log( 4, 'Hello %s', 'world' )
-*
-*   @param  : int cat
-*   @param  : str msg
-*   @param  : varg { ... }
+    log
+
+    debug logs sent to console
+    also writes any logs to a file located in data/rlib
+
+    when using the netmsg debugger, do not post the cat to anything other than id 9 otherwise you will
+    cause stack errors
+
+    @usage  : self:log( 4, 'Hello %s', 'world' )
+
+    @param  : int cat
+    @param  : str msg
+    @param  : varg { ... }
 */
 
 function base:log( cat, msg, ... )
@@ -270,13 +279,13 @@ function base:log( cat, msg, ... )
     msg         = isstring( msg ) and msg or ln( 'msg_invalid' )
 
     /*
-    *   cat 0 returns blank line
+        cat 0 returns blank line
     */
 
     if cat == 0 then print( ' ' ) return end
 
     /*
-    *   rnet debug only
+        rnet debug only
     */
 
     if ( cat == RLIB_LOG_RNET and ( not rnet or not rnet.cfg or not rnet.cfg.debug ) ) then return end
@@ -288,10 +297,10 @@ function base:log( cat, msg, ... )
     end
 
     /*
-    *   debug only
+        debug only
     */
 
-    if not cfg.debug.enabled then
+    if not self:bDebug( ) then
         if cat == RLIB_LOG_DEBUG then return end
         if cat == RLIB_LOG_CACHE then return end
         if cat == RLIB_LOG_FONT then return end
@@ -299,13 +308,13 @@ function base:log( cat, msg, ... )
     end
 
     /*
-    *   oort debug
+        oort debug
     */
 
     if cat == RLIB_LOG_OORT and not mf.astra.oort.debug then return end
 
     /*
-    *   response
+        response
     */
 
     if not resp then
@@ -314,27 +323,27 @@ function base:log( cat, msg, ... )
     end
 
     /*
-    *   prepare log for console output
+        prepare log for console output
     */
 
     log_prepare( cat, msg )
 end
 
 /*
-*   log :: network
-*
-*   always sends a copy of a message to the server console for view
-*   use this to track any issues players may have client-side and send them to the console
-*
-*   similar to base:log( ) but with client errors copied to server
-*   dont use in shared scope otherwise server may get x2 messages, really should just be
-*   used via client -> server
-*
-*   @call   : base:log_net( 2, 'an error' )
-*
-*   @param  : int cat
-*   @param  : str msg
-*   @param  : varg { ... }
+    log :: network
+
+    always sends a copy of a message to the server console for view
+    use this to track any issues players may have client-side and send them to the console
+
+    similar to base:log( ) but with client errors copied to server
+    dont use in shared scope otherwise server may get x2 messages, really should just be
+    used via client -> server
+
+    @call   : base:log_net( 2, 'an error' )
+
+    @param  : int cat
+    @param  : str msg
+    @param  : varg { ... }
 */
 
 function base:log_net( cat, msg, ... )
@@ -351,12 +360,14 @@ function base:log_net( cat, msg, ... )
 end
 
 /*
-*   base :: isconsole
-*
-*   checks to see if an action was done by console instead of a player
-*
-*   @param  : ply pl
-*   @return : bool
+    base :: isconsole
+
+    checks to see if an action was done by console instead of a player
+
+    @note   : deprecate
+
+    @param  : ply pl
+    @return : bool
 */
 
 function base.con:Is( pl )
@@ -365,22 +376,22 @@ function base.con:Is( pl )
 end
 
 /*
-*   base :: console :: allow :: throw
-*
-*   checks to see if an action was done by console instead of a player
-*   returns error
-*
-*       :   true
-*           returned if pl is not console and throw error
-*       :   false
-*           returned if pl is console
-*
-*   @oaram  : ply pl
-*   @return : bool
+    base :: console :: allow :: throw
+
+    checks to see if an action was done by console instead of a player
+    returns error
+
+        :   true
+            returned if pl is not console and throw error
+        :   false
+            returned if pl is console
+
+    @oaram  : ply pl
+    @return : bool
 */
 
 function base.con:ThrowAllow( pl )
-    if not self:Is( pl ) then
+    if not access:bIsConsole( pl ) then
         base.msg:target( pl, mf.name, 'Must execute specified action as', cfg.cmsg.clrs.target_tri, 'console only' )
         return true
     end
@@ -388,22 +399,22 @@ function base.con:ThrowAllow( pl )
 end
 
 /*
-*   base :: console :: allow :: block
-*
-*   checks to see if an action was done by console instead of a player
-*   returns error
-*
-*       :   true
-*           returned if pl is console and throw error
-*       :   false
-*           returned if pl is console
-*
-*   @oaram  : ply pl
-*   @return : bool
+    base :: console :: allow :: block
+
+    checks to see if an action was done by console instead of a player
+    returns error
+
+        :   true
+            returned if pl is console and throw error
+        :   false
+            returned if pl is console
+
+    @oaram  : ply pl
+    @return : bool
 */
 
 function base.con:ThrowBlock( pl )
-    if self:Is( pl ) then
+    if access:bIsConsole( pl ) then
         route( pl, mf.name, 'Cannot execute specified action as', cfg.cmsg.clrs.target_tri, 'console' )
         return true
     end
@@ -411,13 +422,13 @@ function base.con:ThrowBlock( pl )
 end
 
 /*
-*   base :: console
-*
-*   can determine if either the console or a player is executing a console command and then return
-*   output back to that console
-*
-*   @param  : ply pl
-*   @param  : varg { ... }
+    base :: console
+
+    can determine if either the console or a player is executing a console command and then return
+    output back to that console
+
+    @param  : ply pl
+    @param  : varg { ... }
 */
 
 function base:console( pl, ... )
@@ -442,21 +453,21 @@ function base:console( pl, ... )
         table.insert( args, '\n' )
     end
 
-    if CLIENT or not pl or base.con:Is( pl ) or ( pl == 'console' or pl == 'c' ) then
+    if CLIENT or not pl or access:bIsConsole( pl ) or ( pl == 'console' or pl == 'c' ) then
         MsgC( Color( 255, 255, 255 ), ' ', unpack( args ) )
     end
 end
 
 /*
-*   base :: console :: guided
-*
-*   displays a message in the players console
-*   used in conjunction with base.rsay
-*
-*   @assoc  : base.rsay
-*
-*   @param  : ply pl
-*   @param  : str msg
+    base :: console :: guided
+
+    displays a message in the players console
+    used in conjunction with base.rsay
+
+    @assoc  : base.rsay
+
+    @param  : ply pl
+    @param  : str msg
 */
 
 function base.con:Guided( pl, msg )
@@ -476,23 +487,23 @@ function base.con:Guided( pl, msg )
 end
 
 /*
-*   resources
-*
-*   returns the associated call
-*
-*   call using localized function in file that you require fetching needed resources.
-*   these are usually stored in the modules' manifest file
-*
-*   @call   : resources( 'type', 'string_id' )
-*
-*   @ex     : resources( 'sounds', 'modname_sound_hit' )
-*             resources( 'model', 'modname_mdl_combine' )
-*
-*   @param  : tbl mod
-*   @param  : str t
-*   @param  : str s
-*   @param  : varg { ... }
-*   @return : str
+    resources
+
+    returns the associated call
+
+    call using localized function in file that you require fetching needed resources.
+    these are usually stored in the modules' manifest file
+
+    @call   : resources( 'type', 'string_id' )
+
+    @ex     : resources( 'sounds', 'modname_sound_hit' )
+              resources( 'model', 'modname_mdl_combine' )
+
+    @param  : tbl mod
+    @param  : str t
+    @param  : str s
+    @param  : varg { ... }
+    @return : str
 */
 
 function base:resource( mod, t, s, ... )
@@ -520,16 +531,16 @@ function base:resource( mod, t, s, ... )
 end
 
 /*
-*   base :: translate
-*
-*   pulls the proper translation for a specified string
-*   checks both the specified module and the actual lib language files for the proper translation string
-*   or will output the untranslated string back out
-*
-*   @param  : tbl mod
-*   @param  : str str
-*   @param  : varg { ... }
-*   @return : str
+    base :: translate
+
+    pulls the proper translation for a specified string
+    checks both the specified module and the actual lib language files for the proper translation string
+    or will output the untranslated string back out
+
+    @param  : tbl mod
+    @param  : str str
+    @param  : varg { ... }
+    @return : str
 */
 
 function base:translate( mod, str, ... )
@@ -560,13 +571,13 @@ function base:translate( mod, str, ... )
 end
 
 /*
-*   base :: language
-*
-*   provides direct access to rlibs language entries without checking modules first
-*
-*   @param  : str str
-*   @param  : varg { ... }
-*   @return : str
+    base :: language
+
+    provides direct access to rlibs language entries without checking modules first
+
+    @param  : str str
+    @param  : varg { ... }
+    @return : str
 */
 
 function base:lang( str, ... )
@@ -578,12 +589,12 @@ function base:lang( str, ... )
 end
 
 /*
-*   base :: language :: valid
-*
-*   simply checks to see if a provided str may be a possible language match
-*
-*   @param  : str str
-*   @return : bool
+    base :: language :: valid
+
+    simply checks to see if a provided str may be a possible language match
+
+    @param  : str str
+    @return : bool
 */
 
 function base:bValidLanguage( str )
@@ -594,11 +605,11 @@ function base:bValidLanguage( str )
 end
 
 /*
-*   base :: command
-*
-*   fetches the base command utilized for the library
-*
-*   @return : str
+    base :: command
+
+    fetches the base command utilized for the library
+
+    @return : str
 */
 
 function base.get:BaseCmd( )
@@ -606,12 +617,12 @@ function base.get:BaseCmd( )
 end
 
 /*
-*   base :: rpm :: packages
-*
-*   mounts a package to rlib
-*
-*   @param  : str pkg
-*   @return : bool
+    base :: rpm :: packages
+
+    mounts a package to rlib
+
+    @param  : str pkg
+    @return : bool
 */
 
 function base.get:Rpm( pkg )
@@ -737,7 +748,7 @@ function base.sys:Debug( ... )
             log( RLIB_LOG_DEBUG, ln( 'debug_set_disabled' ) )
         end
     else
-        if cfg.debug.enabled then
+        if self:bDebug( ) then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
                 log( RLIB_LOG_DEBUG, ln( 'debug_enabled_time', remains ) )

@@ -1208,9 +1208,21 @@ local function storage_struct_defs( mod_id )
         },
         binds =
         {
-            chat            = { },
-            console         = { },
-            key             = { },
+            chat            = { },      -- deprecate
+            console         = { },      -- deprecate
+            key             = { },      -- deprecate
+            admin =
+            {
+                chat        = { },
+                console     = { },
+                key         = { },
+            },
+            user =
+            {
+                chat        = { },
+                console     = { },
+                key         = { },
+            },
         },
         sounds              = { },
         ui =

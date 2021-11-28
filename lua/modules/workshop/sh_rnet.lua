@@ -48,13 +48,13 @@ local function rnet_register( pl )
         permission > rnet refresh
     */
 
-    if ( ( helper.ok.ply( pl ) or base.con:Is( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+    if ( ( helper.ok.ply( pl ) or access:bIsConsole( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
 
     /*
         concommand > reload
     */
 
-    if helper.ok.ply( pl ) or base.con:Is( pl ) then
+    if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
         base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', mod.name )
         if not base.con.Is( pl ) then
             base.msg:target( pl, mod.name, 'rnet module successfully rehashed.' )

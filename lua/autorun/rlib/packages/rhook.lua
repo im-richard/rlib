@@ -418,7 +418,7 @@ local function rcc_rhook_base( pl, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'rhook' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end

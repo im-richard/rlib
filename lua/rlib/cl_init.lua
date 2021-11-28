@@ -42,62 +42,60 @@ local function lang( ... )
 end
 
 /*
-*   netlib :: sms :: umsg
-*
-*   sends a message directly to the ply chat
+    rnet  > sms  > umsg
+
+    sends a message directly to the ply chat
 */
 
-local function netlib_sms_umsg( len, pl )
+local function rn_sms_umsg( len, pl )
     local msg = net.ReadTable( )
     if not msg then return end
     chat.AddText( unpack( msg ) )
 end
-net.Receive( 'rlib.sms.umsg', netlib_sms_umsg )
+net.Receive( 'rlib.sms.umsg', rn_sms_umsg )
 
 /*
-*   netlib :: sms :: notify
-*
-*   sends a standard notification directly to the ply screen
+    rnet  > sms  > notify
+
+    sends a standard notification directly to the ply screen
 */
 
-local function netlib_sms_notify( len, pl )
-    local args  = net.ReadTable( )
-    local cat   = args and args[ 1 ] or 1
-    local msg   = args and args[ 2 ] or ''
-    local dur   = args and args[ 3 ] or 5
-    local pos   = args and args[ 4 ] or 1
-    local bFull = args and args[ 5 ] or false
+local function rn_sms_notify( len, pl )
+    local args      = net.ReadTable( )
+    local cat       = args and args[ 1 ] or 1
+    local msg       = args and args[ 2 ] or ''
+    local pos       = args and args[ 3 ] or 1
 
-    design:notify( cat, msg, dur, pos, bFull )
+    design:notify( cat, msg, pos )
 end
-net.Receive( 'rlib.sms.notify', netlib_sms_notify )
+net.Receive( 'rlib.sms.notify', rn_sms_notify )
 
 /*
-*   netlib :: inform :: bc
-*
-*   sends a slider notification directly to the ply screen
-*   slides in from the right side.
+    rnet  > inform  > bc
+
+    sends a slider notification directly to the ply screen
+    slides in from the right side.
 */
 
-local function netlib_sms_inform( len, pl )
-    local args  = net.ReadTable( )
-    local cat   = args and args[ 1 ] or 1
-    local msg   = args and args[ 2 ] or ''
-    local title = args and args[ 3 ] or lang( 'notify_title_def' )
-    local dur   = args and isnumber( args[ 4 ] ) and args[ 4 ] or 5
+local function rn_sms_inform( len, pl )
+    local args      = net.ReadTable( )
+    local cat       = args and args[ 1 ] or 1
+    local msg       = args and args[ 2 ] or ''
+    local title     = args and args[ 3 ] or lang( 'notify_title_def' )
+    local dur       = args and isnumber( args[ 4 ] ) and args[ 4 ] or 5
 
     design:inform( cat, msg, title, dur )
 end
-net.Receive( 'rlib.sms.inform', netlib_sms_inform )
+net.Receive( 'rlib.sms.inform', rn_sms_inform )
 
 /*
-*   netlib :: bubble :: bc
-*
-*   sends a bubble msg that displays to the bottom right of the
-*   players screen
+    rnet  > bubble  > bc
+
+    sends a bubble msg that displays to the bottom right of the
+    players screen
 */
 
-local function netlib_sms_bubble( len, pl )
+local function rn_sms_bubble( len, pl )
     local args      = net.ReadTable( )
     local msg       = args and args[ 1 ] or ''
     local dur       = args and isnumber( args[ 2 ] ) and args[ 2 ] or nil
@@ -106,32 +104,31 @@ local function netlib_sms_bubble( len, pl )
 
     design:bubble( msg, dur, clr_box, clr_txt )
 end
-net.Receive( 'rlib.sms.bubble', netlib_sms_bubble )
+net.Receive( 'rlib.sms.bubble', rn_sms_bubble )
 
 /*
-*   netlib :: rbubble :: bc
-*
-*   sends a bubble msg that displays to the bottom right of the
-*   players screen
+    rnet > notification > rbubble
+
+    sends a bubble msg that displays to the bottom right of the
+    players screen
 */
 
-local function netlib_sms_rbubble( len, pl )
-    local dur       = net.ReadInt( 8 )
+local function rn_sms_rbubble( len, pl )
     local args      = net.ReadTable( )
     local data      = args and args[ 1 ] or ''
 
-    design:rbubble( data, dur )
+    design:rbubble( data )
 end
-net.Receive( 'rlib.sms.rbubble', netlib_sms_rbubble )
+net.Receive( 'rlib.sms.rbubble', rn_sms_rbubble )
 
 /*
-*   netlib :: push :: bc
-*
-*   sends a bubble msg that displays to the bottom right of the
-*   players screen
+    rnet > notification > push
+
+    notification supports icons; slides in from middle right.
+    previously known as 'notifcator'
 */
 
-local function netlib_sms_push( len, pl )
+local function rn_sms_push( len, pl )
     local ico       = net.ReadString( )
     local title     = net.ReadString( )
     local args      = net.ReadTable( )
@@ -139,7 +136,21 @@ local function netlib_sms_push( len, pl )
 
     design:push( title, msg, ico )
 end
-net.Receive( 'rlib.sms.push', netlib_sms_push )
+net.Receive( 'rlib.sms.push', rn_sms_push )
+
+/*
+    rnet > notification > sos
+*/
+
+local function rn_sms_sos( len, pl )
+    local ico       = net.ReadString( )
+    local title     = net.ReadString( )
+    local args      = net.ReadTable( )
+    local msg       = args and args[ 1 ] or ''
+
+    design:sos( title, msg, ico )
+end
+net.Receive( 'rlib.sms.sos', rn_sms_sos )
 
 /*
 *   get material data

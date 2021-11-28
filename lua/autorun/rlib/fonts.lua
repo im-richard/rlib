@@ -123,7 +123,7 @@ local function fonts_register( pl )
         perm > reload
     */
 
-        if ( ( helper.ok.ply( pl ) or base.con:Is( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+        if ( ( helper.ok.ply( pl ) or access:bIsConsole( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
 
     /*
         fonts > scale
@@ -136,32 +136,53 @@ local function fonts_register( pl )
     */
 
         _f( pref( 'ucl_font_def' ),                     { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
-        _f( pref( 'ucl_tippy' ),                        { size = 15, weight = 200, antialias = true, shadow = false, font = 'Roboto Light' } )
+        _f( pref( 'ucl_tippy' ),                        { size = math.Round( 17 * fs ), weight = 200, antialias = true, shadow = false, font = 'Roboto Light' } )
 
     /*
         fonts > design
     */
 
-        _f( pref( 'design_dialog_title' ),	            { size = 36, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
-        _f( pref( 'design_dialog_msg' ),		        { size = 20, weight = 100, antialias = true, shadow = false, font = 'Roboto' } )
-        _f( pref( 'design_dialog_qclose' ),	            { size = 16, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
         _f( pref( 'design_dialog_sli_title' ),          { size = 23, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
         _f( pref( 'design_dialog_sli_msg' ),            { size = 17, weight = 300, antialias = true, shadow = true, font = 'Roboto' } )
         _f( pref( 'design_dialog_sli_x' ),              { size = 42, weight = 800, antialias = true, shadow = false, font = 'Segoe UI Light' } )
         _f( pref( 'design_text_default' ),              { size = 16, weight = 100, antialias = true, shadow = false, font = 'Roboto Light' } )
         _f( pref( 'design_rsay_text' ),                 { size = 30, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
         _f( pref( 'design_rsay_text_sub' ),             { size = 20, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
-        _f( pref( 'design_s1_indc' ),                   { size = 22, weight = 400, antialias = true, shadow = true, font = 'Roboto Light' } )
-        _f( pref( 'design_s2_indc' ),                   { size = 40, weight = 400, antialias = true, shadow = true, font = 'Roboto Light' } )
-        _f( pref( 'design_s2_indc_sub' ),               { size = 70, weight = 800, antialias = true, shadow = true, font = 'Roboto' } )
         _f( pref( 'design_draw_textscroll' ),           { size = 14, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
-        _f( pref( 'design_notify_text' ),               { size = 18, weight = 400, antialias = true, shadow = false, font = 'Roboto Light' } )
         _f( pref( 'design_bubble_msg' ),                { size = 18, weight = 200, antialias = true, shadow = true, font = 'Montserrat Medium' } )
         _f( pref( 'design_bubble_msg_2' ),              { size = 18, weight = 200, antialias = true, shadow = true, font = 'Montserrat Medium' } )
         _f( pref( 'design_bubble_ico' ),                { size = 48, weight = 400, antialias = true, shadow = true, font = 'Roboto Condensed' } )
+
+    /*
+        fonts > notification > notify
+    */
+
+        _f( pref( 'design_notify_msg' ),                { size = 18, weight = 400, antialias = true, shadow = false, font = 'Roboto Light' } )
+
+    /*
+        fonts > notification > push
+    */
+
         _f( pref( 'design_push_name' ),                 { size = 20, weight = 700, antialias = true, shadow = false, font = 'Segoe UI Light' } )
-        _f( pref( 'design_push_msg' ),                  { size = 18, weight = 100, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_push_msg' ),                  { size = 18, weight = 100, antialias = true, shadow = false, font = 'Roboto Light' } )
         _f( pref( 'design_push_ico' ),                  { size = 40, weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
+
+    /*
+        fonts > notification > sos
+    */
+
+        _f( pref( 'design_sos_name' ),                  { size = math.Round( 24 * fs ), weight = 700, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_sos_msg' ),                   { size = math.Round( 20 * fs ), weight = 100, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_sos_ico' ),                   { size = math.Round( 50 * fs ), weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
+
+    /*
+        fonts > notification > nms
+    */
+
+        _f( pref( 'design_nms_name' ),	                { size = 46, weight = 100, antialias = true, shadow = true, font = 'Segoe UI Light' } )
+        _f( pref( 'design_nms_msg' ),		            { size = 20, weight = 100, antialias = true, shadow = false, font = 'Roboto' } )
+        _f( pref( 'design_nms_ico' ),                   { size = 68, weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
+        _f( pref( 'design_nms_qclose' ),	            { size = 20, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
 
     /*
         fonts > elements
@@ -228,12 +249,13 @@ local function fonts_register( pl )
         concommand > reload
     */
 
-        if helper.ok.ply( pl ) or base.con:Is( pl ) then
-            base:log( 4, '[ %s ] reloaded fonts', mod.name )
+        if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
+            base:log( 4, '[ %s ] reloaded fonts', base.manifest.name )
             if not base.con.Is( pl ) then
-                base.msg:target( pl, mod.name, 'reloaded fonts' )
+                base.msg:target( pl, base.manifest.name, 'reloaded fonts' )
             end
         end
 
 end
+concommand.Add( 'rlib.fonts.reload', fonts_register )
 hook.Add( 'rlib.fonts.register', '_lib_fonts_register', fonts_register )

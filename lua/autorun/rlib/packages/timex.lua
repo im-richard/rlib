@@ -1086,7 +1086,7 @@ local function rcc_timex_base( pl, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'timex' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1136,7 +1136,7 @@ local function rcc_timex_list( pl, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'timex_list' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end

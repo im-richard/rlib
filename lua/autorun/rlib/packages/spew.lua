@@ -214,7 +214,7 @@ local function rcc_spew_base( pl, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'spew' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -263,7 +263,7 @@ local function rcc_spew_enabled( pl, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'spew_enabled' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end

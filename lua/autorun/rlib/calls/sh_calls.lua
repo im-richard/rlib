@@ -27,6 +27,7 @@
 */
 
 local base                  = rlib
+local access                = base.a
 local helper                = base.h
 local sys                   = base.sys
 
@@ -34,9 +35,9 @@ local sys                   = base.sys
     library > localize
 */
 
+local cfg                   = base.settings
 local mf                    = base.manifest
 local pf                    = mf.prefix
-local cfg                   = base.settings
 
 /*
     languages
@@ -78,20 +79,20 @@ local function pid( str, suffix )
 end
 
 /*
-*   calls > register
-*
-*   grab call categories from main lib table which typically include:
-*       : hooks
-*       : timers
-*       : commands
-*       : net
-*       : pubcmd
-*
-*   send regsitered calls from source table
-*       rlib.c[ type ] => base._rcalls[ type ]
-*
-*   @param  : tbl parent
-*   @param  : tbl src
+    calls > register
+
+    grab call categories from main lib table which typically include:
+        : hooks
+        : timers
+        : commands
+        : net
+        : pubcmd
+
+    send regsitered calls from source table
+        rlib.c[ type ] => base._rcalls[ type ]
+
+    @param  : tbl parent
+    @param  : tbl src
 */
 
 function base.calls:register( parent, src )
@@ -108,7 +109,7 @@ function base.calls:register( parent, src )
     for _, v in pairs( parent.manifest.calls ) do
 
         /*
-        *   v returns call_type
+            v returns call_type
         */
 
         local call_type = v:lower( )
@@ -117,18 +118,18 @@ function base.calls:register( parent, src )
         end
 
         /*
-        *   build calls lib
-        *
-        *   loop calls and setup structure
-        *   : l        =   call_id
-        *   : m[ 1 ]   =   call.id
-        *   : m[ 2 ]   =   desc (optional)
-        *
-        *   structure ex
-        *       commands:
-        *       rlib_command:
-        *           1   : rlib.command
-        *           2   : no description
+            build calls lib
+
+            loop calls and setup structure
+            : l        =   call_id
+            : m[ 1 ]   =   call.id
+            : m[ 2 ]   =   desc (optional)
+
+            structure ex
+                commands:
+                rlib_command:
+                    1   : rlib.command
+                    2   : no description
         */
 
         for l, m in pairs( src[ call_type ] ) do
@@ -145,21 +146,21 @@ function base.calls:register( parent, src )
 end
 
 /*
-*   calls > load
-*
-*   takes all registered net calls and loads them to server
-*
-*   :   (bool) bPrefix
-*       true adds lib prefix at front of all network entries
-*       'rlib.network_string_id'
-*
-*   :   (str) affix
-*       bPrefix must be true, determines what prefix to add to
-*       the front of a netnw string. if none provided, lib prefix
-*       will be used
-*
-*   @param  : bool bPrefix
-*   @param  : str affix
+    calls > load
+
+    takes all registered net calls and loads them to server
+
+    :   (bool) bPrefix
+        true adds lib prefix at front of all network entries
+        'rlib.network_string_id'
+
+    :   (str) affix
+        bPrefix must be true, determines what prefix to add to
+        the front of a netnw string. if none provided, lib prefix
+        will be used
+
+    @param  : bool bPrefix
+    @param  : str affix
 */
 
 function base.calls:load( bPrefix, affix )
@@ -184,12 +185,12 @@ function base.calls:load( bPrefix, affix )
 end
 
 /*
-*   calls > validation
-*
-*   checks a provided call id to see if it is registered within base._rcalls
-*
-*   @param  : str t
-*   @return : tbl
+    calls > validation
+
+    checks a provided call id to see if it is registered within base._rcalls
+
+    @param  : str t
+    @return : tbl
 */
 
 function base.calls:valid( t )
@@ -217,26 +218,26 @@ function base.calls:valid( t )
 end
 
 /*
-*   calls > gcflag
-*
-*   returns the flag for a specified command
-*
-*   :   (str) cmd
-*       command name
-*
-*   :   (str) flg_id
-*       name of the flag
-*
-*   :   (bool) ret
-*       true, 2 will return flag, desc
-*
-*   @ex     : rlib.calls:gcflag( 'rlib', 'all' )
-*   @ex     : rlib.calls:gcflag( 'timex_list', 'active' )
-*
-*   @param  : str cmd
-*   @param  : str flg_id
-*   @param  : bool ret
-*   @return : tbl
+    calls > gcflag
+
+    returns the flag for a specified command
+
+    :   (str) cmd
+        command name
+
+    :   (str) flg_id
+        name of the flag
+
+    :   (bool) ret
+        true, 2 will return flag, desc
+
+    @ex     : rlib.calls:gcflag( 'rlib', 'all' )
+    @ex     : rlib.calls:gcflag( 'timex_list', 'active' )
+
+    @param  : str cmd
+    @param  : str flg_id
+    @param  : bool ret
+    @return : tbl
 */
 
 function base.calls:gcflag( cmd, flg_id, ret )
@@ -258,16 +259,16 @@ function base.calls:gcflag( cmd, flg_id, ret )
 end
 
 /*
-*   calls > gcflag > valid
-*
-*   returns if a provided flag is valid for the specified command
-*
-*   @call   : rlib.calls:gcflag_valid( 'command_name', '-arg' )
-*   @ex     : rlib.calls:gcflag_valid( 'rlib_debug_clean', '-cancel' )
-*
-*   @param  : str cmd
-*   @param  : str flag
-*   @return : bool
+    calls > gcflag > valid
+
+    returns if a provided flag is valid for the specified command
+
+    @call   : rlib.calls:gcflag_valid( 'command_name', '-arg' )
+    @ex     : rlib.calls:gcflag_valid( 'rlib_debug_clean', '-cancel' )
+
+    @param  : str cmd
+    @param  : str flag
+    @return : bool
 */
 
 function base.calls:gcflag_valid( cmd, flag )
@@ -286,10 +287,10 @@ function base.calls:gcflag_valid( cmd, flag )
 end
 
 /*
-*   calls > post load
-*
-*   executed after all calls have been setup and loaded
-*   typically utilized for processes such as checking for base command existence and various other tasks.
+    calls > post load
+
+    executed after all calls have been setup and loaded
+    typically utilized for processes such as checking for base command existence and various other tasks.
 */
 
 local function calls_load_post( )
@@ -314,18 +315,18 @@ end
 hook.Add( pid( 'calls_post' ), pid( 'calls_load_post' ), calls_load_post )
 
 /*
-*   calls > get call
-*
-*   returns the associated call data table
-*
-*   call using localized function in file that you require fetching needed calls.
-*
-*   @ex     : rlib.calls:get( 'calltype', 'id' )
-*             rlib.calls:get( 'commands', 'rlib_modules' )
-*
-*   @param  : str t
-*   @param  : str s
-*   @return : tbl
+    calls > get call
+
+    returns the associated call data table
+
+    call using localized function in file that you require fetching needed calls.
+
+    @ex     : rlib.calls:get( 'calltype', 'id' )
+              rlib.calls:get( 'commands', 'rlib_modules' )
+
+    @param  : str t
+    @param  : str s
+    @return : tbl
 */
 
 function base.calls:get( t, s )
@@ -342,22 +343,22 @@ function base.calls:get( t, s )
 end
 
 /*
-*   call
-*
-*   returns the associated call
-*
-*   call using localized function in file that you require fetching needed calls.
-*   these are usually stored in the modules' manifest file
-*
-*   @call   : call( 'type', 'string_id' )
-*
-*   @ex     : call( 'commands', 'rlib_modules' )
-*             call( 'hooks', 'lunera_initialize' )
-*
-*   @param  : str t
-*   @param  : str s
-*   @param  : varg { ... }
-*   @return : str
+    call
+
+    returns the associated call
+
+    call using localized function in file that you require fetching needed calls.
+    these are usually stored in the modules' manifest file
+
+    @call   : call( 'type', 'string_id' )
+
+    @ex     : call( 'commands', 'rlib_modules' )
+              call( 'hooks', 'lunera_initialize' )
+
+    @param  : str t
+    @param  : str s
+    @param  : varg { ... }
+    @return : str
 */
 
 function base:call( t, s, ... )
@@ -393,17 +394,17 @@ function base:call( t, s, ... )
 end
 
 /*
-*   calls > commands > register
-*
-*   inserts a new command into base commands table which allows it to display within the base library
-*   concommand, as well as execution params
-*
-*   this is an alternative method to registering commands that aren't provided through the module
-*   manifest method
-*
-*   @ex     : rlib.calls.commands:Register( local_tbl_varname )
-*
-*   @param  : tbl params
+    calls > commands > register
+
+    inserts a new command into base commands table which allows it to display within the base library
+    concommand, as well as execution params
+
+    this is an alternative method to registering commands that aren't provided through the module
+    manifest method
+
+    @ex     : rlib.calls.commands:Register( local_tbl_varname )
+
+    @param  : tbl params
 */
 
 function base.calls.commands:Register( params )

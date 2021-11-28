@@ -81,37 +81,74 @@ RLIB_TALIGN_T               = 8
 RLIB_TALIGN_B               = 2
 
 /*
-*   design > push > clean storage
-*
-*   locates any panels that are invalid or no longer visible and removes them
-*   from the push notification storage table.
+    notifications > storage > clean
+
+    locates any panels that are invalid or no longer visible and removes them
+    from the push notification storage table.
 */
 
-local function push_clean_storage( )
-    for k, v in pairs( base.push ) do
-        if v and ui:visible( v ) and k < 9 and tostring( v ) ~= '[NULL Panel]' then continue end
-        base.push[ k ] = nil
+local function slot_storage_clean( )
+    if istable( base.push ) then
+        for k, v in pairs( base.push ) do
+            if v and ui:visible( v ) and k < 9 and tostring( v ) ~= '[NULL Panel]' then continue end
+            base.push[ k ] = nil
+        end
+    end
+
+    if istable( base.sos ) then
+        for k, v in pairs( base.sos ) do
+            if v and ui:visible( v ) and k < 9 and tostring( v ) ~= '[NULL Panel]' then continue end
+            base.sos[ k ] = nil
+        end
     end
 end
 
 /*
-*   design > push > locate slot
-*
-*   determines where an available slot is to place the push notification
-*   interface.
-*
-*   limit to 8 slots
-*
-*   @return : int
+    locate slot > push notifications
+
+    determines where an available slot is to place the notification
+    on the players screen
+
+    limit to 8 slots
+
+    @param  : pnl obj
+    @return : int, int
 */
 
-local function push_loc_slot( obj )
-    push_clean_storage( )
-    local pos_new = 180
+local function loc_slot_push( obj )
+    slot_storage_clean( )
+    local pos_new = 150
 
     for i = 1, 8, 1 do
         if base.push[ i ] then
             local id    = base.push[ i ]
+            pos_new     = pos_new + id:GetTall( )
+            pos_new     = pos_new + 5
+            continue
+        end
+        return i, pos_new
+    end
+end
+
+/*
+    locate slot > sos
+
+    determines where an available slot is to place the notification
+    on the players screen
+
+    limit to 8 slots
+
+    @param  : pnl obj
+    @return : int, int
+*/
+
+local function loc_slot_sos( obj )
+    slot_storage_clean( )
+    local pos_new = 5
+
+    for i = 1, 8, 1 do
+        if base.sos[ i ] then
+            local id    = base.sos[ i ]
             pos_new     = pos_new + id:GetTall( )
             pos_new     = pos_new + 5
             continue
@@ -1483,7 +1520,6 @@ function design.circle_ol( x, y, radius, clr, clr2, clr3 )
     end
 
     surface.DrawPoly( poly3 )
-
 end
 
 /*
@@ -1504,6 +1540,7 @@ function design.rcir.fill( pnl, clr, rotate )
 
     draw.NoTexture          (               )
     surface.SetDrawColor    ( clr           )
+
     pnl:SetRotation         ( rotate        )
     pnl                     (               )
 end
@@ -1525,9 +1562,11 @@ function design.rcir.line( pnl, mat, clr, rotate )
     rotate      = isnumber( rotate ) and rotate or 0
 
     draw.NoTexture          (               )
+
     if mat then
         surface.SetMaterial ( mat           )
     end
+
     surface.SetDrawColor    ( clr           )
     pnl:SetRotation         ( rotate        )
     pnl                     (               )
@@ -1562,205 +1601,72 @@ function design.StencilEnd( )
 end
 
 /*
-*   design > indicator
-*
-*   @param  : str text
-*   @param  : str uid
-*   @param  : str, imat mat
-*   @param  : int mat_a
-*   @param  : clr mat_clr
-*   @param  : int ftop
-*   @param  : int ttop
-*   @param  : str font
-*   @param  : int dur
+    design > notify
+
+    displays a simple slide-in notification box that will allow players to see when something has happened.
+    param 'startpos' determines pos to start from
+        1   : top
+        2   : bottom
+        3   : middle
+
+    @call   : SERVER        pmeta:notify( ... )
+            : CLIENT        design:notify( 1, 'Message', 5 )
+
+    @param  : int cat
+    @param  : str msg
+    @param  : int startpos
 */
 
-function design.indicator( text, uid, mat, mat_a, mat_clr, ftop, ttop, font, dur )
-    if not isstring( text ) then return end
-
-    uid                 = uid or helper.new.id( 10 )
-    mat                 = mat or nil
-    ftop                = ftop or -20
-    ttop                = ttop or 85
-    font                = font or pref( 'design_s1_indc' )
-    dur                 = isnumber( dur ) and dur or 3
-
-    local time_fade     = 0.3
-    local time_start    = CurTime( )
-    local alpha         = 255
-
-    local mat_indicator = mat and Material( mat, 'noclamp smooth' ) or nil
-    local function draw2screen( )
-        local time_anim = CurTime( ) - time_start
-        if alpha < 0 then alpha = 0 end
-
-        if time_anim > dur then
-            hook.Remove( 'HUDPaint', uid .. 'd2s.indicator' )
-            return
-        end
-
-        if ( time_fade - time_anim ) > 0 then
-            alpha = ( time_fade - time_anim ) / time_fade
-            alpha = 1 - alpha
-            alpha = alpha * 255
-        end
-
-        if ( dur - time_anim ) < time_fade then
-            alpha = ( dur - time_anim ) / time_fade
-            alpha = alpha * 255
-        end
-
-        local clr_alpha_max     = isnumber( mat_a ) and mat_a or 255
-        local clr_alpha         = math.Clamp( alpha, 0, clr_alpha_max )
-        local clr_mat           = mat_clr or Color( 255, 255, 255 )
-
-        if mat_indicator then
-            surface.SetDrawColor        ( Color( clr_mat.r, clr_mat.g, clr_mat.b, clr_alpha ) )
-            surface.SetMaterial         ( mat_indicator )
-            surface.DrawTexturedRect    ( ScrW( ) / 2 - ( 200 / 2 ), ftop, 200, 200 )
-        end
-
-        draw.SimpleText( text, font, ScrW( ) / 2, ttop, Color( 255, 255, 255, clr_alpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-    end
-    hook.Add( 'HUDPaint', uid .. 'd2s.indicator', draw2screen )
-end
-
-/*
-*   design > indicator > type 2
-*
-*   indicator that slides in bars from top and bottom, with text in the middle
-*
-*   @param  : str text
-*   @param  : str text_sub
-*   @param  : str uid
-*   @param  : str font
-*   @param  : str font2
-*   @param  : int dur
-*/
-
-function design.indicator_t2( text, text_sub, uid, font, font2, dur )
-    if not isstring( text ) then return end
-
-    uid                 = uid or helper.new.id( 10 )
-    font                = font or pref( 'design_s2_indc' )
-    font2               = font2 or pref( 'design_s2_indc_sub' )
-    dur                 = isnumber( dur ) and dur or 8
+function design:notify( cat, msg, startpos )
 
     /*
-    *   load materials
+        dispatch
     */
 
-    local mat_div       = Material( 'rlib/general/fx/dividers/glow_w_full_01.png', 'noclamp smooth' )
-    local grad          = Material( 'gui/center_gradient', 'noclamp smooth' )
-
-    local time_fade     = 2
-    local time_start    = CurTime( )
-    local alpha         = 255
-
-    local bar_t_pos_s   = 0
-    local bar_t_pos_e   = ScrH( ) / 2 - 100
-
-    local bar_b_pos_s   = ScrH( )
-    local bar_b_pos_e   = ScrH( ) / 2 + 100
-
-    local function draw2screen( )
-        local time_anim = CurTime( ) - time_start
-        if alpha < 0 then alpha = 0 end
-
-        bar_t_pos_s     = math.Approach( bar_t_pos_s, bar_t_pos_e, FrameTime( ) * 500 )
-        bar_b_pos_s     = math.Approach( bar_b_pos_s, bar_b_pos_e, FrameTime( ) * 500 )
-
-        if time_anim > dur then
-            hook.Remove( 'HUDPaint', uid .. 'd2s.indicator' )
-            return
-        end
-
-        if ( time_fade - time_anim ) > 0 then
-            alpha = ( time_fade - time_anim ) / time_fade
-            alpha = 1 - alpha
-            alpha = alpha * 255
-        end
-
-        if ( dur - time_anim ) < time_fade then
-            alpha = ( dur - time_anim ) / time_fade
-            alpha = alpha * 255
-        end
-
-        local clr_alpha = math.Clamp( alpha, 0, 255 )
-
-        design.mat(  ( ScrW( ) / 2 ) - ( ScrW( ) / 2 ), ( ScrH( ) / 2 ) - ( 200 / 2 ) + ( 36 / 2 ), ScrW( ), 200, grad, Color( 5, 5, 5, clr_alpha ) )
-        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_t_pos_s, 512, 36, mat_div, Color( 255, 255, 255, clr_alpha ) )
-        draw.SimpleText( text, font, ScrW( ) / 2, ScrH( ) / 2 - 10, Color( 255, 255, 255, clr_alpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        draw.SimpleText( text_sub, font2, ScrW( ) / 2, ScrH( ) / 2 + 40, Color( 195, 136, 45, clr_alpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        design.mat( ( ScrW( ) / 2 ) - ( 512 / 2 ), bar_b_pos_s, 512, 36, mat_div, Color( 255, 255, 255, clr_alpha ) )
-
-    end
-    hook.Add( 'HUDPaint', uid .. 'd2s.indicator', draw2screen )
-end
-
-/*
-*   design > notify
-*
-*   displays a simple slide-in notification box that will allow players to see when something has happened.
-*   param 'startpos' determines pos to start from
-*       1   : top
-*       2   : bottom
-*       3   : middle
-*
-*   param bFull will force width of notification to be full-screen
-*
-*   @call   : SERVER        pmeta:notify( ... )
-*           : CLIENT        design:notify( 1, 'Message', 5, 2 )
-*
-*   @param  : int, str, tbl, clr mtype
-*   @param  : str msg
-*   @param  : int dur
-*   @param  : int startpos
-*   @param  : bool bFull
-*/
-
-function design:notify( mtype, msg, dur, startpos, bFull )
+    ui:dispatch( base.notify )
 
     /*
-    *   destroy existing
+        checks
     */
 
-    ui:destroy_visible( base.notify )
+    cat                             = ( cat ~= '*' and cat ) or 1
+    msg                             = ( helper.ok.str( msg ) and msg ) or 'Error occured'
+    startpos                        = ( isnumber( startpos ) and startpos ) or 1
 
     /*
-    *   mtype colorization
+        declare > general
     */
 
-    local clr_box, clr_txt          = Color( 30, 30, 30, 255 ), Color( 255, 255, 255, 255 )
-    if mtype and mtype ~= 'def' then
-        if IsColor( mtype ) then
-            clr_box                 = mtype
-        elseif isnumber( mtype ) then
-            clr_box                 = base._def.lc_rgb[ mtype ]
-        elseif istable( mtype ) and not IsColor( mtype ) then
-            clr_box                 = mtype.clr_box or Color( 30, 30, 30, 255 )
-            clr_txt                 = mtype.clr_txt or Color( 255, 255, 255, 255 )
-        end
-    end
+    local dur                       = 10
 
-    if not msg then
-        mtype, msg = 2, 'an error occured'
-    end
+    /*
+        declare > fonts
+    */
 
-    dur                             = isnumber( dur ) and dur or 10
-    startpos                        = isnumber( startpos ) and startpos or 1
+    local fnt_text                  = pref( 'design_notify_msg' )
 
-                                    surface.SetFont( pref( 'design_notify_text' ) )
-    local ui_w, ui_h                = ScrW( ), draw.GetFontHeight( pref( 'design_notify_text' ) ) + 18
-    local sz_w, sz_h                = bFull and ScrW( ) or surface.GetTextSize( msg )
-    sz_w                            = ( bFull and sz_w ) or ( sz_w + 100 )
+    /*
+        declare > colors
+    */
+
+    local clr_box_ol                = Hex( '000000', 255 )
+    local clr_box_n                 = base._def.lc_rgb[ cat ] or Hex( '1E1E1E' )
+    local clr_txt                   = Hex( 'FFFFFF' )
+
+    /*
+        declare > sizes
+    */
+
+    local ui_w, ui_h                = ScrW( ), draw.GetFontHeight( fnt_text ) + 18
+    local sz_w, sz_h                = helper.str:len( msg, fnt_text )
+    sz_w                            = sz_w + 100
 
     local pos_w                     = ( ui_w / 2 ) - ( sz_w / 2 )
-    local pos_h                     = ( startpos == 2 and ( ScrH( ) - ui_h ) ) or ( startpos == 3 and ScrH( ) / 3 ) or 5
+    local pos_h                     = ( startpos == 2 and ( ScrH( ) - ui_h ) ) or ( startpos == 3 and ScrH( ) * 0.25 ) or 5
     local pos_m2                    = ( startpos == 2 and ( ScrH( ) ) ) or ( startpos == 3 and d ) or -ui_h
 
     /*
-    *   btn > close
+        object
     */
 
     local obj                       = ui.new( 'btn'                         )
@@ -1768,7 +1674,7 @@ function design:notify( mtype, msg, dur, startpos, bFull )
     :size                           ( sz_w, ui_h                            )
     :pos                            ( pos_w, pos_h                          )
     :aligntop                       ( pos_m2                                )
-    :textadv                        ( clr_txt, pref( 'design_notify_text' ), msg )
+    :textadv                        ( clr_txt, fnt_text, msg                )
     :drawtop                        ( true                                  )
 
                                     :oc( function ( s )
@@ -1776,17 +1682,16 @@ function design:notify( mtype, msg, dur, startpos, bFull )
                                         s.action_close = true
                                         s:Stop( )
                                         s:MoveTo( pos_w, pos_m2, 0.5, 0, -1, function( )
-                                            ui:destroy_visible( s )
+                                            ui:dispatch( s )
                                         end )
                                     end )
 
                                     :draw( function( s, w, h )
                                         local pulse     = math.abs( math.sin( CurTime( ) * 2 ) * 255 )
-                                        pulse           = math.Clamp( pulse, 125, 175 )
+                                        pulse           = math.Clamp( pulse, 125, 255 )
 
-                                        design.box( 3, 2, w - 6, h - 4, Color( 0, 0, 0, 200 ) )
-                                        design.box( 4, 3, w - 8, h - 6, clr_box )
-                                        design.box( 4, 3, w - 8, h - 6, Color( 0, 0, 0, pulse ) )
+                                        design.box( 3, 2, w - 6, h - 4, clr_box_ol )
+                                        design.box( 4, 3, w - 8, h - 6, ColorAlpha( clr_box_n, pulse ) )
                                     end )
 
                                     :logic( function( s )
@@ -1794,13 +1699,13 @@ function design:notify( mtype, msg, dur, startpos, bFull )
                                     end )
 
     /*
-    *  notice sound
+        notice sound
     */
 
     surface.PlaySound( cfg.dialogs.audio )
 
     /*
-    *  display notice
+        display notice
     */
 
     if ui:ok( obj ) then
@@ -1808,180 +1713,196 @@ function design:notify( mtype, msg, dur, startpos, bFull )
 
         obj:MoveTo( pos_w, pos_h, 0.5, 0, -1, function( )
             obj:MoveTo( pos_w, pos_m2, 0.5, dur, -1, function( )
-                ui:destroy_visible( obj )
+                ui:dispatch( obj )
             end )
         end )
     end
 end
 
 /*
-*   design > notify > adv
-*
-*   an advanced notification feature which displays a msg on-screen with borders on top and bottom
-*   has the ability to hold TAB in order to close out the notification before the destroy timer actually
-*   expires.
-*
-*   will temp disable the scoreboard while active so that the KEY_TAB actually closes the notification
-*   instead of toggling the scoreboard. this however wont be needed if the server owner decides to change
-*   the key to something else besides the default tab key
-*
-*   @param  : str icon
-*   @param  : str title
-    @param  : str message
-*   @param  : int delay
+    design > notify > nms
+
+    an advanced notification feature which displays a msg on-screen with borders on top and bottom
+    has the ability to hold TAB in order to close out the notification before the destroy timer actually
+    expires.
+
+    will temp disable the scoreboard while active so that the KEY_TAB actually closes the notification
+    instead of toggling the scoreboard. this however wont be needed if the server owner decides to change
+    the key to something else besides the default tab key
+
+    @param  : str ico
+    @param  : str title
+    @param  : str msg
 */
 
-function design.notify_adv( icon, title, message, delay )
+function design:nms( ico, title, msg )
+    ico                     = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
+    title                   = title or 'Notice'
+    msg                     = msg or 'Error Occured'
 
-    if not title then return end
-    if not message then return end
-
-    local timer_id                  = pf .. 'notice.timer'
-                                    timex.expire( timer_id )
+    local timer_id          = string.format( '%snotice.timer', pf )
+    timex.expire( timer_id )
 
     /*
-    *   localized vars
+        localized vars
     */
 
-    local fadein_run	            = 1             -- time to fade in
-    local fadeout_run	            = 0.5           -- time to fade out
+    local dur                       = 8
+    local i_fadein	                = 1             -- time to fade in
+    local i_fadeout	                = 0.5           -- time to fade out
     local alpha			            = 255           -- starting alpha
     local start			            = CurTime( )    -- start time
     local m_ctime                   = CurTime( )
     local dtime			            = 0
-    local key_convert 	            = input.GetKeyName( KEY_TAB )
-    delay                           = delay or 8
+    local key_close 	            = input.GetKeyName( KEY_TAB )
 
     /*
-    *   think
-    *
-    *   check to see if notice panel is valid and that binded cancel key is pressed. if both are true,
-    *   kill timers, hooks, and the panel to cancel the entire active notice action
+        materials
+    */
+
+    local m_grad                    = Material( cfg.dialogs.mat_gradient or 'gui/center_gradient' )
+
+    /*
+        fonts
+    */
+
+    local fnt_name                  = pref( 'design_nms_name' )
+    local fnt_msg                   = pref( 'design_nms_msg' )
+    local fnt_ico                   = pref( 'design_nms_ico' )
+    local fnt_qclose                = pref( 'design_nms_qclose' )
+
+    /*
+        colors
+    */
+
+    local clr_txt                   = cfg.dialogs.clrs.primary_text
+    local clr_pri                   = cfg.dialogs.clrs.primary
+    local clr_sec                   = cfg.dialogs.clrs.secondary
+    local clr_prog                  = cfg.dialogs.clrs.progress
+    local clr_icon                  = cfg.dialogs.clrs.icons
+
+    /*
+        logic
+
+        check to see if notice panel is valid and that binded cancel key is pressed. if both are true,
+        kill timers, hooks, and the panel to cancel the entire active notice action
     */
 
     hook.Add( 'Think', pf .. 'design.key.cancel', function( )
-        if input.IsKeyDown( KEY_TAB ) and ui:visible( ui.notifyadv ) then
+        if input.IsKeyDown( KEY_TAB ) and ui:visible( ui.nms ) then
             timex.expire( timer_id )
             hook.Remove( 'Think', pf .. 'design.key.cancel' )
             hook.Remove( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard' )
-            ui:dispatch( ui.notifyadv )
+            ui:dispatch( ui.nms )
         end
     end )
 
     /*
-    *	scoreboardshow
-    *
-    *	while a dialog is active, disallow the scoreboard from showing when the default cancel key
-    *   is pressed ( KEY_TAB ). once the action has completed, return the scoreboard functionality back
-    *   to normal.
-    *
-    *	this hook isnt needed if the server owner changes the default keybind to any other key besides
-    *   the default one ENUM:( KEY_TAB )
+        scoreboardshow
+
+        while a dialog is active, disallow the scoreboard from showing when the default cancel key
+        is pressed ( KEY_TAB ). once the action has completed, return the scoreboard functionality back
+        to normal.
+
+        this hook isnt needed if the server owner changes the default keybind to any other key besides
+        the default one ENUM:( KEY_TAB )
     */
 
     hook.Add( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard', function( )
-        if ui:ok( ui.notifyadv ) and input.IsKeyDown( KEY_TAB ) then
+        if ui:ok( ui.nms ) and input.IsKeyDown( KEY_TAB ) then
             return false
         end
         return true
     end )
 
     /*
-    *   draw to screen
-    *
-    *   displays the dialog for player
+        draw to screen
     */
 
     local function draw2screen( )
-        ui:destroy_visible( ui.notifyadv )
+        ui:dispatch( ui.nms )
 
-        ui.notifyadv                = ui.new( 'pnl'                         )
+        ui.nms                      = ui.new( 'pnl'                         )
         :sz                         ( ScrW( ), ScrH( )                      )
         :pos                        ( 0                                     )
         :m2f                        (                                       )
         :popup                      (                                       )
 
                                     :draw( function( s, w, h )
-                                        delay = math.Clamp( delay, 0, delay )
+                                        dur = math.Clamp( dur, 0, dur )
                                         dtime = CurTime( ) - start
                                         if alpha < 0 then
                                             alpha = 0
                                         end
 
                                         -- fade in math
-                                        if fadein_run - dtime > 0 then
-                                            alpha = ( fadein_run - dtime ) / fadein_run -- 0 to 1
+                                        if i_fadein - dtime > 0 then
+                                            alpha = ( i_fadein - dtime ) / i_fadein -- 0 to 1
                                             alpha = 1 - alpha -- Reverse
                                             alpha = alpha * 255
                                         end
 
                                         -- fade out math
-                                        if delay - dtime < fadeout_run then
-                                            alpha = ( delay - dtime ) / fadeout_run + fadeout_run -- 0 to 1
+                                        if dur - dtime < i_fadeout then
+                                            alpha = ( dur - dtime ) / i_fadeout + i_fadeout -- 0 to 1
                                             alpha = alpha * 255
                                         end
 
                                         local c_alpha           = math.Clamp( alpha, 0, 255 )
                                         local c_alpha_box       = math.Clamp( alpha, 0, 255 )
                                         local c_alpha_obox      = math.Clamp( alpha, 0, 100 )
-                                        local grad_m            = Material( cfg.dialogs.mat_gradient or 'gui/center_gradient' )
-                                        local grad_w, grad_h    = w * 0.70, 70
+                                        local grad_w, grad_h    = w * 0.70, 100
 
-                                        local clr_primary = cfg.dialogs.clrs.primary
-                                        design.mat( w / 2 - ( grad_w / 2 ), h / 2 - ( grad_h / 2 ), grad_w, grad_h, grad_m, Color( clr_primary.r, clr_primary.g, clr_primary.b, c_alpha ) )
+                                        design.mat( w / 2 - ( grad_w / 2 ), h / 2 - ( grad_h / 2 ), grad_w, grad_h, m_grad, ColorAlpha( clr_pri, c_alpha ) )
 
                                         -- top and bottom primary rect
-                                        design.box( 0, 0, w, h * .10, Color( clr_primary.r, clr_primary.g, clr_primary.b, c_alpha_box ) )
-                                        design.box( 0, h - h * .10, w, h * .10, Color( clr_primary.r, clr_primary.g, clr_primary.b, c_alpha_box ) )
+                                        design.box( 0, 0, w, h * .10, ColorAlpha( clr_pri, c_alpha_box ) )
+                                        design.box( 0, h - h * .10, w, h * .10, ColorAlpha( clr_pri, c_alpha_box ) )
 
                                         -- 10% rect on edge of primary boxes
                                         local brder_h = 4
-                                        local clr_secondary = cfg.dialogs.clrs.secondary
-                                        design.box( 0, h * .10 - brder_h, w, brder_h, Color( clr_secondary.r, clr_secondary.g, clr_secondary.b, c_alpha_obox ) )
-                                        design.box( 0, h - h * .10, w, brder_h, Color( clr_secondary.r, clr_secondary.g, clr_secondary.b, c_alpha_obox ) )
+                                        design.box( 0, h * .10 - brder_h, w, brder_h, ColorAlpha( clr_sec, c_alpha_obox ) )
+                                        design.box( 0, h - h * .10, w, brder_h, ColorAlpha( clr_sec, c_alpha_obox ) )
 
                                         -- icons
                                         if icon then
-                                            local clr_icon = cfg.dialogs.clrs.icons
-                                            design.mat( w / 2 - 32, h / 2 - 100, 64, 64, icon, Color( clr_icon.r, clr_icon.g, clr_icon.b, c_alpha ) )
+                                            draw.DrawText( ico, fnt_ico, w / 2, ( h / 2 ) - grad_h - 25, ColorAlpha( clr_icon, c_alpha ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                         end
 
                                         -- text
-                                        local clr_txt = cfg.dialogs.clrs.primary_text
-                                        design.txt( title, w / 2, h / 2 - 13, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_title' ), 1, 1 )
-                                        design.txt( message, w / 2, h / 2 + 17, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_msg' ), 1, 1 )
-                                        design.txt( ln( 'dialog_key_close', key_convert ), w / 2, h - h * .10 / 2 + 15, Color( clr_txt.r, clr_txt.g, clr_txt.b, c_alpha ), pref( 'design_dialog_qclose' ), 1, 1 )
+                                        design.txt( title, w / 2, h / 2 - 17, ColorAlpha( clr_txt, c_alpha ), fnt_name, 1, 1 )
+                                        design.txt( msg, w / 2, h / 2 + 17, ColorAlpha( clr_txt, c_alpha ), fnt_msg, 1, 1 )
+                                        design.txt( ln( 'dialog_key_close', key_close ), w / 2, h - h * .10 / 2 + 15, ColorAlpha( clr_txt, c_alpha ), fnt_qclose, 1, 1 )
 
-                                        local time          = math.Remap( CurTime( ) - m_ctime, 0, delay, w, 0 )
+                                        local time          = math.Remap( CurTime( ) - m_ctime, 0, dur, w, 0 )
                                         local blk_w         = time * 0.20
                                         local blk_center    = w / 2 - ( blk_w / 2 )
-                                        local clr_prog      = cfg.dialogs.clrs.progress
 
-                                        design.box( blk_center, h - h * .10 / 2 - 10, blk_w, 10, Color( clr_prog.r, clr_prog.g, clr_prog.b, c_alpha ) )
+                                        design.box( blk_center, h - h * .10 / 2 - 10, blk_w, 10, ColorAlpha( clr_prog, c_alpha ) )
                                     end )
 
     end
     draw2screen( )
 
     /*
-    *  notice sound
+        sound
     */
 
     surface.PlaySound( cfg.dialogs.audio )
 
     /*
-    *   destroy hudpaint hook when timer has elapsed
-    *
-    *   @param  : bool bForce
+        destroy hudpaint hook when timer has elapsed
+
+        @param  : bool bForce
     */
 
     local function destroy_timer( bForce )
         if timex.exists( timer_id ) and not bForce then return end
-        timex.create( timer_id, delay + 1, 1, function( )
+        timex.create( timer_id, dur + 1, 1, function( )
             timex.expire( timer_id )
             hook.Remove( 'Think', pf .. 'design.key.cancel' )
             hook.Remove( 'ScoreboardShow', pf .. 'design.key.cancel.scoreboard' )
-            ui:dispatch( ui.notifyadv )
+            ui:dispatch( ui.nms )
         end )
     end
     destroy_timer( )
@@ -1989,14 +1910,17 @@ function design.notify_adv( icon, title, message, delay )
 end
 
 /*
-*   design > bubble
-*
-*   displays a simple bubble notification to the lower right
-*
+    design > bubble
+
+    displays a simple bubble notification to the lower right.
+    uses string for message.
+
+    see rbubble for richtext version
+
     @param  : str msg
-*   @param  : int dur
-*   @param  : clr clr_box
-*   @param  : clr clr_txt
+    @param  : int dur
+    @param  : clr clr_box
+    @param  : clr clr_txt
 */
 
 function design:bubble( msg, dur, clr_box, clr_txt )
@@ -2005,7 +1929,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     *   destroy existing
     */
 
-    ui:destroy_visible( base.bubble )
+    ui:dispatch( base.bubble )
 
     /*
     *   check
@@ -2014,12 +1938,18 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     if not msg then return end
 
     /*
+        declare > fonts
+    */
+
+    local fnt_msg                   = pref( 'design_bubble_msg' )
+
+    /*
     *   message cropping and length
     */
 
     local m_diag                    = Material( 'rlib/general/patterns/diag_w.png', 'smooth noclamp' )
-    local message                   = helper.str:crop( msg, ui:cscale( true, 210, 240, 250, 240, 250, 250, 260 ), pref( 'design_bubble_msg' ) )
-    local text_w, text_h            = helper.str:len( message, pref( 'design_bubble_msg' ) )
+    local message                   = helper.str:crop( msg, ui:cscale( true, 210, 240, 250, 240, 250, 250, 260 ), fnt_msg )
+    local text_w, text_h            = helper.str:len( message, fnt_msg )
 
     dur                             = isnumber( dur ) and dur or 8
     clr_box                         = IsColor( clr_box ) and clr_box or Color( 20, 20, 20, 255 )
@@ -2036,7 +1966,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     :bsetup                         (                                       )
     :size                           ( pos_w, pos_h                          )
     :pos                            ( ScrW( ) - pos_w - 5, ScrH( ) + pos_h  )
-    :textadv                        ( clr_txt, pref( 'design_bubble_msg' ), '' )
+    :textadv                        ( clr_txt, fnt_msg, ''                  )
     :drawtop                        ( true                                  )
     :box                            ( Color( 45, 45, 45, 255 )              )
     :keeptop                        (                                       )
@@ -2065,7 +1995,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
     :fill                           ( 'm', 0                                )
 
                                     :draw( function( s, w, h )
-                                        draw.DrawText( message, pref( 'design_bubble_msg' ), 65, ( h / 2 ) - ( text_h / 2 ), clr_txt , TEXT_ALIGN_LEFT )
+                                        draw.DrawText( message, fnt_msg, 65, ( h / 2 ) - ( text_h / 2 ), clr_txt , TEXT_ALIGN_LEFT )
                                     end )
 
                                     surface.SetFont( pref( 'design_bubble_ico' ) )
@@ -2100,7 +2030,7 @@ function design:bubble( msg, dur, clr_box, clr_txt )
                                         obj.action_close = true
                                         obj:Stop( )
                                         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, 0, -1, function( )
-                                            ui:destroy_visible( obj )
+                                            ui:dispatch( obj )
                                         end )
                                     end )
 
@@ -2121,32 +2051,34 @@ function design:bubble( msg, dur, clr_box, clr_txt )
 end
 
 /*
-*   design > bubble > rich
-*
-*   displays a simple bubble notification to the lower right
-*
+    design > bubble > rich
+
+    displays a bubble notification to the lower right.
+    uses table for message.
+
+    see bubble for standard version
+
     @param  : tbk msg
-*   @param  : int dur
-*   @param  : clr clr_box
-*   @param  : clr clr_txt
+    @param  : clr clr_box
+    @param  : clr clr_txt
 */
 
-function design:rbubble( msg_a, dur, clr_box, clr_txt )
+function design:rbubble( msg_a, clr_box, clr_txt )
 
     /*
-    *   destroy existing
+        destroy existing
     */
 
-    ui:destroy_visible( base.bubble )
+    ui:dispatch( base.bubble )
 
     /*
-    *   check
+        check
     */
 
     if not istable( msg_a ) then return end
 
     /*
-    *   merge string values
+        merge string values
     */
 
     local msg, i = '', 0
@@ -2162,20 +2094,20 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     end
 
     /*
-    *   define > message dimensions
+        define > message dimensions
     */
 
-    local m_diag                    = Material( 'rlib/general/patterns/diag_w.png', 'smooth noclamp' )
+    local m_diag                    = mat2d( 'rlib/general/patterns/diag_w.png' )
     local message                   = helper.str:crop( msg, ui:cscale( true, 210, 240, 250, 240, 250, 250, 260 ), pref( 'design_bubble_msg_2' ) )
     local text_w, text_h            = helper.str:len( message, pref( 'design_bubble_msg_2' ) )
 
     local pos_w, pos_h              = text_w + 155, 20 + text_h + 15
     pos_w                           = math.Clamp( pos_w, 150, 330 )
 
-    dur                             = isnumber( dur ) and dur or 8
+    local dur                       = 8
 
     /*
-    *   obj > btn
+        obj > btn
     */
 
     local obj                       = ui.new( 'btn'                         )
@@ -2190,7 +2122,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     :focustop                       ( true                                  )
 
     /*
-    *   obj > bg
+        obj > bg
     */
 
     local bg                        = ui.new( 'dhtml', obj                  )
@@ -2199,7 +2131,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     :sbar                           ( false                                 )
 
     /*
-    *   obj > sub
+        obj > sub
     */
 
     local sub                       = ui.new( 'pnl', bg                     )
@@ -2211,14 +2143,14 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
                                     end )
 
     /*
-    *   obj > get icon size
+        obj > get icon size
     */
 
                                     surface.SetFont( pref( 'design_bubble_ico' ) )
     local ico_w, ico_h              = surface.GetTextSize( utf8.char( 9873 ) )
 
     /*
-    *   obj > btn > icon
+        obj > btn > icon
     */
 
     local ico                       = ui.new( 'btn', sub                    )
@@ -2234,7 +2166,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
                                     end )
 
     /*
-    *   obj > body
+        obj > body
     */
 
     local body                      = ui.new( 'rtxt', sub                   )
@@ -2249,7 +2181,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
                                     end )
 
     /*
-    *   obj > determine string and color keys
+        obj > determine string and color keys
     */
 
     for k, v in pairs( msg_a ) do
@@ -2261,7 +2193,7 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
     end
 
     /*
-    *   obj > btn > overlay
+        obj > btn > overlay
     */
 
     local b_ol                      = ui.new( 'btn', body                   )
@@ -2273,12 +2205,12 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
                                         obj.action_close = true
                                         obj:Stop( )
                                         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, 0, -1, function( )
-                                            ui:destroy_visible( obj )
+                                            ui:dispatch( obj )
                                         end )
                                     end )
 
     /*
-    *  display notice
+        display notice
     */
 
     if ui:ok( obj ) then
@@ -2293,35 +2225,33 @@ function design:rbubble( msg_a, dur, clr_box, clr_txt )
 end
 
 /*
-*   design > push notification
-*
-*   displays a push notification
-*   supports font-awesome icons
-*
-*   @param  : str title
-*   @param  : tbk msgtbl
-*   @param  : str ico
-*   @param  : int dur
-*   @param  : clr clr_title
-*   @param  : clr clr_box
+    design > push
+
+    notification system that displays on the bottom right with icon
+
+    @param  : str title
+    @param  : tbk msgtbl
+    @param  : str ico
+    @param  : clr clr_title
+    @param  : clr clr_box
 */
 
-function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
+function design:push( title, msgtbl, ico, clr_title, clr_box )
 
     /*
-    *   destroy existing
+        destroy existing
     */
 
     base.push                       = istable( base.push ) and base.push or { }
 
     /*
-    *   check
+        check
     */
 
     if not istable( msgtbl ) then return end
 
     /*
-    *   merge string values
+        merge string values
     */
 
     local msg, i = '', 0
@@ -2337,7 +2267,7 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     end
 
     /*
-    *   fonts
+        fonts
     */
 
     local fn_title                  = pref( 'design_push_name' )
@@ -2345,29 +2275,26 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     local fn_ico                    = pref( 'design_push_ico' )
 
     /*
-    *   define > message dimensions
+        define > message dimensions
     */
 
-    local icon                      = helper.str:ok( ico ) and ico or ''
+    local icon                      = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
 
     local _t, _t_li                 = helper.str:crop( title, 300, fn_title )
     local hdr_w, hdr_h              = helper.str:len( _t, fn_title )
-
     local fnt_w, fnt_h              = helper.str:len( icon, fn_ico )
 
     local _m, _m_li                 = helper.str:crop( msg, 290, fn_msg )
     local msg_w, msg_h              = helper.str:len( _m, fn_msg )
 
     local sz_w, sz_h                = 400, 20 + msg_h + hdr_h + 5
-    dur                             = isnumber( dur ) and dur or 8
+    local dur                       = 8
 
-    clr_title                       = clr_title or Color( 46, 163, 67, 255 )
-    local clr_box_p1                = Color( 25, 25, 25, 255 )
-    local clr_box_p2                = Color( 29, 29, 29, 255 )
-    local clr_ico                   = Color( 100, 100, 100, 255 )
+    clr_title                       = IsColor( clr_title ) and clr_title or Color( 46, 163, 67, 255 )
+
 
     /*
-    *   push > btn
+        obj > btn
     */
 
     local obj                       = ui.new( 'btn'                         )
@@ -2379,19 +2306,19 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
     :focustop                       ( true                                  )
 
     /*
-    *   push > sub
+        obj > sub
     */
 
     local sub                       = ui.new( 'pnl', obj                    )
     :fill                           ( 'm', 0                                )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 6, 0, 0, w, h, clr_box_p1 )
-                                        design.rbox( 6, 4, 4, w - 8, h - 8, clr_box_p2 )
+                                        design.rbox( 6, 0, 0, w, h, Color( 25, 25, 25, 255 ) )
+                                        design.rbox( 6, 4, 4, w - 8, h - 8, Color( 29, 29, 29, 255 ))
                                     end )
 
     /*
-    *   push > icon
+        icon
     */
 
     local ico                       = ui.new( 'btn', sub                    )
@@ -2403,23 +2330,23 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
                                         local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
                                         clr_a		    = math.Clamp( clr_a, 100, 255 )
 
-                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), ColorAlpha( clr_ico , clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   push > title
+        obj > title
     */
 
     local hdr_sub                   = ui.new( 'pnl', sub                    )
-    :top                            ( 'm', 1, 5, 0, 0                       )
-    :tall                           ( 25                                    )
+    :top                            ( 'm', 1, 9, 0, 0                       )
+    :tall                           ( hdr_h                                 )
 
                                     :draw( function( s, w, h )
-                                        draw.SimpleText( title, fn_title, 0, 30 / 2, clr_title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( title, fn_title, 0, h / 2, clr_title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-    *   push > body
+        obj > body
     */
 
     local body                      = ui.new( 'rtxt', sub                   )
@@ -2434,27 +2361,23 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
                                     end )
 
     /*
-    *   push > determine string and color keys
+        obj > determine string and color keys
     */
 
     for k, v in pairs( msgtbl ) do
         if IsColor( v ) then
             body:InsertColorChange( v.r, v.g, v.b, v.a  )
-        elseif helper.ok.str( v ) and v ~= '\n' and not helper:clr_ishex( v ) then
-            local txt   = string.TrimLeft( v, ' ' )
-            txt         = txt .. ' '
+        elseif isstring( v ) and v ~= '\n' then
+            local txt = v .. ' '
             body:AppendText( txt )
         elseif v == '\n' then
-            local txt   = v
+            local txt = v
             body:AppendText( txt )
-        elseif helper:clr_ishex( v ) then
-            local clr   = Qix( v, 255 )
-            body:InsertColorChange( clr.r, clr.g, clr.b, clr.a )
         end
     end
 
     /*
-    *   push > btn > overlay
+        obj > btn > overlay
     */
 
     local b_ol                      = ui.new( 'btn', obj                    )
@@ -2472,16 +2395,16 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
                                         obj.action_close = true
                                         obj:Stop( )
                                         obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, 0, -1, function( )
-                                            ui:destroy_visible( obj )
+                                            ui:dispatch( obj )
                                         end )
                                     end )
 
     /*
-    *  push > display
+        display notice
     */
 
     if ui:ok( obj ) then
-        local where, pos            = push_loc_slot( obj )
+        local where, pos            = loc_slot_push( obj )
 
         if ( where and where > 8 ) or not where then
             ui:dispatch( obj )
@@ -2489,13 +2412,220 @@ function design:push( title, msgtbl, ico, dur, clr_title, clr_box )
         end
 
         /*
-        *  height padding
+            height padding
         */
 
         obj:SetPos                  ( ScrW( ), pos                )
-        obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 15, pos, 0.5, 0, -1, function( )
+        obj:MoveTo                  ( ScrW( ) - obj:GetWide( ) - 30, pos, 0.5, 0, -1, function( )
                                         base.push[ where ] = obj
                                         obj:MoveTo( ScrW( ), pos, 0.5, dur, -1, function( )
+                                            ui:dispatch( obj )
+                                        end )
+                                    end )
+    end
+
+end
+
+/*
+    design > sos
+
+    notification system that displays on the bottom right with icon
+
+    @param  : str title
+    @param  : tbk msgtbl
+    @param  : str ico
+    @param  : int dur
+*/
+
+function design:sos( title, msgtbl, ico, dur )
+
+    /*
+        destroy existing
+    */
+
+    base.sos                        = istable( base.sos ) and base.sos or { }
+
+    /*
+        check
+    */
+
+    if not istable( msgtbl ) then return end
+
+    /*
+        merge string values
+    */
+
+    local msg, i = '', 0
+    for k, v in pairs( msgtbl ) do
+        if isstring( v ) then
+            if i == 0 then
+                msg = v
+            else
+                msg = msg .. v
+            end
+            i = i + 1
+        end
+    end
+
+    /*
+        fonts
+    */
+
+    local fn_title                  = pref( 'design_sos_name' )
+    local fn_msg                    = pref( 'design_sos_msg' )
+    local fn_ico                    = pref( 'design_sos_ico' )
+
+    /*
+        define > message dimensions
+    */
+
+    local icon                      = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
+
+    local _t, _t_li                 = helper.str:crop( title, 300, fn_title )
+    local hdr_w, hdr_h              = helper.str:len( _t, fn_title )
+    local fnt_w, fnt_h              = helper.str:len( icon, fn_ico )
+
+    local _m, _m_li                 = helper.str:crop( msg, 290, fn_msg )
+    local msg_w, msg_h              = helper.str:len( _m, fn_msg )
+
+    local sz_w, sz_h                = 400, msg_h + hdr_h + 20
+    dur                             = isnumber( dur ) and dur or 10
+
+    /*
+        colors
+    */
+
+    local clr_box_ol                = hex( '191919' )
+    local clr_box_in                = hex( '1D1D1D' )
+    local clr_box_h                 = hex( '000000', 100 )
+    local clr_txt_title             = hex( 'E8B78E' )
+
+    /*
+        obj > btn
+    */
+
+    local obj                       = ui.new( 'btn'                         )
+    :bsetup                         (                                       )
+    :size                           ( sz_w, sz_h                            )
+    :drawtop                        ( true                                  )
+    :keeptop                        (                                       )
+    :drawtop                        ( true                                  )
+    :focustop                       ( true                                  )
+
+    /*
+        obj > sub
+    */
+
+    local sub                       = ui.new( 'pnl', obj                    )
+    :fill                           ( 'm', 0                                )
+
+                                    :draw( function( s, w, h )
+                                        design.rbox( 8, 0, 0, w, h, clr_box_ol )
+                                        design.rbox( 8, 4, 4, w - 8, h - 8, clr_box_in )
+                                    end )
+
+    /*
+        icon
+    */
+
+    local ico                       = ui.new( 'btn', sub                    )
+    :bsetup                         (                                       )
+    :left                           ( 'm', 9, 0, 7, 0                       )
+    :wide                           ( 64                                    )
+
+                                    :draw( function( s, w, h )
+                                        local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
+                                        clr_a		    = math.Clamp( clr_a, 100, 255 )
+
+                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+        obj > title
+    */
+
+    local hdr_sub                   = ui.new( 'pnl', sub                    )
+    :top                            ( 'm', 1, 9, 0, 0                       )
+    :tall                           ( hdr_h                                 )
+
+                                    :draw( function( s, w, h )
+                                        draw.SimpleText( title, fn_title, 0, h / 2, clr_txt_title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+        obj > body
+    */
+
+    local body                      = ui.new( 'rtxt', sub                   )
+    :fill                           ( 'm', 0, 1, 14, 0                      )
+    :align                          ( 4                                     )
+    :vsbar                          ( false                                 )
+    :mline                          ( true                                  )
+    :appendclr                      ( Color( 255, 255, 255, 255 )           )
+
+                                    :pl( function( s )
+                                        s:SetFontInternal( fn_msg )
+                                    end )
+
+    /*
+        obj > determine string and color keys
+    */
+
+    for k, v in pairs( msgtbl ) do
+        if IsColor( v ) then
+            body:InsertColorChange( v.r, v.g, v.b, v.a  )
+        elseif isstring( v ) and v ~= '\n' then
+            local txt = v .. ' '
+            body:AppendText( txt )
+        elseif v == '\n' then
+            local txt = v
+            body:AppendText( txt )
+        end
+    end
+
+    /*
+        obj > btn > overlay
+    */
+
+    local b_ol                      = ui.new( 'btn', obj                    )
+    :bsetup                         (                                       )
+    :fill                           ( 'm', 0                                )
+
+                                    :draw( function( s, w, h )
+                                        if s.hover then
+                                            design.box( 0, 0, w, h, clr_box_h )
+                                        end
+                                    end )
+
+                                    :oc( function ( s )
+                                        if obj.action_close then return end
+                                        obj.action_close = true
+                                        obj:Stop( )
+                                        obj:MoveTo( ScrW( ) - obj:GetWide( ) - 5, ScrH( ) + obj:GetTall( ) + 5, 0.5, 0, -1, function( )
+                                            ui:dispatch( obj )
+                                        end )
+                                    end )
+
+    /*
+        display notice
+    */
+
+    if ui:ok( obj ) then
+        local where, pos            = loc_slot_sos( obj )
+
+        if ( where and where > 8 ) or not where then
+            ui:dispatch( obj )
+            return
+        end
+
+        /*
+            height padding
+        */
+
+        obj:SetPos                  ( ( ScrW( ) / 2 ) - ( sz_w / 2 ), -sz_h             )
+        obj:MoveTo                  ( ( ScrW( ) / 2 ) - ( sz_w / 2 ), pos, 0.5, 0, -1, function( )
+                                        base.sos[ where ] = obj
+                                        obj:MoveTo( ( ScrW( ) / 2 ) - ( sz_w / 2 ), -sz_h, 0.5, dur, -1, function( )
                                             ui:dispatch( obj )
                                         end )
                                     end )

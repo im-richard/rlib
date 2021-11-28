@@ -177,7 +177,7 @@ local function rcc_rp_setjob( admin, cmd, args )
     */
 
     if n_job and n_num then
-        local admin_name            = base.con:Is( admin ) and 'CONSOLE' or admin:palias( )
+        local admin_name            = access:bIsConsole( admin ) and 'CONSOLE' or admin:palias( )
         local resp                  = sf( '%s switched %s to %s', admin_name  or 'a', user:palias( ), n_job.name )
                                     hook.Run( 'asay.broadcast', rcc_id, resp )
 

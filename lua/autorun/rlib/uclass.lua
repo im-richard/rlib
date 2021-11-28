@@ -5550,9 +5550,9 @@ local uclass = { }
         *   define clrs
         */
 
-        local clr_text  = IsColor( clr_t ) and clr_t or cfg.tips.clrs.text
-        local clr_box   = IsColor( clr_i ) and clr_i or cfg.tips.clrs.inner
-        local clr_out   = IsColor( clr_o ) and clr_o or cfg.tips.clrs.outline
+        local clr_text      = IsColor( clr_t ) and clr_t or cfg.tips.clrs.text
+        local clr_box       = IsColor( clr_i ) and clr_i or cfg.tips.clrs.inner
+        local clr_out       = IsColor( clr_o ) and clr_o or cfg.tips.clrs.outline
 
         /*
         *   fn > draw tooltip
@@ -5581,6 +5581,7 @@ local uclass = { }
             surface.SetFont         ( pid( 'ucl_tippy' ) )
             local sz_w, sz_h        = surface.GetTextSize( str )
             sz_w                    = sz_w + 50
+            sz_h                    = sz_h + 8
 
             /*
             *   create pnl
@@ -5590,7 +5591,7 @@ local uclass = { }
             :bsetup                 (                                       )
             :nodraw                 (                                       )
             :pos                    ( pos_x + 10, pos_y - 35                )
-            :size                   ( sz_w, 25                              )
+            :size                   ( sz_w, sz_h                            )
             :popup                  (                                       )
             :front                  (                                       )
             :m2f                    (                                       )
@@ -5622,12 +5623,10 @@ local uclass = { }
                                     end )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 4, 0, 0, sz_w, 25, clr_out )
-                                        design.rbox( 4, 1, 1, sz_w - 2, 25 - 2, clr_box )
-                                        local resp      = not bUF8f and string.format( '%s %s' , helper.get:utf8char( cfg.tips.clrs.utf ), str ) or string.format( '%s' , str )
-                                        local align     = not bUF8f and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
-                                        local pos       = not bUF8f and 15 or ( w / 2 )
-                                        draw.SimpleText( resp, pid( 'ucl_tippy' ), pos, ( 25 / 2 ), clr_text, align, TEXT_ALIGN_CENTER )
+                                        design.rbox( 4, 0, 0, sz_w, sz_h, clr_out )
+                                        design.rbox( 4, 1, 1, sz_w - 2, sz_h - 2, clr_box )
+
+                                        draw.SimpleText( string.format( '%s' , str ), pid( 'ucl_tippy' ), ( w / 2 ), ( sz_h / 2 ), clr_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
         end

@@ -1465,6 +1465,20 @@ function access:deny_console( pl, mod, perm )
 end
 
 /*
+    access > is console
+
+    returns if player is console
+
+    @param  : ply pl
+    @return : bool
+*/
+
+function access:bIsConsole( pl )
+    if not pl then return false end
+    return isentity( pl ) and pl:EntIndex( ) == 0 and true or false
+end
+
+/*
 *   access > is owner
 *
 *   returns if a player is the owner of a script
@@ -1499,7 +1513,7 @@ end
 */
 
 function access:bIsRoot( pl, bNoConsole )
-    if ( not bNoConsole and base.con:Is( pl ) ) or ( helper.ok.ply( pl ) and ( access:bIsOwner( pl ) or access:bIsDev( pl ) or access:bIsSAdmin( pl ) ) ) then
+    if ( not bNoConsole and access:bIsConsole( pl ) ) or ( helper.ok.ply( pl ) and ( access:bIsOwner( pl ) or access:bIsDev( pl ) or access:bIsSAdmin( pl ) ) ) then
         return true
     end
     return false
@@ -1521,7 +1535,7 @@ end
 */
 
 function access:bIsDev( pl )
-    if base.con:Is( pl ) then return true end
+    if access:bIsConsole( pl ) then return true end
 
     if not mf.developers then return end
     local devs = mf.developers or { }
@@ -1538,7 +1552,7 @@ end
 */
 
 function access:bIsSAdmin( pl )
-    if base.con:Is( pl ) then return true end
+    if access:bIsConsole( pl ) then return true end
     if helper.ok.ply( pl ) and pl:IsSuperAdmin( ) then return true end
     return false
 end
@@ -1556,7 +1570,7 @@ end
 */
 
 function access:bIsAdmin( pl )
-    if base.con:Is( pl ) then return true end
+    if access:bIsConsole( pl ) then return true end
 
     if not access.admins then return false end
     if not helper.ok.ply( pl ) then return false end
@@ -1581,7 +1595,7 @@ end
 
 function access:validate( pl, perm )
     if not IsValid( pl ) then
-        if base.con:Is( pl ) then return true end
+        if access:bIsConsole( pl ) then return true end
         return false
     end
 
@@ -1635,7 +1649,7 @@ end
 
 function access:allow( pl, perm, mod )
     if not IsValid( pl ) then
-        if base.con:Is( pl ) then return true end
+        if access:bIsConsole( pl ) then return true end
         return false
     end
 
@@ -1695,7 +1709,7 @@ end
 
 function access:strict( pl, perm, mod )
     if not IsValid( pl ) then
-        if base.con:Is( pl ) then return true end
+        if access:bIsConsole( pl ) then return true end
         return false
     end
 
@@ -2793,7 +2807,7 @@ function base.msg:simple( pl, ... )
         chat.AddText( unpack( args ) )
     else
         if pl and pl ~= nil then
-            if base.con:Is( pl ) then
+            if access:bIsConsole( pl ) then
                 table.insert( args, '\n' )
                 MsgC( unpack( args ) )
             else
@@ -2987,7 +3001,7 @@ function base.msg:route( pl, bConsole, ... )
         end
     else
         if pl and pl ~= nil then
-            if base.con:Is( pl ) then
+            if access:bIsConsole( pl ) then
                 table.insert( args, '\n' )
                 MsgC( cmsg.clrs.cat, '[' .. cmsg.tag_console .. '] ', cmsg.clrs.subcat, subcat and '[' .. subcat .. '] ' or nil, cmsg.clrs.msg, unpack( args ) )
             else
@@ -3042,7 +3056,7 @@ function base.msg:direct( pl, subcat, ... )
         chat.AddText( unpack( resp ) )
     else
         if pl and pl ~= nil then
-            if base.con:Is( pl ) then
+            if access:bIsConsole( pl ) then
                 table.insert( resp, '\n' )
                 MsgC( unpack( resp ) )
             else
@@ -3505,10 +3519,10 @@ end
 *   @return : bool
 */
 
-function helper:clr_ishex( hex )
-    if not helper.str:startsw( hex, '#' ) then return false end
-    hex = hex:gsub( '#', '' )
-    return ( hex:match( '^%x%x%x' ) or hex:match( '^%x%x%x%x%x%x' ) ) and true or false
+function helper:clr_ishex( val )
+    if not isstring( val ) then return false end
+    val = val:gsub( '#', '' )
+    return ( val:match( '^%x%x%x' ) or val:match( '^%x%x%x%x%x%x' ) ) and true or false
 end
 
 /*

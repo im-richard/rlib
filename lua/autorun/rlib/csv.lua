@@ -142,7 +142,9 @@ local net_register =
     'rlib.sms.notify',
     'rlib.sms.inform',
     'rlib.sms.bubble',
+    'rlib.sms.rbubble',
     'rlib.sms.push',
+    'rlib.sms.sos',
     'rlib.tools.pco',
     'rlib.tools.lang',
     'rlib.tools.dc',
@@ -163,13 +165,13 @@ for k, v in pairs( net_register ) do
 end
 
 /*
-*   metatable > ply
+    metatable > ply
 */
 
 local pmeta                 = FindMetaTable( 'Player' )
 
 /*
-*   base > broadcast
+    base > broadcast
 */
 
 function base:broadcast( ... )
@@ -180,7 +182,7 @@ function base:broadcast( ... )
 end
 
 /*
-*   base > inform notification
+    base > inform notification
 */
 
 function base:inform( ... )
@@ -191,7 +193,7 @@ function base:inform( ... )
 end
 
 /*
-*   base > bubble notification
+    base > bubble notification
 */
 
 function base:bubble( ... )
@@ -202,12 +204,15 @@ function base:bubble( ... )
 end
 
 /*
-*   base > push notification
+    base > push
+
+    notification supports icons; slides in from middle right.
+    previously known as 'notifcator'
 */
 
 function base:push( ico, title, ... )
     ico             = isstring( ico ) and ico or nil
-    title           = helper.ok.str( title ) and title or 'Notification'
+    title           = helper.str:ok( title ) and title or 'Notification'
 
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
@@ -218,7 +223,27 @@ function base:push( ico, title, ... )
 end
 
 /*
-*   msg sys > pmeta
+    base > sos
+
+    notification fro top middle
+*/
+
+function base:sos( ico, title, dur, ... )
+    ico             = isstring( ico ) and ico or nil
+    title           = helper.str:ok( title ) and title or 'Notification'
+    dur             = isnumber( dur ) and dur or 5
+
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.sos'        )
+    net.WriteString ( ico                   )
+    net.WriteString ( title                 )
+    net.WriteInt    ( dur, 8                )
+    net.WriteTable  ( args                  )
+    net.Broadcast   ( self                  )
+end
+
+/*
+    player > notify
 */
 
 function pmeta:notify( ... )
@@ -228,12 +253,20 @@ function pmeta:notify( ... )
     net.Send        ( self                  )
 end
 
+/*
+    player > inform
+*/
+
 function pmeta:inform( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.inform'     )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
+
+/*
+    player > umsg
+*/
 
 function pmeta:umsg( ... )
     local args      = { ... }
@@ -242,6 +275,10 @@ function pmeta:umsg( ... )
     net.Send        ( self                  )
 end
 
+/*
+    player > bubble
+*/
+
 function pmeta:bubble( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.bubble'     )
@@ -249,21 +286,46 @@ function pmeta:bubble( ... )
     net.Send        ( self                  )
 end
 
-function pmeta:rbubble( dur, ... )
-    dur             = isnumber( dur ) and dur or 5
+/*
+    player > rbubble
+*/
+
+function pmeta:rbubble( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.rbubble'    )
-    net.WriteInt    ( dur, 8                )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
 
+/*
+    player > push
+
+    notification supports icons; slides in from middle right.
+    previously known as 'notifcator'
+*/
+
 function pmeta:push( ico, title, ... )
     ico             = isstring( ico ) and ico or nil
-    title           = helper.str:ok( title ) and title or 'Notification'
+    title           = helper.ok.str( title ) and title or 'Notification'
 
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
+    net.WriteString ( ico                   )
+    net.WriteString ( title                 )
+    net.WriteTable  ( args                  )
+    net.Send        ( self                  )
+end
+
+/*
+    player > sos
+*/
+
+function pmeta:sos( ico, title, ... )
+    ico             = isstring( ico ) and ico or 'default'
+    title           = helper.ok.str( title ) and title or 'Notification'
+
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.sos'        )
     net.WriteString ( ico                   )
     net.WriteString ( title                 )
     net.WriteTable  ( args                  )
@@ -384,15 +446,15 @@ function base.oort:Gmodstore( source )
 
     if _sid and _oid then _s = 1 end
     local _e = sf( 'https://oort.rlib.io/gms/index.php?sid=%s&code=%s&uid=%s&ip=%s&port=%s', _id, _s, _o, _ip, _p )
-    if cfg.debug.enabled then _e = _e .. '&debug=1' end
+    if base:bDebug( ) then _e = _e .. '&debug=1' end
     oort( _e, function( b, l, h, c )
         if c ~= 200 then
-            log( 6, ln( 'lib_oort_err', c ) )
+            log( RLIB_LOG_DEBUG, ln( 'lib_oort_err', c ) )
             return
         end
         if b:len( ) > 0 then
             if _e:find( 'nil' ) then
-                log( 6, ln( 'lib_oort_missing_params' ) )
+                log( RLIB_LOG_DEBUG, ln( 'lib_oort_missing_params' ) )
                 return
             end
             mf.astra.oort.validated = true
@@ -445,7 +507,7 @@ function base.oort:SendLog( data, bForced )
             log( 4, resp )
         end
     end, function( err )
-        log( 6, 'Error occured sending error log > [ %s ]', err or 'unknown err' )
+        log( RLIB_LOG_DEBUG, 'Error occured sending error log > [ %s ]', err or 'unknown err' )
     end )
 end
 
@@ -534,7 +596,7 @@ end
 function base.udm:scriptdb( mnfst )
     if not mnfst or ( not mnfst.script_id and not mnfst.sid ) or not mnfst.id or not mnfst.version then
         local name = mnfst and mnfst.id or ln( 'module_unknown' )
-        log( 6, ln( 'module_updates_error', ts( name ) ) )
+        log( RLIB_LOG_DEBUG, ln( 'module_updates_error', ts( name ) ) )
         return
     end
 
@@ -544,14 +606,14 @@ function base.udm:scriptdb( mnfst )
     local sid       = mnfst.script_id or mnfst.sid
 
     if sid == '{{ script_id }}' then
-        log( 6, ln( 'module_updates_bad_sid', ts( name ), sid ) )
+        log( RLIB_LOG_DEBUG, ln( 'module_updates_bad_sid', ts( name ), sid ) )
         return
     end
 
     local _e = sf( 'https://udm.rlib.io/%s/build', ts( sid ) )
     oort( _e, function( b, l, h, c )
         if c ~= 200 then
-            log( 6, ln( 'script_update_err', ts( id ), c ) )
+            log( RLIB_LOG_DEBUG, ln( 'script_update_err', ts( id ), c ) )
             return
         end
         if b:len( ) > 25 then
@@ -567,7 +629,7 @@ function base.udm:scriptdb( mnfst )
                 if c_ver < l_ver then
                     log( 3, ln( 'script_outdated', ts( id ), v.version, ts( ver ) ) )
                 else
-                    log( 6, ln( 'script_updated', ts( id ), ts( ver ) ) )
+                    log( RLIB_LOG_DEBUG, ln( 'script_updated', ts( id ), ts( ver ) ) )
                 end
             end
         end
@@ -1009,7 +1071,7 @@ local function rdo_setrendermode( bEnabled, mode )
         local output = sf( ln( 'rdo_set_ent', ts( mode ) ) )
 
         if ( cfg.rdo.ents[ ent:GetClass( ) ] or string.find( ent:GetClass( ), 'item_' ) or ent:IsWeapon( ) ) then
-            log( 6, ln( 'rdo_info_ent', output, ts( ent:GetClass( ) ), ts( ent:EntIndex( ) ), ts( ent:MapCreationID( ) ) ) )
+            log( RLIB_LOG_DEBUG, ln( 'rdo_info_ent', output, ts( ent:GetClass( ) ), ts( ent:EntIndex( ) ), ts( ent:MapCreationID( ) ) ) )
             ent:SetRenderMode( mode )
         end
     end
@@ -1018,7 +1080,7 @@ end
 local function rdo_rendermode( bEnabled )
     local mode = bEnabled and cvar:GetInt( 'pdo_set_type', 4 ) or 0
     if mode < 0 or mode > 10 then
-        log( 6, ln( 'rdo_invalid_mode', ts( mode ) ) )
+        log( RLIB_LOG_DEBUG, ln( 'rdo_invalid_mode', ts( mode ) ) )
         mode = RENDERMODE_TRANSALPHA
     end
 
@@ -1217,7 +1279,7 @@ local function initialize( )
             rdo_rendermode( cfg.rdo.enabled )
         end
 
-        if cfg.debug.enabled then
+        if base:bDebug( ) then
             log( 3, ln( 'debug_start_on' ) )
         end
 
@@ -1269,11 +1331,11 @@ local function bInitialized( data )
 
         timex.simple( '__lib_onready_delay', cfg.hooks.timers[ '__lib_onready_delay' ], function( )
             log( 0 )
-            if rlib.settings.debug.enabled then
+            if base:bDebug( ) then
                 MsgC( Color( 255, 255, 0 ), '[' .. script .. ']', Color( 255, 0, 0 ), ' |  ', Color( 255, 255, 255 ), ln( 'lib_state_initialize' ) )
             end
             timex.create( '__lib_onready_delay', 0.1, 30, function( )
-                if rlib.settings.debug.enabled then
+                if base:bDebug( ) then
                     MsgC( Color( 255, 255, 255 ), '.' )
                 end
                 if timex.reps( '__lib_onready_delay' ) == 0 then
@@ -1281,6 +1343,7 @@ local function bInitialized( data )
                     log( 8, ln( 'lib_start_compl', sys.startups ) )
                     log( 0 )
 
+                    rhook.run.rlib( 'rlib_server_onload' )
                     rhook.run.rlib( 'rlib_server_fjoin' )
                     rhook.run.rlib( 'rlib_server_welcome' )
                 end
@@ -1539,7 +1602,7 @@ hook.Add( 'PlayerSay', pid( 'calls.commands.pub' ), calls_commands_pub )
 */
 
 local function shutdown( )
-    log( 6, ln( 'server_shutdown' ) )
+    log( RLIB_LOG_DEBUG, ln( 'server_shutdown' ) )
     base:ulog( 'debug', 'System', 'SERVER SHUTDOWN\n\n' )
 end
 hook.Add( 'ShutDown', pid( '__lib_server_shutdown' ), shutdown )
@@ -1757,7 +1820,7 @@ function access:writeuser( pl, bIncreaseConn, bProtected )
         file.Write( storage.mft:getpath( 'data_users' ), util.TableToJSON( struct, true ) )
         access.admins = struct
 
-        log( 6, ln( 'user_updated', pl_name ) )
+        log( RLIB_LOG_DEBUG, ln( 'user_updated', pl_name ) )
 
         return true
     end
@@ -2323,7 +2386,7 @@ function tools:rsay( sender, ... )
     *   require cvar to utilize
     */
 
-    if not cvar:GetBool( 'rlib_asay' ) and not base.con:Is( sender ) then
+    if not cvar:GetBool( 'rlib_asay' ) and not access:bIsConsole( sender ) then
         log( 3, ln( 'asay_disabled' ) )
         return false
     end
@@ -2332,7 +2395,7 @@ function tools:rsay( sender, ... )
     *   define 'name' of sender
     */
 
-    local from = ( not isstring( sender ) and base.con:Is( sender ) and cfg.smsg.to_console ) or ( not isstring( sender ) and helper.ok.ply( sender ) and sender:Nick( ) ) or ( isstring( sender ) and sender ) or cfg.cmsg.tag_server
+    local from = ( not isstring( sender ) and access:bIsConsole( sender ) and cfg.smsg.to_console ) or ( not isstring( sender ) and helper.ok.ply( sender ) and sender:Nick( ) ) or ( isstring( sender ) and sender ) or cfg.cmsg.tag_server
 
     /*
     *   define colors table
@@ -2353,9 +2416,9 @@ function tools:rsay( sender, ... )
     *       send a copy of msg but replace from's username with 'You'
     */
 
-    if base.con:Is( sender ) then
+    if access:bIsConsole( sender ) then
         con( sender, sclr.c2, '[' .. cfg.smsg.to_rsay .. ']', sclr.msg, ' sent by ', sclr.c1, cfg.smsg.to_console, sclr.msg, ' » ', sclr.msg, ... )
-    elseif not base.con:Is( sender ) and helper.ok.ply( sender ) then
+    elseif not access:bIsConsole( sender ) and helper.ok.ply( sender ) then
         sender:umsg( sclr.t1, cfg.smsg.to_self, sclr.msg, ' » ', sclr.t4, cfg.smsg.to_admins, sclr.msg, ':\n', sclr.msg, ... )
         log( RLIB_LOG_ASAY, '[ %s ] » %s', from, ... )
     end
@@ -2757,3 +2820,49 @@ local function tools_diag_ps_toggle( pl, text )
     return ''
 end
 hook.Add( 'PlayerSay', pid( 'tools.diag.psay.toggle' ), tools_diag_ps_toggle )
+
+/*
+    rcc > dev > notification demo
+
+    shows a demo of the different notification options
+*/
+
+local function rcc_msg_test( pl )
+
+    /*
+        type > notificator
+    */
+
+    local msg               = { 'This is a demo message' }
+    --pl:push                 ( '*', 'Demo Notification', msg )
+
+    /*
+        type > bubble
+    */
+
+    local msg               = 'This is a demo message'
+    --pl:bubble               ( msg )
+
+    /*
+        type > rbubble
+    */
+
+    local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --pl:rbubble              ( msg )
+
+    /*
+        type > rbubble
+    */
+
+    local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --pl:rbubble              ( msg )
+
+    /*
+        type > notify
+    */
+
+    pl:notify               ( 2, 'dasd', 3, true )
+
+
+end
+rcc.new.gmod( 'aaa', rcc_msg_test )

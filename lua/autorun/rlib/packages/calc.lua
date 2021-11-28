@@ -153,6 +153,26 @@ function min( min, num )
 end
 
 /*
+    round
+
+    round to the nearest decimal
+
+    @ex     : round( 1554, 1 )
+              1550
+
+            : round( 1554, 2 )
+              1600
+
+            : round( 1554, 3 )
+              2000
+*/
+
+function round( num, dec )
+    local n = 10 ^ ( dec or 1 )
+	return math.floor( num / n + 0.5 ) * n
+end
+
+/*
 *   get percentage of two numbers
 *
 *   @param  : int num
@@ -696,7 +716,7 @@ local function rcc_calc_base( ply, cmd, args )
 
     local ccmd = base.calls:get( 'commands', 'calc' )
 
-    if ( ccmd.scope == 1 and not base.con:Is( ply ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( ply ) ) then
         access:deny_consoleonly( ply, script, ccmd.id )
         return
     end

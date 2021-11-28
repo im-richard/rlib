@@ -1155,7 +1155,7 @@ local function rcc_debug( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1229,7 +1229,7 @@ local function rcc_rehash( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1269,7 +1269,7 @@ local function rcc_modules_reload( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1331,7 +1331,7 @@ local function rcc_index( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1375,7 +1375,7 @@ local function rcc_list( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1442,7 +1442,7 @@ local function rcc_router( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
@@ -1489,7 +1489,7 @@ local function rcc_base( pl, cmd, args )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end

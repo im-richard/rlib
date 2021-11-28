@@ -19,7 +19,6 @@
 *   standard tables and localization
 */
 
-rlib                        = rlib or { }
 local base                  = rlib
 local mf                    = base.manifest
 local pf                    = mf.prefix
@@ -128,7 +127,7 @@ local function rcc_base( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -602,7 +601,7 @@ local function rcc_access( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -620,7 +619,7 @@ local function rcc_access( pl, cmd, args )
     *   functionality
     */
 
-    if base.con:Is( pl ) then
+    if access:bIsConsole( pl ) then
         log( 1, 'You are [ %s ], a god-like particle that floats around with infinite permissions.', 'CONSOLE' )
         return
     end
@@ -686,7 +685,7 @@ local function rcc_changelog( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -868,7 +867,7 @@ local function rcc_clear( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -921,7 +920,7 @@ local function rcc_commands_rehash( pl, cmd, args, str )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -971,7 +970,7 @@ local function rcc_services( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1211,7 +1210,7 @@ local function rcc_running( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1247,7 +1246,7 @@ local function rcc_version( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1302,7 +1301,7 @@ local function rcc_manifest( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1379,7 +1378,7 @@ local function rcc_help( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1461,7 +1460,7 @@ local function rcc_languages( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1600,7 +1599,7 @@ local function rcc_debug( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1649,7 +1648,7 @@ local function rcc_debug( pl, cmd, args )
             log( 4, lang( 'debug_set_disabled' ) )
         end
     else
-        if cfg.debug.enabled then
+        if base:bDebug( ) then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
                 log( 4, lang( 'debug_enabled_time', remains ) )
@@ -1685,7 +1684,7 @@ local function rcc_debug_status( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1703,8 +1702,8 @@ local function rcc_debug_status( pl, cmd, args )
     *   functionality
     */
 
-    local dbtimer   = timex.remains( 'rlib_debug_delay' ) or false
-    local status    = cfg.debug.enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    local dbtimer       = timex.remains( 'rlib_debug_delay' ) or false
+    local status        = base:bDebug( ) and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
 
     log( 1, lang( 'debug_status', status ) )
 
@@ -1732,7 +1731,7 @@ local function rcc_debug_devop( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1897,7 +1896,7 @@ local function rcc_admins( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -1976,7 +1975,7 @@ local function rcc_uptime( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -2018,7 +2017,7 @@ local function rcc_connections( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
@@ -2062,7 +2061,7 @@ local function rcc_workshops( pl, cmd, args )
     *   scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end
