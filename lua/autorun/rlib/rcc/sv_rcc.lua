@@ -1713,7 +1713,7 @@ local function rcc_status( pl, cmd, args )
 
     local p1_c          = sf( '%s » %s', script, lang( 'packages' ) )
     local p1_l          = sf( '%-20s', p1_c )
-    local p2_l          = sf( '%-20s', '' )
+    local p2_l          = sf( '%-25s', '' )
     local p3_l          = sf( '%-25s', '' )
 
     con( pl, clr_r, p1_l, p2_l, p3_l )
@@ -1726,7 +1726,7 @@ local function rcc_status( pl, cmd, args )
 
         local p1_d      = sf( '%-20s', id )
         local p2_d      = sf( '%-5s', '»' )
-        local p3_d      = sf( '%-20s', ver )
+        local p3_d      = sf( '%-25s', ver )
         local p4_d      = sf( '%-25s', desc )
 
         con( pl, clr_y, p1_d, clr_p, p2_d, clr_w, p3_d, clr_w, p4_d )
@@ -1780,7 +1780,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     local m1_l       = sf( '%-20s', lang( 'col_module' )    )
-    local m2_l       = sf( '%-15s', lang( 'col_version' )   )
+    local m2_l       = sf( '%-20s', lang( 'col_version' )   )
     local m3_l       = sf( '%-15s', lang( 'col_author' )    )
     local m4_l       = sf( '%-20s', lang( 'col_desc' )      )
 
@@ -1798,7 +1798,7 @@ local function rcc_status( pl, cmd, args )
         local desc      = tostring( helper.str:truncate( v.desc, 40, '...' ) or lang( 'err' ) )
 
         local m1_d      = sf( '%-20s', name )
-        local m2_d      = sf( '%-15s', ver )
+        local m2_d      = sf( '%-20s', ver )
         local m3_d      = sf( '%-15s', author )
         local m4_d      = sf( '%-20s', desc )
 

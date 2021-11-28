@@ -574,7 +574,7 @@ function base:lang( str, ... )
     local selg  = self.settings and self.settings.lang or 'en'
     str         = not { ... } and str:gsub( '_', ' ' ) or str
 
-    return ( self.language and string.format( self.language[ selg ][ str ], ... ) ) or str
+    return ( self.language and string.format( self.language[ selg ][ str ] or str, ... ) ) or str
 end
 
 /*

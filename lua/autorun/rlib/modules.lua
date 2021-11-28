@@ -77,24 +77,24 @@ local function log( ... )
 end
 
 /*
-*   base > has dependency
-*
-*   checks to see if a function has the required dependencies such as rlib, rcore + modules, or specified
-*   objects in general are available
-*
-*   similar to rcore:bHasModule( ) but accepts other tables outside of rcore. use rcores version to confirm
-*   just a module
-*
-*   @ex     : rlib.modules:bInstalled( mod )
-*           : rlib.modules:bInstalled( 'identix' )
-*
-*   @param  : str, tbl mod
-*   @return : bool
+    base > has dependency
+
+    checks to see if a function has the required dependencies such as rlib, rcore + modules, or specified
+    objects in general are available
+
+    similar to rcore:bHasModule( ) but accepts other tables outside of rcore. use rcores version to confirm
+    just a module
+
+    @ex     : rlib.modules:bInstalled( mod )
+            : rlib.modules:bInstalled( 'identix' )
+
+    @param  : str, tbl mod
+    @return : bool
 */
 
 function base.modules:bInstalled( mod )
     if not mod then
-        log( 6, 'dependency not specified\n%s', debug.traceback( ) )
+        log( RLIB_LOG_DEBUG, 'dependency not specified\n%s', debug.traceback( ) )
         return false
     end
 
@@ -107,18 +107,18 @@ function base.modules:bInstalled( mod )
     end
 
     mod = isstring( mod ) and mod or 'unknown'
-    log( 6, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
+    log( RLIB_LOG_DEBUG, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
 
     return false
 end
 
 /*
-*   base > module > exists
-*
-*   check if the specified module is valid or not
-*
-*   @param  : tbl, str mod
-*   @return : bool
+    base > module > exists
+
+    check if the specified module is valid or not
+
+    @param  : tbl, str mod
+    @return : bool
 */
 
 function base.modules:bExists( mod )
@@ -133,19 +133,19 @@ function base.modules:bExists( mod )
 end
 
 /*
-*   base > module > alpha
-*
-*   returns if module is alpha release
-*
-*   @param  : tbl, str mod
-*   @return : bool
+    base > module > alpha
+
+    returns if module is alpha release
+
+    @param  : tbl, str mod
+    @return : bool
 */
 
 function base.modules:bIsAlpha( mod )
     if not mod then return false end
-    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and ( rcore.modules[ mod ].version.build == 1 ) ) then
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and ( rcore.modules[ mod ].build == 1 ) ) then
         return true
-    elseif istable( mod ) and ( mod.version.build == 1 ) then
+    elseif istable( mod ) and ( mod.build == 1 ) then
         return true
     end
 
@@ -153,19 +153,19 @@ function base.modules:bIsAlpha( mod )
 end
 
 /*
-*   base > module > beta
-*
-*   returns if module is beta release
-*
-*   @param  : tbl, str mod
-*   @return : bool
+    base > module > beta
+
+    returns if module is beta release
+
+    @param  : tbl, str mod
+    @return : bool
 */
 
 function base.modules:bIsBeta( mod )
     if not mod then return false end
-    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and ( rcore.modules[ mod ].version.build == 2 ) ) then
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and ( rcore.modules[ mod ].build == 2 ) ) then
         return true
-    elseif istable( mod ) and ( mod.version.build == 2 ) then
+    elseif istable( mod ) and ( mod.build == 2 ) then
         return true
     end
 
@@ -173,23 +173,21 @@ function base.modules:bIsBeta( mod )
 end
 
 /*
-*   base > module > version build
-*
-*   returns module build
-*
-*   @param  : tbl, str mod
-*   @return : int
+    modules > get build
+
+    @param  : tbl, str mod
+    @return : int
 */
 
-function base.modules:ver2build( mod )
+function base.modules:Build( mod )
     if not mod then return false end
 
     local build
-    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].version ) then
-        local resp  = rcore.modules[ mod ].version.build or rcore.modules[ mod ].version[ 4 ] or 0
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] ) then
+        local resp  = rcore.modules[ mod ].build or 0
         build       = resp
-    elseif istable( mod ) and mod.version then
-        local resp  = mod.version.build or mod.version[ 4 ] or 0
+    elseif istable( mod ) then
+        local resp  = mod.build or 0
         build       = resp
     end
 
@@ -199,12 +197,12 @@ function base.modules:ver2build( mod )
 end
 
 /*
-*   base > module > build
-*
-*   returns module build
-*
-*   @param  : tbl, str mod
-*   @return : str
+    base > module > build
+
+    returns module build
+
+    @param  : tbl, str mod
+    @return : str
 */
 
 function base.modules:build( mod )
@@ -223,16 +221,16 @@ function base.modules:build( mod )
 end
 
 /*
-*   module > version
-*
-*   returns the version of the installed module as a table
-*
-*   @call   : rlib.modules:ver( mod )
-*           : rlib.modules:ver( 'lunera' )
-*
-*   @since  : v3.0.0
-*   @return : tbl
-*           : major, minor, patch, build
+    module > version
+
+    returns the version of the installed module as a table
+
+    @call   : rlib.modules:ver( mod )
+            : rlib.modules:ver( 'lunera' )
+
+    @since  : v3.0.0
+    @return : tbl
+            : major, minor, patch, build
 */
 
 function base.modules:ver( mod )
@@ -241,41 +239,48 @@ function base.modules:ver( mod )
             [ 'major' ] = 1,
             [ 'minor' ] = 0,
             [ 'patch' ] = 0,
+            [ 'micro' ] = 0,
             [ 'build' ] = 0,
         }
     end
-    if isstring( mod ) and self.modules[ mod ] and self.modules[ mod ].version then
-        if isstring( self.modules[ mod ].version ) then
-            local ver = string.Explode( '.', self.modules[ mod ].version )
+    if isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].version then
+        if isstring( rcore.modules[ mod ].version ) then
+            local ver       = string.Explode( '.', rcore.modules[ mod ].version )
+            local build     = rcore.modules[ mod ].build or 0
             return {
                 [ 'major' ] = ver[ 'major' ] or ver[ 1 ] or 1,
                 [ 'minor' ] = ver[ 'minor' ] or ver[ 2 ] or 0,
                 [ 'patch' ] = ver[ 'patch' ] or ver[ 3 ] or 0,
-                [ 'build' ] = ver[ 'build' ] or ver[ 4 ] or 0,
+                [ 'micro' ] = ver[ 'micro' ] or ver[ 4 ] or 0,
+                [ 'build' ] = build,
             }
-        elseif istable( self.modules[ mod ].version ) then
+        elseif istable( rcore.modules[ mod ].version ) then
             return {
-                [ 'major' ] = self.modules[ mod ].version.major or self.modules[ mod ].version[ 1 ] or 1,
-                [ 'minor' ] = self.modules[ mod ].version.minor or self.modules[ mod ].version[ 2 ] or 0,
-                [ 'patch' ] = self.modules[ mod ].version.patch or self.modules[ mod ].version[ 3 ] or 0,
-                [ 'build' ] = self.modules[ mod ].version.build or self.modules[ mod ].version[ 4 ] or 0,
+                [ 'major' ] = rcore.modules[ mod ].version.major or rcore.modules[ mod ].version[ 1 ] or 1,
+                [ 'minor' ] = rcore.modules[ mod ].version.minor or rcore.modules[ mod ].version[ 2 ] or 0,
+                [ 'patch' ] = rcore.modules[ mod ].version.patch or rcore.modules[ mod ].version[ 3 ] or 0,
+                [ 'micro' ] = rcore.modules[ mod ].version.micro or rcore.modules[ mod ].version[ 4 ] or 0,
+                [ 'build' ] = rcore.modules[ mod ].build or 0,
             }
         end
     elseif istable( mod ) and mod.version then
         if isstring( mod.version ) then
-            local ver = string.Explode( '.', mod.version )
+            local ver       = string.Explode( '.', mod.version )
+            local build     = mod.build or 0
             return {
                 [ 'major' ] = ver[ 'major' ] or ver[ 1 ] or 1,
                 [ 'minor' ] = ver[ 'minor' ] or ver[ 2 ] or 0,
                 [ 'patch' ] = ver[ 'patch' ] or ver[ 3 ] or 0,
-                [ 'build' ] = ver[ 'build' ] or ver[ 4 ] or 0,
+                [ 'micro' ] = ver[ 'micro' ] or ver[ 4 ] or 0,
+                [ 'build' ] = build or 0,
             }
         elseif istable( mod.version ) then
             return {
                 [ 'major' ] = mod.version.major or mod.version[ 1 ] or 1,
                 [ 'minor' ] = mod.version.minor or mod.version[ 2 ] or 0,
                 [ 'patch' ] = mod.version.patch or mod.version[ 3 ] or 0,
-                [ 'build' ] = mod.version.build or mod.version[ 4 ] or 0,
+                [ 'micro' ] = mod.version.micro or mod.version[ 4 ] or 0,
+                [ 'build' ] = mod.build or 0,
             }
         end
     end
@@ -283,16 +288,17 @@ function base.modules:ver( mod )
         [ 'major' ] = 1,
         [ 'minor' ] = 0,
         [ 'patch' ] = 0,
+        [ 'micro' ] = 0,
         [ 'build' ] = 0,
     }
 end
 
 /*
-*   base > module > get list
-*
-*   returns table of modules installed on server
-*
-*   @return : tbl
+    base > module > get list
+
+    returns table of modules installed on server
+
+    @return : tbl
 */
 
 function base.modules:list( )
@@ -305,11 +311,11 @@ function base.modules:list( )
 end
 
 /*
-*   base > module > list > formatted
-*
-*   returns list of delimited modules
-*
-*   @return : str
+    base > module > list > formatted
+
+    returns list of delimited modules
+
+    @return : str
 */
 
 function base.modules:listf( )
@@ -328,80 +334,83 @@ function base.modules:listf( )
 end
 
 /*
-*   module > version to str
-*
-*   returns the version of the installed module in a human readable string
-*
-*   @call   : rlib.modules:ver2str( mod )
-*           : rlib.modules:ver2str( 'lunera' )
-*
-*   @return : v2.x.x stable
-*
-*   @since  : v1.1.5
-*   @return : str
+    module > version to str
+
+    returns the version of the installed module in a human readable string
+
+    @call   : rlib.modules:ver2str( mod )
+            : rlib.modules:ver2str( 'lunera' )
+
+    @return : v2.x.x.x stable
+
+    @return : str
 */
 
 function base.modules:ver2str( mod )
-    if not mod then return '1.0.0' end
-    if isstring( mod ) and self.modules[ mod ] and self.modules[ mod ].version then
-        if isstring( self.modules[ mod ].version ) then
-            return self.modules[ mod ].version
-        elseif istable( self.modules[ mod ].version ) then
-            local major, minor, patch, build = self.modules[ mod ].version.major or self.modules[ mod ].version[ 1 ] or 1, self.modules[ mod ].version.minor or self.modules[ mod ].version[ 2 ] or 0, self.modules[ mod ].version.patch or self.modules[ mod ].version[ 3 ] or 0, self.modules[ mod ].version.build or self.modules[ mod ].version[ 4 ] or 0
-            return string.format( '%i.%i.%i %s', major, minor, patch, base._def.builds[ build ] )
+    if not mod then return '1.0.0.0 stable' end
+
+    if isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].version then
+        if isstring( rcore.modules[ mod ].version ) then
+            return rcore.modules[ mod ].version
+        elseif istable( rcore.modules[ mod ].version ) then
+            local major, minor, patch, micro, build = rcore.modules[ mod ].version.major or rcore.modules[ mod ].version[ 1 ] or 1, rcore.modules[ mod ].version.minor or rcore.modules[ mod ].version[ 2 ] or 0, rcore.modules[ mod ].version.patch or rcore.modules[ mod ].version[ 3 ] or 0, rcore.modules[ mod ].version[ 4 ] or 0, rcore.modules[ mod ].build or 0
+            return string.format( '%i.%i.%i.%i %s', major, minor, patch, micro, base._def.builds[ build ] )
         end
     elseif istable( mod ) and mod.version then
         if isstring( mod.version ) then
             return mod.version
         elseif istable( mod.version ) then
-            local major, minor, patch, build = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0, mod.version.build or mod.version[ 4 ] or 0
-            return string.format( '%i.%i.%i %s', major, minor, patch, base._def.builds[ build ] )
+            local major, minor, patch, micro, build = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0, mod.version.micro or mod.version[ 4 ] or 0, mod.build or 0
+            return string.format( '%i.%i.%i.%i %s', major, minor, patch, micro, base._def.builds[ build ] )
         end
     end
-    return '1.0.0 stable'
+
+    return '1.0.0.0 stable'
 end
 
 /*
-*   module > version to str > simple
-*
-*   returns the version of the installed module in a human readable string
-*
-*   @call   : rlib.modules:ver2str_s( mod )
-*           : rlib.modules:ver2str_s( 'lunera' )
-*
-*   @return : v2.x.x.x
-*
-*   @since  : v3.2.0
-*   @return : str
+    module > version to str > simple
+
+    returns the version of the installed module in a human readable string.
+    does not include build
+
+    @call   : rlib.modules:ver2str_s( mod )
+            : rlib.modules:ver2str_s( 'lunera' )
+
+    @return : v2.x.x.x
+
+    @return : str
 */
 
 function base.modules:ver2str_s( mod )
-    if not mod then return '1.0.0' end
-    if isstring( mod ) and self.modules[ mod ] and self.modules[ mod ].version then
-        if isstring( self.modules[ mod ].version ) then
-            return self.modules[ mod ].version
-        elseif istable( self.modules[ mod ].version ) then
-            local major, minor, patch, build = self.modules[ mod ].version.major or self.modules[ mod ].version[ 1 ] or 1, self.modules[ mod ].version.minor or self.modules[ mod ].version[ 2 ] or 0, self.modules[ mod ].version.patch or self.modules[ mod ].version[ 3 ] or 0, self.modules[ mod ].build or self.modules[ mod ].version[ 4 ] or 0
-            return string.format( '%i.%i.%i.%i', major, minor, patch, build )
+    if not mod then return '1.0.0.0' end
+
+    if isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].version then
+        if isstring( rcore.modules[ mod ].version ) then
+            return rcore.modules[ mod ].version
+        elseif istable( rcore.modules[ mod ].version ) then
+            local major, minor, patch, micro = rcore.modules[ mod ].version.major or rcore.modules[ mod ].version[ 1 ] or 1, rcore.modules[ mod ].version.minor or rcore.modules[ mod ].version[ 2 ] or 0, rcore.modules[ mod ].version.patch or rcore.modules[ mod ].version[ 3 ] or 0, rcore.modules[ mod ].version.micro or rcore.modules[ mod ].version[ 4 ] or 0
+            return string.format( '%i.%i.%i.%i', major, minor, patch, micro )
         end
     elseif istable( mod ) and mod.version then
         if isstring( mod.version ) then
             return mod.version
         elseif istable( mod.version ) then
-            local major, minor, patch, build = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0, mod.build or mod.version[ 4 ] or 0
-            return string.format( '%i.%i.%i.%i', major, minor, patch, build )
+            local major, minor, patch, micro = mod.version.major or mod.version[ 1 ] or 1, mod.version.minor or mod.version[ 2 ] or 0, mod.version.patch or mod.version[ 3 ] or 0, mod.version.micro or mod.version[ 4 ] or 0
+            return string.format( '%i.%i.%i.%i', major, minor, patch, micro )
         end
     end
+
     return '1.0.0.0'
 end
 
 /*
-*   base > module > get module
-*
-*   returns specified module table
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    base > module > get module
+
+    returns specified module table
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
 function base.modules:get( mod )
@@ -417,23 +426,23 @@ function base.modules:get( mod )
     end
 
     mod = isstring( mod ) and mod or 'unknown'
-    log( 6, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
+    log( RLIB_LOG_DEBUG, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
 
     return false
 end
 
 /*
-*   base > module > get prefix
-*
-*   used for various things such as font names, etc.
-*
-*   @param  : tbl mod
-*   @param  : str suffix
+    base > module > get prefix
+
+    used for various things such as font names, etc.
+
+    @param  : tbl mod
+    @param  : str suffix
 */
 
 function base.modules:prefix( mod, suffix )
     if not istable( mod ) then
-        log( 6, 'warning: cannot create prefix with missing module in \n[ %s ]', debug.traceback( ) )
+        log( RLIB_LOG_DEBUG, 'warning: cannot create prefix with missing module in \n[ %s ]', debug.traceback( ) )
         return
     end
 
@@ -444,12 +453,12 @@ end
 base.modules.pf = base.modules.prefix
 
 /*
-*   base > module > load module
-*
-*   loads specified module table
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    base > module > load module
+
+    loads specified module table
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
 function base.modules:require( mod )
@@ -461,18 +470,18 @@ function base.modules:require( mod )
 
     if not bLoaded then
         mod = mod or 'unknown'
-        log( 6, 'missing module [ %s ]\n%s', mod, debug.traceback( ) )
+        log( RLIB_LOG_DEBUG, 'missing module [ %s ]\n%s', mod, debug.traceback( ) )
         return false
     end
 end
 base.modules.req = base.modules.require
 
 /*
-*   base > module > manifest
-*
-*   returns stored modules.txt file
-*
-*   @return : str
+    base > module > manifest
+
+    returns stored modules.txt file
+
+    @return : str
 */
 
 function base.modules:Manifest( )
@@ -486,11 +495,11 @@ function base.modules:Manifest( )
 end
 
 /*
-*   base > module > ManifestList
-*
-*   returns a list of modules in a simple string format
-*
-*   @return : str
+    base > module > ManifestList
+
+    returns a list of modules in a simple string format
+
+    @return : str
 */
 
 function base.modules:ManifestList( )
@@ -515,12 +524,12 @@ function base.modules:ManifestList( )
 end
 
 /*
-*   base > module > registered panels
-*
-*   returns a list of registered pnls based on the specified module
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    base > module > registered panels
+
+    returns a list of registered pnls based on the specified module
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
 function base.modules:RegisteredPnls( mod )
@@ -535,43 +544,43 @@ function base.modules:RegisteredPnls( mod )
 
     if not bLoaded then
         local mod_output = isstring( mod ) and mod or 'unspecified'
-        rlib:log( 6, 'missing module [ %s ]\n%s', mod_output, debug.traceback( ) )
+        rlib:log( RLIB_LOG_DEBUG, 'missing module [ %s ]\n%s', mod_output, debug.traceback( ) )
         return false
     end
 end
 
 /*
-*   base > module > log
-*
-*   logs data to rlib\modules\module_name\logs
-*
-*   @link   : rcore.log
-*
-*   @param  : tbl, str mod
-*   @param  : int cat
-*   @param  : str msg
-*   @param  : varg varg
+    base > module > log
+
+    logs data to rlib\modules\module_name\logs
+
+    @link   : rcore.log
+
+    @param  : tbl, str mod
+    @param  : int cat
+    @param  : str msg
+    @param  : varg varg
 */
 
 base.modules.log = rcore.log
 
 /*
-*   base > module > get cfg
-*
-*   fetches config parameters from the specified module
-*
-*   @ex :
-*
-*       local cfg_mo 		= rlib and rlib.modules:cfg( 'module_name' )
-*		local job_house		= cfg_mo.setting_name
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    base > module > get cfg
+
+    fetches config parameters from the specified module
+
+    @ex :
+
+        local cfg_mo 		= rlib and rlib.modules:cfg( 'module_name' )
+ 		local job_house		= cfg_mo.setting_name
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
 function base.modules:cfg( mod )
     if not mod then
-        log( 6, 'dependency not specified\n%s', debug.traceback( ) )
+        log( RLIB_LOG_DEBUG, 'dependency not specified\n%s', debug.traceback( ) )
         return false
     end
 
@@ -582,23 +591,23 @@ function base.modules:cfg( mod )
     end
 
     mod = isstring( mod ) and mod or 'unknown'
-    log( 6, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
+    log( RLIB_LOG_DEBUG, 'error loading required dependency [ %s ]\n%s', mod, debug.traceback( ) )
 
     return false
 end
 
 /*
-*   base > module > ents
-*
-*   fetches module ents
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    base > module > ents
+
+    fetches module ents
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
 function base.modules:ents( mod )
     if not mod then
-        log( 6, 'dependency not specified\n%s', debug.traceback( ) )
+        log( RLIB_LOG_DEBUG, 'dependency not specified\n%s', debug.traceback( ) )
         return false
     end
 
@@ -609,17 +618,17 @@ function base.modules:ents( mod )
     end
 
     mod = istable( mod ) and mod or 'unknown'
-    log( 6, 'error fetching entities for module [ %s ]\n%s', mod, debug.traceback( ) )
+    log( RLIB_LOG_DEBUG, 'error fetching entities for module [ %s ]\n%s', mod, debug.traceback( ) )
 
     return false
 end
 
 /*
-*   base > module > count
-*
-*   returns count of modules installed
-*
-*   @return : str
+    base > module > count
+
+    returns count of modules installed
+
+    @return : str
 */
 
 function base.modules:count( )
