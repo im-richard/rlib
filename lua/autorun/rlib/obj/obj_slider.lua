@@ -62,7 +62,7 @@ AccessorFunc( PANEL, 'm_fFloatValue',   'FloatValue'    )
 function PANEL:Init( )
     self:SetMin             ( 2 )
     self:SetMax             ( 10 )
-    self:SetDecimals        ( 1 )
+    self:SetDecimals        ( 0 )
 
     local minVal            = self:GetMin( )
     self.Dragging           = true
@@ -77,7 +77,7 @@ function PANEL:Init( )
     self.Knob:SetSize       ( 10, 14 )
 
     function self.Knob:Paint( w, h )
-        draw.RoundedBox( 4, 1, 2, w - 2, h - 5, self:GetParent( ):GetKnobColor( ) )
+        draw.RoundedBox( 4, 1, ( h / 2 ) - ( ( h - 5 ) / 2 ) + 3, w - 2, h - 5, self:GetParent( ):GetKnobColor( ) )
     end
 end
 
@@ -191,7 +191,7 @@ end
 
 function PANEL:Paint( w, h )
     local barcolor = self:GetBarColor( )
-    design.obox( 0, 8, w, 2, Color( 0, 0, 0, 0 ), barcolor )
+    design.obox( 0, ( h / 2 ) - ( 2 / 2 ) + 3, w, 2, Color( 0, 0, 0, 0 ), barcolor )
 end
 
 /*
