@@ -1609,35 +1609,30 @@ end
         2   : bottom
         3   : middle
 
-    @call   : SERVER        pmeta:notify( ... )
-            : CLIENT        design:notify( 1, 'Message', 5 )
+    [ SERVER ]
+
+        pl:notify( 'This is a demo message', cat, startpos )
+
+    [ CLIENT ]
+
+        design:notify( 'This is a demo message', cat, startpos )
 
     @param  : int cat
     @param  : str msg
     @param  : int startpos
 */
 
-function design:notify( cat, msg, startpos )
+function design:notify( msg, cat, startpos )
+    msg                             = ( helper.ok.str( msg ) and msg ) or 'Error occured'
+    cat                             = cat or 1
+    startpos                        = ( isnumber( startpos ) and startpos ) or 1
+    local dur                       = 10
 
     /*
         dispatch
     */
 
     ui:dispatch( base.notify )
-
-    /*
-        checks
-    */
-
-    cat                             = ( cat ~= '*' and cat ) or 1
-    msg                             = ( helper.ok.str( msg ) and msg ) or 'Error occured'
-    startpos                        = ( isnumber( startpos ) and startpos ) or 1
-
-    /*
-        declare > general
-    */
-
-    local dur                       = 10
 
     /*
         declare > fonts
@@ -1730,17 +1725,26 @@ end
     instead of toggling the scoreboard. this however wont be needed if the server owner decides to change
     the key to something else besides the default tab key
 
-    @param  : str ico
-    @param  : str title
+    [ SERVER ]
+
+        pl:nms( 'This is a demo message', 'Title','icon or *' )
+
+    [ CLIENT ]
+
+        design:nms( 'This is a demo message', 'Title', 'icon or *' )
+
     @param  : str msg
+    @param  : str title
+    @param  : str ico
 */
 
-function design:nms( ico, title, msg )
-    ico                     = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
-    title                   = title or 'Notice'
+function design:nms( msg, title, ico )
     msg                     = msg or 'Error Occured'
+    title                   = helper.str:ok( title ) and title or 'Notice'
+    ico                     = helper.str:ok( ico ) and ico or ''
 
     local timer_id          = string.format( '%snotice.timer', pf )
+
     timex.expire( timer_id )
 
     /*
@@ -1865,7 +1869,7 @@ function design:nms( ico, title, msg )
                                         design.box( 0, h - h * .10, w, brder_h, ColorAlpha( clr_sec, c_alpha_obox ) )
 
                                         -- icons
-                                        if icon then
+                                        if ico then
                                             draw.DrawText( ico, fnt_ico, w / 2, ( h / 2 ) - grad_h - 25, ColorAlpha( clr_icon, c_alpha ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                         end
 
@@ -2232,33 +2236,36 @@ end
     [ SERVER ]
 
         local msg = { 'This is a demo message' }
-        pl:push ( '*', 'Demo Notification', msg )
+        pl:push( msg, 'Demo Notification', 'icon or *' )
 
     [ CLIENT ]
 
         local msg = { 'This is a demo message' }
-        design:push( 'Demo Notification', msg, '*' )
+        design:push( msg, 'Demo Notification', 'icon or *' )
 
+    @param  : tbl msgtbl
     @param  : str title
-    @param  : tbk msgtbl
     @param  : str ico
     @param  : clr clr_title
     @param  : clr clr_box
 */
 
-function design:push( title, msgtbl, ico, clr_title, clr_box )
-
-    /*
-        destroy existing
-    */
-
-    base.push                       = istable( base.push ) and base.push or { }
+function design:push( msgtbl, title, ico, clr_title, clr_box )
+    msgtbl                  = istable( msgtbl ) and msgtbl or { 'Error Occured' }
+    title                   = helper.str:ok( title ) and title or 'Notice'
+    ico                     = helper.str:ok( ico ) and ico or ''
 
     /*
         check
     */
 
     if not istable( msgtbl ) then return end
+
+    /*
+        destroy existing
+    */
+
+    base.push                       = istable( base.push ) and base.push or { }
 
     /*
         merge string values
@@ -2288,11 +2295,9 @@ function design:push( title, msgtbl, ico, clr_title, clr_box )
         define > message dimensions
     */
 
-    local icon                      = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
-
     local _t, _t_li                 = helper.str:crop( title, 300, fn_title )
     local hdr_w, hdr_h              = helper.str:len( _t, fn_title )
-    local fnt_w, fnt_h              = helper.str:len( icon, fn_ico )
+    local fnt_w, fnt_h              = helper.str:len( ico, fn_ico )
 
     local _m, _m_li                 = helper.str:crop( msg, 290, fn_msg )
     local msg_w, msg_h              = helper.str:len( _m, fn_msg )
@@ -2331,7 +2336,7 @@ function design:push( title, msgtbl, ico, clr_title, clr_box )
         icon
     */
 
-    local ico                       = ui.new( 'btn', sub                    )
+    local b_ico                     = ui.new( 'btn', sub                    )
     :left                           ( 'm', 9, 0, 7, 0                       )
     :wide                           ( 64                                    )
     :notext                         (                                       )
@@ -2340,7 +2345,7 @@ function design:push( title, msgtbl, ico, clr_title, clr_box )
                                         local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
                                         clr_a		    = math.Clamp( clr_a, 100, 255 )
 
-                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.DrawText( ico, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
@@ -2441,25 +2446,39 @@ end
 
     notification system that displays on the bottom right with icon
 
+    [ SERVER ]
+
+        local msg = { 'This is a demo message' }
+        pl:sos( msg, 'Demo Notification', 'icon or *' )
+
+    [ CLIENT ]
+
+        local msg = { 'This is a demo message' }
+        design:sos( msg, 'Demo Notification', 'icon or *' )
+
+    @param  : tbl msgtbl
     @param  : str title
-    @param  : tbk msgtbl
     @param  : str ico
     @param  : int dur
 */
 
-function design:sos( title, msgtbl, ico, dur )
-
-    /*
-        destroy existing
-    */
-
-    base.sos                        = istable( base.sos ) and base.sos or { }
+function design:sos( msgtbl, title, ico, dur )
+    msgtbl                  = istable( msgtbl ) and msgtbl or { 'Error Occured' }
+    title                   = helper.str:ok( title ) and title or 'Notice'
+    ico                     = helper.str:ok( ico ) and ico or ''
+    dur                     = isnumber( dur ) and dur or 10
 
     /*
         check
     */
 
     if not istable( msgtbl ) then return end
+
+    /*
+        destroy existing
+    */
+
+    base.sos                        = istable( base.sos ) and base.sos or { }
 
     /*
         merge string values
@@ -2489,26 +2508,22 @@ function design:sos( title, msgtbl, ico, dur )
         define > message dimensions
     */
 
-    local icon                      = ( helper.str:ok( ico ) and ico ~= '*' and ico ) or ''
-
     local _t, _t_li                 = helper.str:crop( title, 300, fn_title )
     local hdr_w, hdr_h              = helper.str:len( _t, fn_title )
-    local fnt_w, fnt_h              = helper.str:len( icon, fn_ico )
+    local fnt_w, fnt_h              = helper.str:len( ico, fn_ico )
 
     local _m, _m_li                 = helper.str:crop( msg, 290, fn_msg )
     local msg_w, msg_h              = helper.str:len( _m, fn_msg )
-
     local sz_w, sz_h                = 400, msg_h + hdr_h + 20
-    dur                             = isnumber( dur ) and dur or 10
 
     /*
         colors
     */
 
-    local clr_box_ol                = hex( '191919' )
-    local clr_box_in                = hex( '1D1D1D' )
-    local clr_box_h                 = hex( '000000', 100 )
-    local clr_txt_title             = hex( 'E8B78E' )
+    local clr_box_ol                = Hex( '191919' )
+    local clr_box_in                = Hex( '1D1D1D' )
+    local clr_box_h                 = Hex( '000000', 100 )
+    local clr_txt_title             = Hex( 'E8B78E' )
 
     /*
         obj > btn
@@ -2538,7 +2553,7 @@ function design:sos( title, msgtbl, ico, dur )
         icon
     */
 
-    local ico                       = ui.new( 'btn', sub                    )
+    local b_ico                     = ui.new( 'btn', sub                    )
     :bsetup                         (                                       )
     :left                           ( 'm', 9, 0, 7, 0                       )
     :wide                           ( 64                                    )
@@ -2547,7 +2562,7 @@ function design:sos( title, msgtbl, ico, dur )
                                         local clr_a     = math.abs( math.sin( CurTime( ) * 3 ) * 255 )
                                         clr_a		    = math.Clamp( clr_a, 100, 255 )
 
-                                        draw.DrawText( icon, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.DrawText( ico, fn_ico, w / 2, ( h / 2 ) - ( fnt_h / 2 ), Color( 100, 100, 100, clr_a ) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*

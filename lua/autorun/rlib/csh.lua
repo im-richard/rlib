@@ -2050,7 +2050,9 @@ function helper.str:ok( str )
     if not isstring( str ) then return false end
 
     local text = str:gsub( '%s', '' )
+    if text == '*' then return false end
     if isstring( text ) and text ~= '' and text ~= 'NULL' and text ~= NULL then return true end
+
     return false
 end
 

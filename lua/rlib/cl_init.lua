@@ -62,11 +62,11 @@ net.Receive( 'rlib.sms.umsg', rn_sms_umsg )
 
 local function rn_sms_notify( len, pl )
     local args      = net.ReadTable( )
-    local cat       = args and args[ 1 ] or 1
-    local msg       = args and args[ 2 ] or ''
+    local msg       = args and args[ 1 ] or false
+    local cat       = args and args[ 2 ] or 1
     local pos       = args and args[ 3 ] or 1
 
-    design:notify( cat, msg, pos )
+    design:notify( msg, cat, pos )
 end
 net.Receive( 'rlib.sms.notify', rn_sms_notify )
 
@@ -129,12 +129,12 @@ net.Receive( 'rlib.sms.rbubble', rn_sms_rbubble )
 */
 
 local function rn_sms_push( len, pl )
-    local ico       = net.ReadString( )
-    local title     = net.ReadString( )
     local args      = net.ReadTable( )
-    local msg       = args and args[ 1 ] or ''
+    local msg       = args and args[ 1 ] or false
+    local title     = args and args[ 2 ] or false
+    local ico       = args and args[ 3 ] or '*'
 
-    design:push( title, msg, ico )
+    design:push( msg, title, ico )
 end
 net.Receive( 'rlib.sms.push', rn_sms_push )
 
@@ -143,14 +143,28 @@ net.Receive( 'rlib.sms.push', rn_sms_push )
 */
 
 local function rn_sms_sos( len, pl )
-    local ico       = net.ReadString( )
-    local title     = net.ReadString( )
     local args      = net.ReadTable( )
-    local msg       = args and args[ 1 ] or ''
+    local msg       = args and args[ 1 ] or false
+    local title     = args and args[ 2 ] or false
+    local ico       = args and args[ 3 ] or '*'
 
-    design:sos( title, msg, ico )
+    design:sos( msg, title, ico )
 end
 net.Receive( 'rlib.sms.sos', rn_sms_sos )
+
+/*
+    rnet > notification > nms
+*/
+
+local function rn_sms_nms( len, pl )
+    local args      = net.ReadTable( )
+    local msg       = args and args[ 1 ] or false
+    local title     = args and args[ 2 ] or false
+    local ico       = args and args[ 3 ] or '*'
+
+    design:nms( msg, title, ico )
+end
+net.Receive( 'rlib.sms.nms', rn_sms_nms )
 
 /*
 *   get material data

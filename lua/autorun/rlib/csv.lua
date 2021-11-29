@@ -145,6 +145,7 @@ local net_register =
     'rlib.sms.rbubble',
     'rlib.sms.push',
     'rlib.sms.sos',
+    'rlib.sms.nms',
     'rlib.tools.pco',
     'rlib.tools.lang',
     'rlib.tools.dc',
@@ -193,12 +194,33 @@ function base:inform( ... )
 end
 
 /*
-    base > bubble notification
+    base > bubble
+
+    notification in bottom right.
+    does NOT support richtext
+
+    similar to rbubble
 */
 
 function base:bubble( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.bubble'     )
+    net.WriteTable  ( args                  )
+    net.Broadcast   (                       )
+end
+
+/*
+    base > rbubble
+
+    notification in bottom right.
+    supports richtext
+
+    similar to bubble
+*/
+
+function base:rbubble( ... )
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.rbubble'    )
     net.WriteTable  ( args                  )
     net.Broadcast   (                       )
 end
@@ -210,14 +232,9 @@ end
     previously known as 'notifcator'
 */
 
-function base:push( ico, title, ... )
-    ico             = isstring( ico ) and ico or nil
-    title           = helper.str:ok( title ) and title or 'Notification'
-
+function base:push( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
-    net.WriteString ( ico                   )
-    net.WriteString ( title                 )
     net.WriteTable  ( args                  )
     net.Broadcast   ( self                  )
 end
@@ -228,16 +245,24 @@ end
     notification fro top middle
 */
 
-function base:sos( ico, title, dur, ... )
-    ico             = isstring( ico ) and ico or nil
-    title           = helper.str:ok( title ) and title or 'Notification'
-    dur             = isnumber( dur ) and dur or 5
-
+function base:sos( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.sos'        )
-    net.WriteString ( ico                   )
-    net.WriteString ( title                 )
-    net.WriteInt    ( dur, 8                )
+    net.WriteTable  ( args                  )
+    net.Broadcast   ( self                  )
+end
+
+/*
+    base > nms
+
+    notification displays full-screen.
+    black bar on top and bottom.
+    supports pressing TAB to close.
+*/
+
+function base:nms( ... )
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.nms'        )
     net.WriteTable  ( args                  )
     net.Broadcast   ( self                  )
 end
@@ -277,6 +302,11 @@ end
 
 /*
     player > bubble
+
+    notification in bottom right.
+    does NOT support richtext
+
+    similar to rbubble
 */
 
 function pmeta:bubble( ... )
@@ -288,6 +318,11 @@ end
 
 /*
     player > rbubble
+
+    notification in bottom right.
+    supports richtext
+
+    similar to bubble
 */
 
 function pmeta:rbubble( ... )
@@ -304,14 +339,9 @@ end
     previously known as 'notifcator'
 */
 
-function pmeta:push( ico, title, ... )
-    ico             = isstring( ico ) and ico or nil
-    title           = helper.ok.str( title ) and title or 'Notification'
-
+function pmeta:push( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.push'       )
-    net.WriteString ( ico                   )
-    net.WriteString ( title                 )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
@@ -320,14 +350,24 @@ end
     player > sos
 */
 
-function pmeta:sos( ico, title, ... )
-    ico             = isstring( ico ) and ico or 'default'
-    title           = helper.ok.str( title ) and title or 'Notification'
-
+function pmeta:sos( ... )
     local args      = { ... }
     net.Start       ( 'rlib.sms.sos'        )
-    net.WriteString ( ico                   )
-    net.WriteString ( title                 )
+    net.WriteTable  ( args                  )
+    net.Send        ( self                  )
+end
+
+/*
+    player > nms
+
+    notification displays full-screen.
+    black bar on top and bottom.
+    supports pressing TAB to close.
+*/
+
+function pmeta:nms( ... )
+    local args      = { ... }
+    net.Start       ( 'rlib.sms.nms'        )
     net.WriteTable  ( args                  )
     net.Send        ( self                  )
 end
@@ -2874,42 +2914,56 @@ hook.Add( 'PlayerSay', pid( 'tools.diag.psay.toggle' ), tools_diag_ps_toggle )
     shows a demo of the different notification options
 */
 
-local function rcc_msg_test( pl )
+local function rcc_dev_msg_test( pl )
 
     /*
         type > notificator
     */
 
-    local msg               = { 'This is a demo message' }
-    pl:push                 ( '*', 'Demo Notification', msg )
+    --local msg               = { 'This is a demo message' }
+    --pl:push                 ( msg, 'Demo', '' )
+
+    /*
+        type > sos
+    */
+
+    --local msg               = { 'This is a demo message' }
+    --pl:sos                  ( msg, 'Demo Notification', '*' )
+
+    /*
+        type > nms
+    */
+
+    --local msg               = 'This is a demo message'
+    --pl:nms                  ( msg, '*', '*' )
 
     /*
         type > bubble
     */
 
-    local msg               = 'This is a demo message'
+    --local msg               = 'This is a demo message'
     --pl:bubble               ( msg )
 
     /*
         type > rbubble
     */
 
-    local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
     --pl:rbubble              ( msg )
 
     /*
         type > rbubble
     */
 
-    local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
     --pl:rbubble              ( msg )
 
     /*
         type > notify
     */
 
-    -- pl:notify               ( 2, 'dasd', 3, true )
+    pl:notify               ( 'Demo message', 2, 3 )
 
 
 end
-rcc.new.gmod( 'aaa', rcc_msg_test )
+rcc.new.gmod( 'rlib_dev_msgtest', rcc_dev_msg_test )

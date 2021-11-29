@@ -2,10 +2,16 @@
     "unreleased": [],
     "releases": {
       "3.6.0.0": [
+            "[ + ] scaling functionality for future addon updates",
             "[ + ] added SAP",
+            "[ + ] added new sliders / checkbox objects",
             "[ + ] added new type of notification",
             "[ ^ ] removed numerous functions no longer needed",
-            "[ ^ ] rewrote several aspects"
+            "[ ^ ] prepwork to remove deprecated functions in next update",
+            "[ ^ ] rewrote several aspects",
+            "[ ^ ] better notifications",
+            "[ % ] various minor fixes",
+            "[ % ] fixed steamapi error if customer removes steamapi.cfg file"
       ],
       "3.5.0.0": [
             "[ ^ ] initial slim-down of library"
