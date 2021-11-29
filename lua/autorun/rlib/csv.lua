@@ -1037,10 +1037,10 @@ end
 function base.get:wsinfo( collection_id, src, format )
     if not collection_id then return end
 
-    collection_id   = isstring( collection_id ) and collection_id or isnumber( collection_id ) and ts( collection_id )
-    local api_key   = base.cfg and isstring( base.cfg.steamapi.key ) and base.cfg.steamapi.key or '0'
-    format          = isstring( format ) and format or 'json'
-    local _e        = sf( 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?key=%s&format=%s', api_key, format )
+    collection_id       = isstring( collection_id ) and collection_id or isnumber( collection_id ) and ts( collection_id )
+    local api_key       = base.cfg and base.cfg.steamapi and base.cfg.steamapi.key or '0'
+    format              = isstring( format ) and format or 'json'
+    local _e            = sf( 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/?key=%s&format=%s', api_key, format )
     oort_post( _e,
     {
         [ 'itemcount' ]                 = '1',
@@ -1060,9 +1060,9 @@ function base.get:wsinfo( collection_id, src, format )
         if not json_body or not json_body.response then
             collection_id = collection_id or '0'
             if code == resp then
-                log( 2, ln( 'ws_no_json_response', collection_id ) )
+                log( RLIB_LOG_ERR, ln( 'ws_no_json_response', collection_id ) )
             else
-                log( 2, resp )
+                log( RLIB_LOG_ERR, resp )
             end
             return
         else
@@ -1409,20 +1409,28 @@ local function __lib_initpostentity( )
     rhook.run.rlib( 'rlib_pkg_register' )
 
     /*
-    *   register commands
+        register commands
     */
 
     rcc.prepare( )
 
     /*
-    *   cfgs
+        cfgs
     */
 
-    base.cfg            = { }
-    base.cfg.steamapi   = storage.get.ext( 'steamapi.cfg' )
+    base.cfg                = { }
+    base.cfg.steamapi       = storage.get.ext( 'steamapi.cfg' )
 
     /*
-    *   run post initialization hook
+        throw error if steamapi config missing
+    */
+
+    if not base.cfg.steamapi then
+        base:log( RLIB_LOG_WARN, '[ %s ] steamapi.cfg file missing', mf.name )
+    end
+
+    /*
+        run post initialization hook
     */
 
     rhook.run.rlib( 'rlib_initialize_post' )
