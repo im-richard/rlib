@@ -1,54 +1,61 @@
 /*
-*   @package        : rlib
-*   @module         : glon
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-* 
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : glon
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   rlib makes use of the glon module as part of its support; however, takes zero credit towards the
-*   development other than some tweaks, and integrated functionality. all credit goes to the original 
-*   developer listed in the secondary annotations below
+    rlib makes use of the glon module as part of its support; however, takes zero credit towards the
+    development other than some tweaks, and integrated functionality. all credit goes to the original
+    developer listed in the secondary annotations below
 */
 
 /*
-*   original author annotations
-*    
-*   @package     Lua Object Notation (GLON)
-*   @author      Deco Da Man
-*   
-*   types
-*        2:         table
-*        3:         array
-*        4:         false boolean
-*        5:         true boolean
-*        6:         number (NOT COMPRESSED, it isn't worth it)
-*        7:         string (non-LON types start here!)
-*        8:         Vector (NOT COMPRESSED, it isn't worth it)
-*        9:         Angle (NOT COMPRESSED, it isn't worth it)
-*        10:        Entity (Can do players, vehicles, npcs, weapons and any other type of entity (-1 for null entity))
-*        11:        Player (By UserID)
-*        12:        CEffectData
-*        13:        ConVar (Not ClientConVar)
-*        15:        Color
-*        253:       The number equal to -math.huge (tostring(math.huge) == "-1.#INF")
-*        254:       The number equal to math.huge (tostring(math.huge) == "1.#INF")
-*        255:       reference (Sends the ID of the table to use (for "local t = {} t.a=t"))
+    original author annotations
+
+    @package     Lua Object Notation (GLON)
+    @author      Deco Da Man
+
+    types
+         2:         table
+         3:         array
+         4:         false boolean
+         5:         true boolean
+         6:         number (NOT COMPRESSED, it isn't worth it)
+         7:         string (non-LON types start here!)
+         8:         Vector (NOT COMPRESSED, it isn't worth it)
+         9:         Angle (NOT COMPRESSED, it isn't worth it)
+         10:        Entity (Can do players, vehicles, npcs, weapons and any other type of entity (-1 for null entity))
+         11:        Player (By UserID)
+         12:        CEffectData
+         13:        ConVar (Not ClientConVar)
+         15:        Color
+         253:       The number equal to -math.huge (tostring(math.huge) == "-1.#INF")
+         254:       The number equal to math.huge (tostring(math.huge) == "1.#INF")
+         255:       reference (Sends the ID of the table to use (for "local t = {} t.a=t"))
 */
 
 /*
-*   standard tables and localization
+    standard tables and localization
 */
 
 local pairs                = pairs

@@ -1,86 +1,89 @@
 /*
-*   @package        : rlib
-*   @module         : timex
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.1.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : timex
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-local base              = rlib
-local mf                = base.manifest
-local pf                = mf.prefix
-local script            = mf.name
+local base                  = rlib
+local access                = base.a
+local helper                = base.h
 
 /*
-*   lib includes
+    library > localize
 */
 
-local access            = base.a
-local helper            = base.h
+local mf                    = base.manifest
+local pf                    = mf.prefix
+local script                = mf.name
 
 /*
 *   module declarations
 */
 
-local dcat              = 9
+local dcat                  = 9
 
 /*
-*   localizations
+    lua > localize
 */
 
-local timer             = timer
-local math              = math
-local debug             = debug
-local module            = module
-local sf                = string.format
-local floor             = math.floor
+local sf                    = string.format
+local floor                 = math.floor
 
 /*
-*   simplifiy funcs
+    languages
+*/
+
+local function ln( ... )
+    return base:lang( ... )
+end
+
+/*
+    localize output functions
 */
 
 local function con( ... ) base:console( ... ) end
 local function log( ... ) base:log( ... ) end
 
 /*
-*   call id
-*
-*   @source : lua\autorun\libs\_calls
-*   @param  : str id
+    call id > get
+
+    @source : lua\autorun\libs\_calls
+    @param  : str id
 */
 
-local function call_id( id )
+local function g_CallID( id )
     return base:call( 'timers', id )
 end
 
 /*
-*   Localized translation func
+    prefix > create id
 */
 
-local function lang( ... )
-    return base:lang( ... )
-end
-
-/*
-*	pf > create id
-*/
-
-local function pref( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
+local function cid( id, suffix )
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or mf.prefix
     affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
@@ -90,16 +93,16 @@ local function pref( id, suffix )
 end
 
 /*
-*	prefix > handle
+    prefix > get id
 */
 
 local function pid( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return pref( str, state )
+    return cid( str, state )
 end
 
 /*
-*   define module
+    define module
 */
 
 module( 'timex', package.seeall )
@@ -145,9 +148,25 @@ local function gid( id )
         return
     end
 
-    id = call_id( id )
+    id = g_CallID( id )
 
     return id
+end
+
+/*
+    rcc id
+
+    creates rcc command with package name appended to the front
+    of the string.
+
+    @param  : str str
+*/
+
+function g_PackageId( str )
+    str         = isstring( str ) and str ~= '' and str or false
+                if not str then return pkg_name end
+
+    return pid( str, pkg_name )
 end
 
 /*
@@ -1035,16 +1054,16 @@ function bw.structtime( tbl, bLong )
     local resp      = ''
 
     if dat.h > 0 then
-        resp        = resp .. dat.h .. ( not bLong and BaseWars.LANG.HoursShort or lang( 'time_hour_sh' ) ) .. ' '
+        resp        = resp .. dat.h .. ( not bLong and BaseWars.LANG.HoursShort or ln( 'time_hour_sh' ) ) .. ' '
     end
     if dat.m > 0 then
-        resp        = resp .. dat.m ..  ( not bLong and BaseWars.LANG.MinutesShort or lang( 'time_min_sh' ) ) .. ' '
+        resp        = resp .. dat.m ..  ( not bLong and BaseWars.LANG.MinutesShort or ln( 'time_min_sh' ) ) .. ' '
     end
     if dat.s > 0 then
-        resp        = resp .. dat.s  ..  ( not bLong and BaseWars.LANG.SecondsShort or lang( 'time_sec_sh' ) ) .. ' '
+        resp        = resp .. dat.s  ..  ( not bLong and BaseWars.LANG.SecondsShort or ln( 'time_sec_sh' ) ) .. ' '
     end
 
-    return #resp > 0 and resp or sf( '0%s', ( not bLong and BaseWars.LANG.SecondsShort or lang( 'time_sec_ti' ) ) )
+    return #resp > 0 and resp or sf( '0%s', ( not bLong and BaseWars.LANG.SecondsShort or ln( 'time_sec_ti' ) ) )
 end
 
 /*
@@ -1070,6 +1089,22 @@ function bw.playtime( pl, bLong )
     if not helper.ok.ply( pl ) then return def end
     local playtime = pl.GetPlayTimeTable and pl:GetPlayTimeTable( ) or def
     return bw.structtime( playtime, bLong )
+end
+
+/*
+    rcc id
+
+    creates rcc command with package name appended to the front
+    of the string.
+
+    @param  : str str
+*/
+
+local function g_RccID( str )
+    str         = isstring( str ) and str ~= '' and str or false
+                if not str then return pkg_name end
+
+    return pid( str, pkg_name )
 end
 
 /*
@@ -1131,27 +1166,35 @@ end
 local function rcc_timex_list( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'timex_list' )
 
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
+    /*
+        scope
+    */
 
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
         return
     end
 
     /*
-    *   functionality
+        perms
     */
 
-    local arg_param     = args and args[ 1 ] or false
-    local gcf_active    = base.calls:gcflag( 'timex_list', 'active' )
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        params
+    */
+
+    local arg_param         = args and args[ 1 ] or false
+    local gcf_active        = base.calls:gcflag( 'timex_list', 'active' )
 
     /*
     *   bActiveOnly
@@ -1164,53 +1207,119 @@ local function rcc_timex_list( pl, cmd, args )
         bActiveOnly = true
     end
 
-    local res, cnt = list( bActiveOnly )
+    local res, cnt          = list( bActiveOnly )
+    table.sort( res, function( a, b ) return a.id < b.id end )
 
-    base:console( pl, '\n' )
+    /*
+        functionality
+    */
 
-    local id_cat        = pkg_name or 'Unspecified'
-    local id_subcat     = ccmd.title or ccmd.name or 'Unspecified'
+    con( 'c', 3 )
+    con( 'c', 0 )
+    con( 'c',       sf( '%s » %s', mf.name, pkg_name ), Color( 255, 255, 255 ), ' » Registered Items' )
+    con( 'c', 0 )
+    con( 'c', 1 )
 
-    local i1_lbl        = sf( ' %s » %s', id_cat, id_subcat )
-    local i2_lbl        = sf( '%-15s', '' )
-    local i0_lbl        = sf( '%s %s', i1_lbl, i2_lbl )
+    local a1_l      = sf( '%-35s',  'Name'      )
+    local a2_l      = sf( '%-5s',   '»'         )
+    local a3_l      = sf( '%-10s',  'Active'    )
+    local a4_l      = sf( '%-20s',  'Remains'   )
+    local a5_l      = sf( '%-10s',  'Reps'      )
+    local a6_l      = sf( '%-30s',  'Desc'      )
 
-    base:console( pl, Color( 255, 0, 0 ), i0_lbl )
-    base:console( pl, ' -------------------------------------------------------------------------------------------' )
+    con( 'c',       Color( 255, 255, 0 ), a1_l, Color( 255, 255, 255 ), a2_l, a3_l, a4_l, a5_l, a6_l )
+    con( 'c', 0 )
+    con( 'c', 1 )
 
-    helper.p_table( res )
+    if table.IsEmpty( res ) then
+        local resp  = ( bActiveOnly and 'No active timers found' ) or 'No timers found'
+        con( 'c',    resp )
+        con( 'c', 3 )
+        return
+    end
 
-    base:console( pl, ' -------------------------------------------------------------------------------------------' )
-    base:console( pl, Color( 255, 0, 255 ), '\n Results: ' .. cnt )
-    base:console( pl, '\n' )
+    for k, v in SortedPairs( res ) do
+        local a1_2      = sf( '%-35s',  v.id        )
+        local a2_2      = sf( '%-5s',   '»'         )
+        local a3_2      = sf( '%-10s',  v.bActive   )
+        local a4_2      = sf( '%-20s',  v.remains   )
+        local a5_2      = sf( '%-10s',  v.reps      )
+        local a6_2      = sf( '%-30s',  v.desc      )
+
+        con( 'c',       Color( 255, 255, 0 ), a1_2, Color( 255, 255, 255 ), a2_2, a3_2, a4_2, a5_2, a6_2 )
+    end
+
+    con( 'c', 3 )
 
 end
 
 /*
-*   rcc > register
+    rcc > rehash
+
+    refreshes all console commands
 */
 
-local function rcc_register( )
+local function rcc_rehash( pl, cmd, args )
+
+    /*
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'timex_rcc_rehash' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        execute
+    */
+
+    RegisterRCC( true )
+
+end
+
+/*
+    rcc > register
+
+    @param  : bool bOutput
+*/
+
+function RegisterRCC( bOutput )
     local pkg_commands =
     {
         [ pkg_name ] =
         {
             enabled     = true,
             warn        = true,
-            id          = pkg_name,
+            id          = g_PackageId( ),
             name        = pkg_name,
             desc        = 'returns package information',
             scope       = 2,
             clr         = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_timex_base( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_timex_base( ... )
+                        end,
         },
         [ pkg_name .. '_list' ] =
         {
             enabled     = true,
             warn        = true,
-            id          = pkg_name .. '.list',
+            id          = g_PackageId( 'list' ),
             name        = 'List',
             desc        = 'returns a list of registered timers',
             clr         = Color( 255, 255, 0 ),
@@ -1219,15 +1328,40 @@ local function rcc_register( )
             {
                 [ 'active' ]    = { flag = '-a', desc = 'returns active only' },
             },
-            assoc = function( ... )
-                rcc_timex_list( ... )
-            end,
+            assoc       = function( ... )
+                            rcc_timex_list( ... )
+                        end,
+        },
+        [ pkg_name .. '_rcc_rehash' ] =
+        {
+            enabled     = true,
+            warn        = true,
+            id          = g_PackageId( 'rcc_rehash' ),
+            desc        = 'reload all module rcc commands',
+            scope       = 1,
+            clr         = Color( 255, 255, 0 ),
+            assoc       = function( ... )
+                            rcc_rehash( ... )
+                        end,
         },
     }
 
+    /*
+        rcc > register
+    */
+
     base.calls.commands:Register( pkg_commands )
+
+    /*
+        save output
+    */
+
+    if not bOutput then return end
+
+    local i = table.Count( pkg_commands )
+    base:log( RLIB_LOG_OK, ln( 'rcc_rehash_i', i, pkg_name ) )
 end
-hook.Add( pid( 'cmd.register' ), pid( '__timex.cmd.register' ), rcc_register )
+hook.Add( pid( 'cmd.register' ), pid( '__timex.cmd.register' ), RegisterRCC )
 
 /*
 *   register package

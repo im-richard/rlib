@@ -1,103 +1,96 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : rcc
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-local base              = rlib
-local mf                = base.manifest
-local pf                = mf.prefix
-local script            = mf.name
-local cfg               = base.settings
+local base                  = rlib
+local helper                = base.h
+local access                = base.a
+local storage               = base.s
+local tools                 = base.t
+local cvar                  = base.v
+local sys                   = base.sys
 
 /*
-*   Localized rlib routes
+    Localized rlib routes
 */
 
-local helper            = base.h
-local access            = base.a
-local storage           = base.s
-local tools             = base.t
-local cvar              = base.v
-local sys               = base.sys
+local cfg                   = base.settings
+local mf                    = base.manifest
+local pf                    = mf.prefix
+local script                = mf.name
 
 /*
-*   Localized lua funcs
-*
-*   absolutely hate having to do this, but for squeezing out every bit of performance, we need to.
+    Localized lua funcs
 */
 
-local Color             = Color
-local pairs             = pairs
-local SortedPairs       = SortedPairs
-local Vector            = Vector
-local tonumber          = tonumber
-local tostring          = tostring
-local istable           = istable
-local isstring          = isstring
-local file              = file
-local table             = table
-local os                = os
-local coroutine         = coroutine
-local math              = math
-local string            = string
-local sf                = string.format
+local sf                    = string.format
 
 /*
-*   manifest paths
+    manifest paths
 */
 
-local path_logs         = mf.paths[ 'dir_logs' ]
-local path_uconn        = mf.paths[ 'dir_uconn' ]
-local path_server       = mf.paths[ 'dir_server' ]
+local path_logs             = mf.paths[ 'dir_logs' ]
+local path_uconn            = mf.paths[ 'dir_uconn' ]
+local path_server           = mf.paths[ 'dir_server' ]
 
 /*
-*   localized http.fetch
+    localize clrs
 */
 
-local function oort( ... )
-    return http.Fetch( ... )
-end
+local clr_r                 = Color( 255, 0, 0 )
+local clr_y                 = Color( 255, 255, 0 )
+local clr_w                 = Color( 255, 255, 255 )
+local clr_g                 = Color( 0, 255, 0 )
+local clr_p                 = Color( 255, 0, 255 )
 
 /*
-*   Localized translation func
-*/
-
-local function lang( ... )
-    return base:lang( ... )
-end
-
-/*
-*	localize clrs
-*/
-
-local clr_r             = Color( 255, 0, 0 )
-local clr_y             = Color( 255, 255, 0 )
-local clr_w             = Color( 255, 255, 255 )
-local clr_p             = Color( 255, 0, 255 )
-
-/*
-*   simplifiy funcs
+    localize output functions
 */
 
 local function con      ( ... ) base:console( ... ) end
 local function log      ( ... ) base:log( ... ) end
 local function route    ( ... ) base.msg:route( ... ) end
+
+/*
+    Localized translation func
+*/
+
+local function ln( ... )
+    return base:lang( ... )
+end
+
+/*
+    localized http.fetch
+*/
+
+local function oort( ... )
+    return http.Fetch( ... )
+end
 
 /*
 *   rcc > user
@@ -269,16 +262,16 @@ local function rcc_debug_clean( pl, cmd, args, str )
 
     if ( arg_flag and ( arg_flag == gcf_cancel ) or ( arg_flag == '-cancel' or arg_flag == 'cancel' ) and timex.exists( 'rlib_debug_doclean' ) ) then
         timex.expire( 'rlib_debug_doclean' )
-        log( 4, lang( 'logs_clean_cancel' ) )
+        log( 4, ln( 'logs_clean_cancel' ) )
         return
     end
 
     if arg_flag then
-        log( 2, lang( 'cmd_param_invalid', timer_clean, pf ) )
+        log( 2, ln( 'cmd_param_invalid', timer_clean, pf ) )
         return
     end
 
-    log( 4, lang( 'logs_clean_scheduled', timer_clean, pf, '-c' ) )
+    log( 4, ln( 'logs_clean_scheduled', timer_clean, pf, '-c' ) )
 
     timex.create( 'rlib_debug_doclean', timer_clean, 1, function( )
         local files, _ = file.Find( path_logs .. '/*', 'DATA' )
@@ -291,7 +284,7 @@ local function rcc_debug_clean( pl, cmd, args, str )
             i_del = i_del + 1
         end
 
-        log( 4, lang( 'logs_clean_success', i_del, path_logs ) )
+        log( 4, ln( 'logs_clean_success', i_del, path_logs ) )
     end )
 
 end
@@ -344,12 +337,12 @@ local function rcc_debug_diag( pl, cmd, args, str )
 
     local get_state =
     {
-        { id = lang( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
-        { id = lang( 'status_col_basecmd' ),        val = sys.calls_basecmd or lang( 'none' ) },
-        { id = lang( 'status_col_debug' ),          val = base:bDebug( ) and lang( 'opt_enabled' ) or lang( 'opt_disabled' ) },
-        { id = lang( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' ) },
-        { id = lang( 'status_col_rnet_debug' ),     val = rnet and rnet.cfg.debug and lang( 'opt_enabled' ) or lang( 'opt_disabled' ) },
-        { id = lang( 'status_col_rcore' ),          val = istable( rcore ) and lang( 'opt_yes' ) or lang( 'opt_no' ) },
+        { id = ln( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
+        { id = ln( 'status_col_basecmd' ),        val = sys.calls_basecmd or ln( 'none' ) },
+        { id = ln( 'status_col_debug' ),          val = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_rnet_debug' ),     val = rnet and rnet.cfg.debug and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_rcore' ),          val = istable( rcore ) and ln( 'opt_yes' ) or ln( 'opt_no' ) },
     }
 
     for m in helper.get.data( get_state ) do
@@ -374,8 +367,8 @@ local function rcc_debug_diag( pl, cmd, args, str )
 
     local get_versions =
     {
-        { id = lang( 'col_name_lib' ),          val = base.get:ver2str_mf( ) or 'missing' },
-        { id = lang( 'col_name_spew' ),         val = base.get:ver_pkg( base.spew ) },
+        { id = ln( 'col_name_lib' ),          val = base.get:ver2str_mf( ) or 'missing' },
+        { id = ln( 'col_name_spew' ),         val = base.get:ver_pkg( base.spew ) },
         { id = rnet.__manifest.name,            val = base.get:ver_pkg( rnet ) },
         { id = timex.__manifest.name,           val = base.get:ver_pkg( timex ) },
         { id = rcc.__manifest.name,             val = base.get:ver_pkg( rcc ) },
@@ -402,7 +395,7 @@ local function rcc_debug_diag( pl, cmd, args, str )
 
     if not istable( rcore ) then
         con( pl, 0 )
-        con( pl, clr_r, '\n ', clr_r, lang( 'status_rcore_missing' ) )
+        con( pl, clr_r, '\n ', clr_r, ln( 'status_rcore_missing' ) )
         return
     end
 
@@ -417,10 +410,10 @@ local function rcc_debug_diag( pl, cmd, args, str )
     for v in helper.get.data( rcore.modules ) do
         if not v.demo and not v.demomode then continue end
 
-        local name      = helper.str:truncate( v.name, 20, '...' ) or lang( 'err' )
+        local name      = helper.str:truncate( v.name, 20, '...' ) or ln( 'err' )
         local ver       = base.get:ver2str( v.version )
         local author    = v.author
-        local desc      = helper.str:truncate( v.desc, 40, '...' ) or lang( 'err' )
+        local desc      = helper.str:truncate( v.desc, 40, '...' ) or ln( 'err' )
 
         local d1_d      = sf( '%-20s', name )
         local d2_d      = sf( '%-15s', ver )
@@ -482,10 +475,10 @@ local function rcc_checksum_new( pl, cmd, args, str )
     */
 
     if pl and not access:bIsConsole( pl ) then
-        base.msg:direct( pl, script, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
+        base.msg:direct( pl, script, not deploy and ln( 'checksum_write_err' ) or ln( 'checksum_write_success' ) )
     end
 
-    log( RLIB_LOG_SYSTEM, not deploy and lang( 'checksum_write_err' ) or lang( 'checksum_write_success' ) )
+    log( RLIB_LOG_SYSTEM, not deploy and ln( 'checksum_write_err' ) or ln( 'checksum_write_success' ) )
 
 end
 rcc.register( 'rlib_cs_new', rcc_checksum_new )
@@ -529,7 +522,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
 
     local checksums = base.checksum:verify( )
     if not istable( checksums ) then
-        con( pl, clr_w, lang( 'checksum_validate_fail' ) )
+        con( pl, clr_w, ln( 'checksum_validate_fail' ) )
         return
     end
 
@@ -540,7 +533,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     local i = table.Count( checksums )
 
     con( pl, 1 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, lang( 'con_checksum_verify' ) )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, ln( 'con_checksum_verify' ) )
     con( pl, 0 )
 
     /*
@@ -548,7 +541,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     */
 
     if i == 0 then
-        con( pl, clr_w, lang( 'files_modified_none' ) )
+        con( pl, clr_w, ln( 'files_modified_none' ) )
         con( pl, 0 )
         return
     end
@@ -557,7 +550,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     *   output > subheader
     */
 
-    con( pl, clr_w, lang( 'files_listed_have_been_modified' ) )
+    con( pl, clr_w, ln( 'files_listed_have_been_modified' ) )
     con( pl, 1 )
     con( pl, 0 )
 
@@ -565,10 +558,10 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     *   columns
     */
 
-    local l1_l      = sf( '%-40s',    lang( 'col_file'        ) )
-    local l2_l      = sf( '%-20s',    lang( 'col_verified'    ) )
-    local l3_l      = sf( '%-5s',     lang( 'sym_arrow'       ) )
-    local l4_l      = sf( '%-20s',    lang( 'col_current'     ) )
+    local l1_l      = sf( '%-40s',    ln( 'col_file'        ) )
+    local l2_l      = sf( '%-20s',    ln( 'col_verified'    ) )
+    local l3_l      = sf( '%-5s',     ln( 'sym_arrow'       ) )
+    local l4_l      = sf( '%-20s',    ln( 'col_current'     ) )
 
     con( pl, clr_w, l1_l, Color( 0, 255, 0 ), l2_l, clr_w, l3_l, clr_r, l4_l )
     con( pl )
@@ -593,7 +586,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     if i > 0 then
         con( pl, 0 )
         con( pl, 1 )
-        con( pl, clr_w, lang( 'files_modified_count', i ) )
+        con( pl, clr_w, ln( 'files_modified_count', i ) )
     end
 
     con( pl, 1 )
@@ -638,7 +631,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     */
 
     con( pl, 1 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, lang( 'con_checksum_obf' ) )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, ln( 'con_checksum_obf' ) )
     con( pl, 0 )
 
     /*
@@ -682,6 +675,90 @@ end
 rcc.register( 'rlib_cs_obf', rcc_checksum_obf )
 
 /*
+    rcc > sap > encode
+*/
+
+local function rcc_sap_encode( pl, cmd, args, str )
+
+    /*
+    *   define command
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rlib_sap_encode' )
+
+    /*
+    *   scope
+    */
+
+    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+        access:deny_consoleonly( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+    *   perms
+    */
+
+    if not access:bIsDev( pl ) then
+        access:deny_permission( pl, script, ccmd.id )
+        return
+    end
+
+    /*
+        output > header
+    */
+
+    con( pl, 3 )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'SAP > Encode' )
+    con( pl, 0 )
+
+    /*
+        arg
+    */
+
+    local arg_str           = args and args[ 1 ] or false
+
+    if not arg_str then
+        log( RLIB_LOG_ERR, 'aborting SAP encode -- missing value' )
+        return
+    end
+
+    /*
+        encode
+    */
+
+    local sha1val           = base.checksum:encode( arg_str )
+
+    if not sha1val then
+        log( RLIB_LOG_ERR, 'aborting checksum encode -- could not encode provided argument' )
+        return
+    end
+
+    /*
+        resp > header
+    */
+
+    local l1_l      = sf( '%-45s',      'String' )
+    local l2_l      = sf( '%-35s',      'Output' )
+
+    con( pl, clr_r, l1_l, l2_l )
+    con( pl, 1 )
+
+    /*
+        resp > data
+    */
+
+    local r1_l      = sf( '%-45s',      arg_str )
+    local r2_l      = sf( '%-35s',      sha1val )
+
+    con( pl, clr_g, r1_l, clr_w, r2_l )
+
+    con( pl, 0 )
+    con( pl, 3 )
+end
+rcc.register( 'rlib_sap_encode', rcc_sap_encode )
+
+/*
 *   rcc > udm
 *
 *   toggles the update notification for the remainder of the session and will revert to default when
@@ -723,7 +800,7 @@ local function rcc_udm( pl, cmd, args )
     local dur               = args and args[ 2 ] or cfg.udm.checktime or 1800
 
     if not base:bInitialized( ) then
-        log( 1, lang( 'lib_udm_err_noinit' ) )
+        log( 1, ln( 'lib_udm_err_noinit' ) )
         con( pl, 1 )
         return
     end
@@ -746,31 +823,31 @@ local function rcc_udm( pl, cmd, args )
             if timex.exists( timer_id ) then
                 local next_chk = timex.remains( timer_id )
                 next_chk = timex.secs.sh_simple( next_chk, false, true )
-                log( 4, lang( 'lib_udm_nextchk', next_chk ) )
+                log( 4, ln( 'lib_udm_nextchk', next_chk ) )
                 return
             end
 
             if dur and not helper:bIsNum( dur ) then
-                log( 2, lang( 'lib_udm_bad_dur' ) )
+                log( 2, ln( 'lib_udm_bad_dur' ) )
                 return
             end
 
-            log( 4, lang( 'lib_udm_started', dur ) )
+            log( 4, ln( 'lib_udm_started', dur ) )
 
             base.udm:Run( dur )
         else
             timex.expire( timer_id )
-            log( 4, lang( 'lib_udm_stopped', dur ) )
+            log( 4, ln( 'lib_udm_stopped', dur ) )
         end
     else
         if timex.exists( timer_id ) then
             local next_chk = timex.remains( timer_id )
             next_chk = timex.secs.sh_simple( next_chk, false, true )
-            log( 4, lang( 'lib_udm_active', next_chk ) )
+            log( 4, ln( 'lib_udm_active', next_chk ) )
 
             return
         else
-            log( 1, lang( 'lib_udm_inactive' ) )
+            log( 1, ln( 'lib_udm_inactive' ) )
         end
     end
 
@@ -842,9 +919,9 @@ local function rcc_calls( pl, cmd, args )
             tbl_calls = rlib.c
         else
             if arg_flag == '-s' and arg_srch then
-                con( pl, clr_r, ' ' .. lang( 'search_term', arg_srch ) )
+                con( pl, clr_r, ' ' .. ln( 'search_term', arg_srch ) )
             elseif arg_flag == '-r' then
-                con( pl, clr_r, ' ' .. lang( 'search_raw' ) )
+                con( pl, clr_r, ' ' .. ln( 'search_raw' ) )
                 helper.p_table( tbl_calls )
                 return
             end
@@ -866,8 +943,8 @@ local function rcc_calls( pl, cmd, args )
                 con( pl, 0 )
 
                 local l1_l      = sf( '%-15s',      cat )
-                local l2_l      = sf( '%-35s',      lang( 'col_id' ) )
-                local l3_l      = sf( '%-35s',      lang( 'col_data' ) )
+                local l2_l      = sf( '%-35s',      ln( 'col_id' ) )
+                local l3_l      = sf( '%-35s',      ln( 'col_data' ) )
                 local l4_l      = sf( '%s %s %s',   l1_l, l2_l, l3_l )
 
                 con( pl, clr_w, l4_l )
@@ -890,7 +967,7 @@ local function rcc_calls( pl, cmd, args )
                     local l1_d, l2_d, l3_d, c0_resp = '', '', '', ''
                     l1_d    = sf( '%-15s', tostring( '' ) )
                     l2_d    = sf( '%-35s', tostring( id ) )
-                    l3_d    = sf( '%-35s', lang( 'missing_item' , tostring( l ) ) )
+                    l3_d    = sf( '%-35s', ln( 'missing_item' , tostring( l ) ) )
 
                     if m ~= '' then
                         l3_d = sf( '%-35s', tostring( l ) .. ' : ' .. helper.str:truncate( tostring( m ), 60, '...' ) )
@@ -927,7 +1004,7 @@ local function rcc_calls( pl, cmd, args )
     con( pl, 1 )
     con( pl, 0 )
 
-    local c_ftr     = sf( lang( 'calls_found_cnt', i_entries ) )
+    local c_ftr     = sf( ln( 'calls_found_cnt', i_entries ) )
     con( pl,        Color( 0, 255, 0 ), c_ftr )
 
     con( pl, 0 )
@@ -1217,7 +1294,7 @@ local function rcc_tools_pco( pl, cmd, args )
 
     -- no arg specified, simply return pco status
     if not arg_toggle then
-        local state = pl:GetNWBool( pf .. 'tools.pco' ) and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+        local state = pl:GetNWBool( pf .. 'tools.pco' ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
         route( pl, false, script, 'pco is currently', cfg.cmsg.clrs.target, state )
         return
     end
@@ -1267,7 +1344,7 @@ local function rcc_tools_rdo( pl, cmd, args )
     local arg_state     = helper.util:toggle( arg_toggle )
 
     if not arg_toggle then
-        local state = cfg.rdo.enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+        local state = cfg.rdo.enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
         route( pl, false, script, 'rdo »', cfg.cmsg.clrs.target, state )
         return
     end
@@ -1275,7 +1352,7 @@ local function rcc_tools_rdo( pl, cmd, args )
     cfg.rdo.enabled = arg_state
     rdo_rendermode( arg_state )
 
-    local set_state = arg_state and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    local set_state = arg_state and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
     route( pl, false, script, 'rdo »', cfg.cmsg.clrs.target, set_state )
 
 end
@@ -1318,7 +1395,7 @@ local function rcc_session( pl, cmd, args )
     */
 
     if not ccmd.enabled then
-        log( 3, lang( 'setup_cmd_disabled' ) )
+        log( 3, ln( 'setup_cmd_disabled' ) )
         return
     end
 
@@ -1326,7 +1403,7 @@ local function rcc_session( pl, cmd, args )
     *   return session id
     */
 
-    route( pl, false, script, lang( 'lib_session_id', sys.startups ) )
+    route( pl, false, script, ln( 'lib_session_id', sys.startups ) )
 
 end
 rcc.register( 'rlib_session', rcc_session )
@@ -1368,7 +1445,7 @@ local function rcc_setup( pl, cmd, args )
     */
 
     if not ccmd.enabled then
-        log( 3, lang( 'setup_cmd_disabled' ) )
+        log( 3, ln( 'setup_cmd_disabled' ) )
         return
     end
 
@@ -1378,7 +1455,7 @@ local function rcc_setup( pl, cmd, args )
 
     local bHasRoot, rootuser = access:root( )
     if bHasRoot then
-        route( pl, false, script, lang( 'setup_root_exists' ), clr_y, ( rootuser and rootuser.name ) or 'none' )
+        route( pl, false, script, ln( 'setup_root_exists' ), clr_y, ( rootuser and rootuser.name ) or 'none' )
         return
     end
 
@@ -1387,7 +1464,7 @@ local function rcc_setup( pl, cmd, args )
     */
 
     if not base:bInitialized( ) then
-        route( pl, false, script, lang( 'lib_initialized' ) )
+        route( pl, false, script, ln( 'lib_initialized' ) )
         return
     end
 
@@ -1398,28 +1475,28 @@ local function rcc_setup( pl, cmd, args )
     local target = args and args[ 1 ] or false
 
     if not target then
-        route( pl, false, script, lang( 'user_find_errmsg' ) )
+        route( pl, false, script, ln( 'user_find_errmsg' ) )
         return
     end
 
     local c_results, result = helper.who:name_wc( target )
 
     if c_results > 1 then
-        route( pl, false, script, lang( 'user_find_multires' ), cfg.cmsg.clrs.target, lang( 'user_find_quotes_ex' ) )
+        route( pl, false, script, ln( 'user_find_multires' ), cfg.cmsg.clrs.target, ln( 'user_find_quotes_ex' ) )
         return
     elseif not c_results or c_results < 1 then
         if sys.connections == 1 then
-            route( pl, false, script, lang( 'user_find_nores_one' ) )
+            route( pl, false, script, ln( 'user_find_nores_one' ) )
         else
-            route( pl, false, script, lang( 'user_find_nores' ), cfg.cmsg.clrs.target, lang( 'user_find_quotes_ex' ) )
+            route( pl, false, script, ln( 'user_find_nores' ), cfg.cmsg.clrs.target, ln( 'user_find_quotes_ex' ) )
         end
         return
     else
         if not helper.ok.ply( result[ 0 ] ) then
             if sys.connections == 1 then
-                route( pl, false, script, lang( 'user_find_noply_one' ) )
+                route( pl, false, script, ln( 'user_find_noply_one' ) )
             else
-                route( pl, false, script, lang( 'user_find_noply' ) )
+                route( pl, false, script, ln( 'user_find_noply' ) )
             end
             return
         else
@@ -1504,8 +1581,8 @@ local function rcc_status( pl, cmd, args )
 
     con( pl, 1 )
 
-    local cat       = script or lang( 'lib_name' )
-    local subcat    = ccmd.title or ccmd.name or lang( 'untitled' )
+    local cat       = script or ln( 'lib_name' )
+    local subcat    = ccmd.title or ccmd.name or ln( 'untitled' )
 
     con( pl, sf( '%s » %s', cat, subcat ) )
 
@@ -1516,7 +1593,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 1 )
     con( pl, 0 )
 
-    local l0_l      = sf( '%s » %s', script, lang( 'manifest' ) )
+    local l0_l      = sf( '%s » %s', script, ln( 'manifest' ) )
     local l1_l      = sf( '%-20s', l0_l )
     local l2_l      = sf( '%-15s', '' )
 
@@ -1529,7 +1606,7 @@ local function rcc_status( pl, cmd, args )
         if istable( m ) then continue end
 
         local id    = tostring( l ) or nil
-        local val   = tostring( m ) or lang( 'missing' )
+        local val   = tostring( m ) or ln( 'missing' )
 
         local l1_d, l2_d, s1_l = '', '', ''
         if id == 'about' then
@@ -1541,7 +1618,7 @@ local function rcc_status( pl, cmd, args )
 
             for k, v in pairs( about_d ) do
                 if k == 1 then continue end -- hide the first line, already called in the initial col
-                val             = tostring( v ) or lang( 'missing' )
+                val             = tostring( v ) or ln( 'missing' )
 
                 local l3_d      = sf( '%-20s', '' )
                 local l4_d      = sf( '%-15s', val )
@@ -1563,7 +1640,7 @@ local function rcc_status( pl, cmd, args )
     *   appends version to the manifest output
     */
 
-    local v1_d          = sf( '%-20s', lang( 'label_version' ) )
+    local v1_d          = sf( '%-20s', ln( 'label_version' ) )
     local v2_d          = sf( '%-5s', '»' )
     local v3_d          = sf( '%-15s', base.get:ver2str_mf( ) )
 
@@ -1576,7 +1653,7 @@ local function rcc_status( pl, cmd, args )
     *   stats output
     */
 
-    local s0_c          = sf( '%s » %s', script, lang( 'stats' ) )
+    local s0_c          = sf( '%s » %s', script, ln( 'stats' ) )
     local s1_l          = sf( '%-20s', s0_c )
     local s2_l          = sf( '%-15s', '' )
 
@@ -1585,20 +1662,20 @@ local function rcc_status( pl, cmd, args )
 
     local tbl_stats =
     {
-        { id = lang( 'status_col_os' ),             val = base.get:os( ) },
-        { id = lang( 'status_col_gm' ),             val = base.get:gm( true ) },
-        { id = lang( 'status_col_admins' ),         val = table.Count( access.admins ) or 0 },
-        { id = lang( 'status_col_rnet_id' ),        val = GetGlobalString( 'rlib_sess') or 0 },
-        { id = lang( 'status_col_calls' ),          val = lang( 'stats_reg_cnt', sys.calls or 0 ) },
-        { id = lang( 'status_col_basecmd' ),        val = sys.calls_basecmd or lang( 'none' ) },
-        { id = lang( 'status_col_init' ),           val = sys.initialized and lang( 'opt_yes' ) or lang( 'opt_no' ) },
-        { id = lang( 'status_col_conncnt' ),        val = sys.connections or 0 },
-        { id = lang( 'status_col_debug_mode' ),     val = base:bDebug( ) and lang( 'opt_enabled' ) or lang( 'opt_disabled' ) },
-        { id = lang( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' ) },
-        { id = lang( 'status_col_rcore' ),          val = istable( rcore ) and lang( 'opt_yes' ) or lang( 'opt_no' ) },
-        { id = lang( 'status_col_starttime' ),      val = sys.starttime or 0 },
-        { id = lang( 'status_col_startcnt' ),       val = sys.startups or 0 },
-        { id = lang( 'status_col_uptime' ),         val = timex.secs.sh_cols( SysTime( ) - sys.uptime ) },
+        { id = ln( 'status_col_os' ),             val = base.get:os( ) },
+        { id = ln( 'status_col_gm' ),             val = base.get:gm( true ) },
+        { id = ln( 'status_col_admins' ),         val = table.Count( access.admins ) or 0 },
+        { id = ln( 'status_col_rnet_id' ),        val = GetGlobalString( 'rlib_sess') or 0 },
+        { id = ln( 'status_col_calls' ),          val = ln( 'stats_reg_cnt', sys.calls or 0 ) },
+        { id = ln( 'status_col_basecmd' ),        val = sys.calls_basecmd or ln( 'none' ) },
+        { id = ln( 'status_col_init' ),           val = sys.initialized and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_conncnt' ),        val = sys.connections or 0 },
+        { id = ln( 'status_col_debug_mode' ),     val = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_rcore' ),          val = istable( rcore ) and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_starttime' ),      val = sys.starttime or 0 },
+        { id = ln( 'status_col_startcnt' ),       val = sys.startups or 0 },
+        { id = ln( 'status_col_uptime' ),         val = timex.secs.sh_cols( SysTime( ) - sys.uptime ) },
     }
 
     for m in helper.get.data( tbl_stats ) do
@@ -1620,7 +1697,7 @@ local function rcc_status( pl, cmd, args )
     *   stats output
     */
 
-    local o0_c          = sf( '%s » %s', script, lang( 'oort' ) )
+    local o0_c          = sf( '%s » %s', script, ln( 'oort' ) )
     local o1_l          = sf( '%-20s', o0_c )
     local o2_l          = sf( '%-15s', '' )
 
@@ -1635,14 +1712,14 @@ local function rcc_status( pl, cmd, args )
 
     local tbl_oort =
     {
-        -- { id = lang( 'status_col_validated' ),      val = sys.validate and lang( 'opt_yes' ) or lang( 'opt_no' ) },
-        { id = lang( 'status_col_owner' ),          val = bHasRoot and owner_id or 'unregistered' },
-        { id = lang( 'status_col_validated' ),      val = mf.astra.oort.validated and lang( 'opt_yes' ) or lang( 'opt_no' ) },
-        { id = lang( 'status_col_latest_ver' ),     val = mf.astra.oort.has_latest and lang( 'opt_yes' ) or lang( 'opt_no' ) },
-        { id = lang( 'status_col_heartbeat' ),      val = hb or 0 },
-        { id = lang( 'status_col_sess_id' ),        val = mf.astra.oort.sess_id or 'null' },
-        { id = lang( 'status_col_auth_id' ),        val = mf.astra.oort.auth_id or 'null' },
-        { id = lang( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
+        -- { id = ln( 'status_col_validated' ),      val = sys.validate and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_owner' ),          val = bHasRoot and owner_id or 'unregistered' },
+        { id = ln( 'status_col_validated' ),      val = mf.astra.oort.validated and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_latest_ver' ),     val = mf.astra.oort.has_latest and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_heartbeat' ),      val = hb or 0 },
+        { id = ln( 'status_col_sess_id' ),        val = mf.astra.oort.sess_id or 'null' },
+        { id = ln( 'status_col_auth_id' ),        val = mf.astra.oort.auth_id or 'null' },
+        { id = ln( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
     }
 
     for m in helper.get.data( tbl_oort ) do
@@ -1664,7 +1741,7 @@ local function rcc_status( pl, cmd, args )
     *   paths
     */
 
-    local t1_c          = sf( '%s » %s', script, lang( 'storage' ) )
+    local t1_c          = sf( '%s » %s', script, ln( 'storage' ) )
     local t1_l          = sf( '%-20s', t1_c )
     local t2_l          = sf( '%-15s', '' )
 
@@ -1687,9 +1764,9 @@ local function rcc_status( pl, cmd, args )
 
     local tbl_storage =
     {
-        { id = lang( 'status_col_logs' ),           val = ( sys.log_ct or 0 ) .. ' ( ' .. ( sys.log_sz or 0 ) .. ' )' or 0 },
-        { id = lang( 'status_col_uconn' ),          val = ( sys.uconn_ct or 0 ) .. ' ( ' .. ( sys.uconn_sz or 0 ) .. ' )' or 0 },
-        { id = lang( 'status_col_history' ),        val = ( sys.history_ct or 0 ) .. ' ( ' .. ( sys.history_sz or 0 ) .. ' )' or 0 },
+        { id = ln( 'status_col_logs' ),           val = ( sys.log_ct or 0 ) .. ' ( ' .. ( sys.log_sz or 0 ) .. ' )' or 0 },
+        { id = ln( 'status_col_uconn' ),          val = ( sys.uconn_ct or 0 ) .. ' ( ' .. ( sys.uconn_sz or 0 ) .. ' )' or 0 },
+        { id = ln( 'status_col_history' ),        val = ( sys.history_ct or 0 ) .. ' ( ' .. ( sys.history_sz or 0 ) .. ' )' or 0 },
     }
 
     for m in helper.get.data( tbl_storage ) do
@@ -1711,7 +1788,7 @@ local function rcc_status( pl, cmd, args )
     *   packages output
     */
 
-    local p1_c          = sf( '%s » %s', script, lang( 'packages' ) )
+    local p1_c          = sf( '%s » %s', script, ln( 'packages' ) )
     local p1_l          = sf( '%-20s', p1_c )
     local p2_l          = sf( '%-25s', '' )
     local p3_l          = sf( '%-25s', '' )
@@ -1722,7 +1799,7 @@ local function rcc_status( pl, cmd, args )
     for i, m in SortedPairs( base.package.index ) do
         local id        = tostring( i )
         local ver       = sf( '%s : %s', base.get:ver2str( m.version ), m.build )
-        local desc      = tostring( helper.str:truncate( m.desc, 50, '...' ) or lang( 'none' ) )
+        local desc      = tostring( helper.str:truncate( m.desc, 50, '...' ) or ln( 'none' ) )
 
         local p1_d      = sf( '%-20s', id )
         local p2_d      = sf( '%-5s', '»' )
@@ -1740,11 +1817,11 @@ local function rcc_status( pl, cmd, args )
     */
 
     if not istable( rcore ) then
-        con( pl, clr_r, ' ', clr_r, lang( 'status_rcore_missing' ) )
+        con( pl, clr_r, ' ', clr_r, ln( 'status_rcore_missing' ) )
         return
     end
 
-    local rc0_cat   = sf( 'rcore » %s', script, lang( 'modules' ) )
+    local rc0_cat   = sf( 'rcore » %s', script, ln( 'modules' ) )
     local rc1_l     = sf( '%-20s', rc0_cat )
     local rc2_l     = sf( '%-15s', '' )
 
@@ -1753,10 +1830,10 @@ local function rcc_status( pl, cmd, args )
 
     local tbl_modules =
     {
-        { id = lang( 'stats_total' ),         val = rcore.sys.modules.total or 0 },
-        { id = lang( 'stats_registered' ),    val = rcore.sys.modules.registered or 0 },
-        { id = lang( 'stats_errors' ),        val = rcore.sys.modules.err or 0 },
-        { id = lang( 'stats_disabled' ),      val = rcore.sys.modules.disabled or 0 },
+        { id = ln( 'stats_total' ),         val = rcore.sys.modules.total or 0 },
+        { id = ln( 'stats_registered' ),    val = rcore.sys.modules.registered or 0 },
+        { id = ln( 'stats_errors' ),        val = rcore.sys.modules.err or 0 },
+        { id = ln( 'stats_disabled' ),      val = rcore.sys.modules.disabled or 0 },
     }
 
     for m in helper.get.data( tbl_modules ) do
@@ -1779,10 +1856,10 @@ local function rcc_status( pl, cmd, args )
     con( pl, 2 )
     con( pl, 0 )
 
-    local m1_l       = sf( '%-20s', lang( 'col_module' )    )
-    local m2_l       = sf( '%-20s', lang( 'col_version' )   )
-    local m3_l       = sf( '%-15s', lang( 'col_author' )    )
-    local m4_l       = sf( '%-20s', lang( 'col_desc' )      )
+    local m1_l       = sf( '%-20s', ln( 'col_module' )    )
+    local m2_l       = sf( '%-20s', ln( 'col_version' )   )
+    local m3_l       = sf( '%-15s', ln( 'col_author' )    )
+    local m4_l       = sf( '%-20s', ln( 'col_desc' )      )
 
     con( pl, clr_w, m1_l, m2_l, m3_l, m4_l )
 
@@ -1792,10 +1869,10 @@ local function rcc_status( pl, cmd, args )
     for v in helper.get.data( rcore.modules ) do
         clr_status      = not v.enabled and clr_r or clr_status
 
-        local name      = tostring( helper.str:truncate( v.name, 20, '...' ) or lang( 'err' ) )
+        local name      = tostring( helper.str:truncate( v.name, 20, '...' ) or ln( 'err' ) )
         local ver       = tostring( rlib.modules:ver2str( v ) )
         local author    = tostring( v.author )
-        local desc      = tostring( helper.str:truncate( v.desc, 40, '...' ) or lang( 'err' ) )
+        local desc      = tostring( helper.str:truncate( v.desc, 40, '...' ) or ln( 'err' ) )
 
         local m1_d      = sf( '%-20s', name )
         local m2_d      = sf( '%-20s', ver )
@@ -1846,8 +1923,8 @@ local function rcc_packages( pl, cmd, args )
 
     con( pl, 2 )
 
-    local cat       = script or lang( 'lib_name' )
-    local subcat    = ccmd.title or ccmd.name or lang( 'untitled' )
+    local cat       = script or ln( 'lib_name' )
+    local subcat    = ccmd.title or ccmd.name or ln( 'untitled' )
 
     con( pl, 1 )
 
@@ -1855,10 +1932,10 @@ local function rcc_packages( pl, cmd, args )
 
     con( pl, clr_r, c0_lbl )
 
-    local l1_l      = sf( '%-15s', lang( 'col_package' )   )
-    local l2_l      = sf( '%-15s', lang( 'col_version' )   )
-    local l3_l      = sf( '%-15s', lang( 'col_author' )    )
-    local l4_l      = sf( '%-20s', lang( 'col_desc' )      )
+    local l1_l      = sf( '%-15s', ln( 'col_package' )   )
+    local l2_l      = sf( '%-15s', ln( 'col_version' )   )
+    local l3_l      = sf( '%-15s', ln( 'col_author' )    )
+    local l4_l      = sf( '%-20s', ln( 'col_desc' )      )
 
     con( pl, 0 )
 
@@ -1867,10 +1944,10 @@ local function rcc_packages( pl, cmd, args )
     con( pl, 0 )
 
     for v in helper.get.data( base.package.index ) do
-        local l1_d        = sf( '%-15s', tostring( helper.str:truncate( v.name, 20, '...' ) or lang( 'err' ) ) )
-        local l2_d        = sf( '%-15s', base.get:ver2str( v.version ) or lang( 'err' ) )
-        local l3_d        = sf( '%-15s', tostring( v.author ) or lang( 'err' ) )
-        local l4_d        = sf( '%-20s', tostring( helper.str:truncate( v.desc, 40, '...' ) or lang( 'err' ) ) )
+        local l1_d        = sf( '%-15s', tostring( helper.str:truncate( v.name, 20, '...' ) or ln( 'err' ) ) )
+        local l2_d        = sf( '%-15s', base.get:ver2str( v.version ) or ln( 'err' ) )
+        local l3_d        = sf( '%-15s', tostring( v.author ) or ln( 'err' ) )
+        local l4_d        = sf( '%-20s', tostring( helper.str:truncate( v.desc, 40, '...' ) or ln( 'err' ) ) )
 
         con( pl, clr_y, l1_d, l2_d, l3_d, l4_d )
     end
@@ -1918,8 +1995,8 @@ local function rcc_license( pl, cmd, args )
 
     con( pl, 1 )
 
-    local cat       = script or lang( 'lib_name' )
-    local subcat    = ccmd.title or ccmd.name or lang( 'untitled' )
+    local cat       = script or ln( 'lib_name' )
+    local subcat    = ccmd.title or ccmd.name or ln( 'untitled' )
 
     local l1_l      = sf( '%s » %s', cat, subcat )
     local l2_l      = sf( '%-15s', '' )
@@ -1933,7 +2010,7 @@ local function rcc_license( pl, cmd, args )
         if istable( m ) then continue end
 
         local id    = tostring( l ) or nil
-        local val   = tostring( m ) or lang( 'missing' )
+        local val   = tostring( m ) or ln( 'missing' )
 
         local l1_d, l2_d, s1_l = '', '', ''
         if id == 'text' then
@@ -1945,7 +2022,7 @@ local function rcc_license( pl, cmd, args )
 
             for k, v in pairs( about_d ) do
                 if k == 1 then continue end -- hide first line
-                val = tostring( v ) or lang( 'missing' )
+                val = tostring( v ) or ln( 'missing' )
 
                 local l3_d  = sf( '%-10s', '' )
                 local l4_d  = sf( '%-15s', val )
@@ -2105,7 +2182,7 @@ local function rcc_oort( pl, cmd, args )
     *   functionality
     */
 
-    local has_oort = cfg.oort.enabled and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    local has_oort = cfg.oort.enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
     route( pl, false, script, 'Oort Engine', cfg.cmsg.clrs.target, '[' .. has_oort .. ']' )
 end
 rcc.register( 'rlib_oort', rcc_oort )
@@ -2270,11 +2347,11 @@ local function restart_cancel( pl )
     hook.Remove( 'Tick', pf .. 'timer.srv.restart' )
 
     if not bIsActive then
-        log( 1, lang( 'restart_none_active' ) )
+        log( 1, ln( 'restart_none_active' ) )
         return false
     end
 
-    local admin_name = access:bIsConsole( pl ) and lang( 'console' ) or pl:Name( )
+    local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
 
     route( nil, true, script, 'Server restart', cfg.cmsg.clrs.target_tri, 'CANCELLED' )
     storage:log( 7, false, '[ %s ] » cancelled an active server restart', admin_name )
@@ -2331,13 +2408,13 @@ local function rcc_restart( pl, cmd, args )
     end
 
     if not timex.exists( 'rlib_cmd_srv_restart' ) then
-        local admin_name = access:bIsConsole( pl ) and lang( 'console' ) or pl:Name( )
+        local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
 
         storage:log( 7, false, '[ %s ] » forced a server restart', admin_name )
         log( 4, '[ %s ] » forced a server restart', admin_name )
 
         timex.create( 'rlib_cmd_srv_restart', restart_timer, 1, function( )
-            log( 4, lang( 'restart_now' ) )
+            log( 4, ln( 'restart_now' ) )
         end )
 
         route( nil, true, script, 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( restart_timer ), cfg.cmsg.clrs.msg, 'seconds' )
@@ -2407,7 +2484,7 @@ local function rcc_trestart( pl, cmd, args )
 
     if not timex.exists( 'rlib_cmd_srv_restart_delay' ) then
 
-        local admin_name = access:bIsConsole( pl ) and lang( 'console' ) or pl:Name( )
+        local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
 
         route( nil, true, script, 'Server will restart in', cfg.cmsg.clrs.target_tri, tostring( arg_time ), cfg.cmsg.clrs.msg, 'seconds' )
         log( 4, 'Server restart in [ %s ] seconds', arg_time )
@@ -2415,7 +2492,7 @@ local function rcc_trestart( pl, cmd, args )
 
         -- overall timer action to execute when timer runs out
         timex.create( 'rlib_cmd_srv_restart_delay', arg_time, 1, function( )
-            log( 4, lang( 'restart_now' ) )
+            log( 4, ln( 'restart_now' ) )
             for v in helper.get.ents( ) do v:SetPos( Vector( 99999999999999999, 0, 0 ) ) end
             hook.Remove( 'Tick', pf .. 'timer.srv.restart' )
         end )

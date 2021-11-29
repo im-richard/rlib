@@ -164,13 +164,13 @@ end
 */
 
 function base.calls:load( bPrefix, affix )
-    log( 6, ln( 'calls_register_nlib' ) )
+    log( RLIB_LOG_DEBUG, ln( 'calls_register_nlib' ) )
 
     rhook.run.rlib( 'rlib_calls_pre' )
 
     if not base._rcalls[ 'net' ] then
         base._rcalls[ 'net' ] = { }
-        log( 6, ln( 'calls_register_tbl' ) )
+        log( RLIB_LOG_DEBUG, ln( 'calls_register_tbl' ) )
     end
 
     if SERVER then
@@ -178,7 +178,7 @@ function base.calls:load( bPrefix, affix )
     end
 
     if rnet then
-        rhook.run.gmod( 'rlib_rnet_register' )
+        rhook.run.rlib( 'rlib_rnet_register' )
     end
 
     rhook.run.rlib( 'rlib_calls_post' )

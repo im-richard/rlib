@@ -1,34 +1,33 @@
 /*
-*   @package        : rlib
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : rcc
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
 local base                  = rlib
-local mf                    = base.manifest
-local pf                    = mf.prefix
-local script                = mf.name
-local cfg                   = base.settings
-
-/*
-*   localized rlib routes
-*/
-
 local helper                = base.h
 local storage               = base.s
 local access                = base.a
@@ -36,31 +35,38 @@ local cvar                  = base.v
 local sys                   = base.sys
 
 /*
-*   Localized lua funcs
-*
-*   i absolutely hate having to do this, but for squeezing out every
-*   bit of performance, we need to.
+    library > localize
 */
 
-local Color                 = Color
-local pairs                 = pairs
-local ipairs                = ipairs
-local tonumber              = tonumber
-local tostring              = tostring
-local istable               = istable
-local isfunction            = isfunction
-local isentity              = isentity
-local isnumber              = isnumber
-local isstring              = isstring
-local Color                 = Color
-local file                  = file
-local table                 = table
-local os                    = os
-local string                = string
+local cfg                   = base.settings
+local mf                    = base.manifest
+local script                = mf.name
+
+/*
+    lua > localize
+*/
+
 local sf                    = string.format
 
 /*
-*   simplifiy funcs
+    languages
+*/
+
+local function ln( ... )
+    return base:lang( ... )
+end
+
+/*
+    prefix ids
+*/
+
+local function pid( str, suffix )
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
+    return rlib.get:pref( str, state )
+end
+
+/*
+    localize output functions
 */
 
 local function con      ( ... ) base:console( ... ) end
@@ -69,27 +75,7 @@ local function route    ( ... ) base.msg:route( ... ) end
 local function target   ( ... ) base.msg:target( ... ) end
 
 /*
-*   Localized cmd func
-*
-*   @source : lua\autorun\libs\calls
-*   @param  : str t
-*   @param  : varg { ... }
-*/
-
-local function call( t, ... )
-    return rlib:call( t, ... )
-end
-
-/*
-*   Localized translation func
-*/
-
-local function lang( ... )
-    return base:lang( ... )
-end
-
-/*
-*	localize clrs
+    localize clrs
 */
 
 local clr_r                 = Color( 255, 0, 0 )
@@ -526,7 +512,7 @@ local function rcc_base( pl, cmd, args )
         if arg_flag == gcf_f and arg_srch and not string.match( k, arg_srch ) then continue end
 
         local id            = v.id or v[ 1 ] or 'no id'
-        local _desc         = v.desc or v[ 2 ] or lang( 'cmd_no_desc' )
+        local _desc         = v.desc or v[ 2 ] or ln( 'cmd_no_desc' )
         local desc          = helper.str:wordwrap( _desc, 100 )
 
         local c1_d          = sf( '%-35s', id )
@@ -536,7 +522,7 @@ local function rcc_base( pl, cmd, args )
         -- clrs all commands that match lib name a different clr from others
         local clr_cmd = clr_w
 
-        if string.match( id, mf.basecmd ) or string.match( id, pf ) then
+        if string.match( id, mf.basecmd ) or string.match( id, mf.prefix ) then
             clr_cmd = clr_p
         elseif rcore and string.match( id, rcore.manifest.prefix ) then
             clr_cmd = Color( 0, 255, 0 )
@@ -894,9 +880,7 @@ local function rcc_clear( pl, cmd, args )
     *   pretty much im just tired of raping my enter key server-side so i can track errors
     */
 
-    for i = 1, 200 do
-        con( pl, 1 )
-    end
+    con( pl, 200 )
 
 end
 rcc.register( 'rlib_clear', rcc_clear )
@@ -944,7 +928,7 @@ local function rcc_commands_rehash( pl, cmd, args, str )
     *   output
     */
 
-    log( 4, lang( 'rcc_commands_rehash' ) )
+    log( 4, ln( 'rcc_commands_rehash' ) )
 
 end
 rcc.register( 'rlib_rcc_rehash', rcc_commands_rehash )
@@ -1010,7 +994,7 @@ local function rcc_services( pl, cmd, args )
             tbl_calls = base.c
         else
             if arg_flag == '-s' and arg_srch then
-                con( pl, clr_r, lang( 'search_term', arg_srch ) )
+                con( pl, clr_r, ln( 'search_term', arg_srch ) )
             end
         end
     end
@@ -1018,7 +1002,7 @@ local function rcc_services( pl, cmd, args )
     local tbl_services =
     {
         {
-            id      = lang( 'services_id_udm' ),
+            id      = ln( 'services_id_udm' ),
             desc    = 'update check service',
             cb      = function( )
                 if not timex.exists( 'rlib_udm_notice' ) then return 'stopped' end
@@ -1026,7 +1010,7 @@ local function rcc_services( pl, cmd, args )
             end,
         },
         {
-            id      = lang( 'services_id_pco' ),
+            id      = ln( 'services_id_pco' ),
             desc    = 'player-client-optimization',
             cb      = function( )
                 if not cvar:GetBool( 'rlib_pco' ) then return 'stopped' end
@@ -1034,7 +1018,7 @@ local function rcc_services( pl, cmd, args )
             end,
         },
         {
-            id      = lang( 'services_id_rdo' ),
+            id      = ln( 'services_id_rdo' ),
             desc    = 'render-distance-optimization',
             cb      = function( )
                 if not cfg.rdo.enabled then return 'stopped' end
@@ -1042,7 +1026,7 @@ local function rcc_services( pl, cmd, args )
             end,
         },
         {
-            id      = lang( 'services_id_oort' ),
+            id      = ln( 'services_id_oort' ),
             desc    = 'oort engine',
             cb      = function( )
                 if not cfg.oort.enabled then return 'stopped' end
@@ -1054,10 +1038,10 @@ local function rcc_services( pl, cmd, args )
 
     local i = 0
     for m in helper.get.data( tbl_services ) do
-        local status    = m.cb( ) or lang( 'services_status_warn' )
+        local status    = m.cb( ) or ln( 'services_status_warn' )
         local id        = tostring( m.id )
         local desc      = tostring( m.desc )
-        local val       = isstring( status ) and status or isbool( status ) and lang( 'services_status_running' ) or lang( 'services_status_stopped' )
+        local val       = isstring( status ) and status or isbool( status ) and ln( 'services_status_running' ) or ln( 'services_status_stopped' )
 
         local c1_d      = sf( '%-15s', id )
         local c2_d      = sf( '%-5s', '»' )
@@ -1072,7 +1056,7 @@ local function rcc_services( pl, cmd, args )
     con( pl, 1 )
     con( pl, 0 )
 
-    local c_ftr = sf( lang( 'services_found_cnt', i ) )
+    local c_ftr = sf( ln( 'services_found_cnt', i ) )
     con( pl, Color( 0, 255, 0 ), c_ftr )
     con( pl, 0 )
 
@@ -1117,7 +1101,7 @@ local function rcc_reload( pl, cmd, args )
     arg_flag                = helper.str:ok( arg_flag ) and arg_flag:lower( ) or false
 
     if not arg_flag then
-        route( pl, false, ccmd.id, lang ( 'modules_rehash_unknown' ) )
+        route( pl, false, ccmd.id, ln ( 'modules_rehash_unknown' ) )
         return
     end
 
@@ -1136,7 +1120,7 @@ local function rcc_reload( pl, cmd, args )
 
     if arg_flag == 'rcore' then
         rlib.autoload:Run( rcore )
-        route( pl, false, ccmd.id, lang( 'modules_rehash_rcore' ) )
+        route( pl, false, ccmd.id, ln( 'modules_rehash_rcore' ) )
         return
     end
 
@@ -1265,7 +1249,7 @@ local function rcc_version( pl, cmd, args )
 
     con( pl, 2 )
 
-    local cat               = script or lang( 'lib_name' )
+    local cat               = script or ln( 'lib_name' )
     local subcat            = 'manifest'
 
     con( pl, cfg.smsg.clrs.t3, sf( '%s » %s', cat, subcat ) )
@@ -1410,9 +1394,9 @@ local function rcc_help( pl, cmd, args )
 
     local tbl_help =
     {
-        { id = 'Docs',  val = mf.docs or lang( 'not_specified' ) },
-        { id = 'Repo',  val = mf.repo or lang( 'not_specified' ) },
-        { id = 'Site',  val = mf.site or lang( 'not_specified' ) },
+        { id = 'Docs',  val = mf.docs or ln( 'not_specified' ) },
+        { id = 'Repo',  val = mf.repo or ln( 'not_specified' ) },
+        { id = 'Site',  val = mf.site or ln( 'not_specified' ) },
     }
 
     for l, m in SortedPairs( tbl_help ) do
@@ -1481,7 +1465,7 @@ local function rcc_languages( pl, cmd, args )
     con( pl, 1 )
 
     local cat       = script or mf.name
-    local subcat    = ccmd.title or ccmd.name or lang( 'untitled' )
+    local subcat    = ccmd.title or ccmd.name or ln( 'untitled' )
 
     local a1_lbl    = sf( '%s » %s', cat, subcat )
     local a2_lbl    = sf( '%-15s', '' )
@@ -1503,8 +1487,8 @@ local function rcc_languages( pl, cmd, args )
 
     local tbl_stats =
     {
-        { id = lang( 'languages' ),     val = table.Count( base.language ) },
-        { id = lang( 'entries' ),       val = cnt_entries },
+        { id = ln( 'languages' ),     val = table.Count( base.language ) },
+        { id = ln( 'entries' ),       val = cnt_entries },
     }
 
     for m in helper.get.data( tbl_stats ) do
@@ -1531,10 +1515,10 @@ local function rcc_languages( pl, cmd, args )
     con( pl, clr_r, a3_l )
     con( pl, 0 )
 
-    local b1_l      = sf( '%-20s', lang( 'col_module' ) )
-    local b2_l      = sf( '%-15s', lang( 'col_language' ) )
+    local b1_l      = sf( '%-20s', ln( 'col_module' ) )
+    local b2_l      = sf( '%-15s', ln( 'col_language' ) )
     local b3_l      = sf( '%-5s', '»' )
-    local b4_l      = sf( '%-15s', lang( 'col_entries' ) )
+    local b4_l      = sf( '%-15s', ln( 'col_entries' ) )
 
     local col_lo    = sf( '%s%s%s%s', b1_l, b2_l, b3_l, b4_l )
 
@@ -1542,7 +1526,7 @@ local function rcc_languages( pl, cmd, args )
     con( pl, 0 )
 
     if not istable( rcore ) then
-        con( pl, clr_r, ' ', clr_r, lang( 'lang_rcore_missing' ) )
+        con( pl, clr_r, ' ', clr_r, ln( 'lang_rcore_missing' ) )
         return
     end
 
@@ -1570,7 +1554,7 @@ local function rcc_languages( pl, cmd, args )
     local c1_d      = sf( '%-20s', '' )
     local c2_d      = sf( '%-15s', '' )
     local c3_d      = sf( '%-5s', '»' )
-    local c4_d      = sf( '%-15s', lang( 'stats_total_cnt', i ) )
+    local c4_d      = sf( '%-15s', ln( 'stats_total_cnt', i ) )
 
     local ftr       = sf( '\n%s%s %s%s', c1_d, c2_d, c3_d, c4_d )
 
@@ -1626,42 +1610,42 @@ local function rcc_debug( pl, cmd, args )
         if param_status then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, lang( 'debug_enabled_already', remains ) )
+                log( 4, ln( 'debug_enabled_already', remains ) )
                 return
             end
 
             if dur and not helper:bIsNum( dur ) then
-                log( 2, lang( 'debug_err_duration' ) )
+                log( 2, ln( 'debug_err_duration' ) )
                 return
             end
 
             cfg.debug.enabled = true
-            log( 4, lang( 'debug_set_enabled_dur', dur ) )
+            log( 4, ln( 'debug_set_enabled_dur', dur ) )
 
             timex.create( time_id, dur, 1, function( )
-                log( 4, lang( 'debug_auto_disable' ) )
+                log( 4, ln( 'debug_auto_disable' ) )
                 cfg.debug.enabled = false
             end )
         else
             timex.expire( time_id )
             cfg.debug.enabled = false
-            log( 4, lang( 'debug_set_disabled' ) )
+            log( 4, ln( 'debug_set_disabled' ) )
         end
     else
         if base:bDebug( ) then
             if timex.exists( time_id ) then
                 local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, lang( 'debug_enabled_time', remains ) )
+                log( 4, ln( 'debug_enabled_time', remains ) )
             else
-                log( 4, lang( 'debug_enabled' ) )
+                log( 4, ln( 'debug_enabled' ) )
             end
             return
         else
-            log( 1, lang( 'debug_disabled' ) )
+            log( 1, ln( 'debug_disabled' ) )
         end
 
-        log( 1, lang( 'debug_help_info_1' ) )
-        log( 1, lang( 'debug_help_info_2' ) )
+        log( 1, ln( 'debug_help_info_1' ) )
+        log( 1, ln( 'debug_help_info_2' ) )
     end
 end
 rcc.register( 'rlib_debug', rcc_debug )
@@ -1703,12 +1687,12 @@ local function rcc_debug_status( pl, cmd, args )
     */
 
     local dbtimer       = timex.remains( 'rlib_debug_delay' ) or false
-    local status        = base:bDebug( ) and lang( 'opt_enabled' ) or lang( 'opt_disabled' )
+    local status        = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
 
-    log( 1, lang( 'debug_status', status ) )
+    log( 1, ln( 'debug_status', status ) )
 
     if dbtimer then
-        log( 1, lang( 'debug_auto_remains', timex.secs.sh_cols_steps( dbtimer ) ) )
+        log( 1, ln( 'debug_auto_remains', timex.secs.sh_cols_steps( dbtimer ) ) )
     end
 end
 rcc.register( 'rlib_debug_status', rcc_debug_status )
@@ -1759,9 +1743,9 @@ local function rcc_debug_devop( pl, cmd, args )
         *   output > timex > header
         */
 
-            con( 'c', 2 )
+            con( 'c', 3 )
             con( 'c', 0 )
-            con( 'c',       Color( 255, 255, 0 ), lang( 'lib_devop_timers_t' ) )
+            con( 'c',       Color( 255, 255, 0 ), ln( 'lib_devop_timers_t' ) )
             con( 'c', 0 )
             con( 'c', 1 )
 
@@ -1792,7 +1776,7 @@ local function rcc_debug_devop( pl, cmd, args )
         */
 
             if i_timex < 1 then
-                con( 'c',       Color( 0, 255, 0 ), lang( 'lib_devop_check_pass' ) )
+                con( 'c',       Color( 0, 255, 0 ), ln( 'lib_devop_check_pass' ) )
             end
 
     /***********************************************************************
@@ -1805,7 +1789,7 @@ local function rcc_debug_devop( pl, cmd, args )
 
             con( 'c', 2 )
             con( 'c', 0 )
-            con( 'c',       Color( 255, 255, 0 ), lang( 'lib_devop_rnet_t' ) )
+            con( 'c',       Color( 255, 255, 0 ), ln( 'lib_devop_rnet_t' ) )
             con( 'c', 0 )
             con( 'c', 1 )
 
@@ -1835,11 +1819,11 @@ local function rcc_debug_devop( pl, cmd, args )
         *   output > rnet > entry has rnet.new ( ) entry, but NOT registered in ENV file
         */
 
-            for k, v in helper.get.table( rnet.GetSession( ) ) do
+            for k, v in helper.get.table( rnet.g_Session( ) ) do
                 local src = rnet.source( )
                 if not src[ k ] then
                     local a1_d              = sf( '%-45s',  k )
-                    local a2_d              = sf( '%-35s',  'missing sh_env registry' )
+                    local a2_d              = sf( '%-35s',  'missing in sh_env.lua' )
 
                     con( pl, clr_r, a1_d, clr_w, a2_d )
 
@@ -1852,11 +1836,25 @@ local function rcc_debug_devop( pl, cmd, args )
         */
 
             for k, v in helper.get.table( rnet.source( ) ) do
-                if not table.HasValue( rnet.GetSession( ), k ) then
+                if not table.HasValue( rnet.g_Session( ), k ) then
                     local a1_d              = sf( '%-45s',  k )
-                    local a2_d              = sf( '%-35s',  'missing rnet.new( ) entry' )
+                    local a2_d              = sf( '%-35s',  'missing rnet.new( "' .. k .. '" )' )
 
                     con( pl, clr_r, a1_d, clr_w, a2_d )
+
+                    i_rnet = i_rnet + 1
+                end
+            end
+
+            for a, b in pairs( rcore.modules ) do
+                local name = string.format( '%s_fonts_reload', b.id )
+                if not rnet.env( name ) then
+                    local a1_d              = sf( '%-45s',  name )
+                    local a2_d              = sf( '%-35s',  'missing in sh_env.lua [ ' .. b.id .. ' ]' )
+
+                    con( pl, clr_r, a1_d, clr_w, a2_d )
+
+                    i_rnet = i_rnet + 1
                 end
             end
 
@@ -1865,8 +1863,76 @@ local function rcc_debug_devop( pl, cmd, args )
         */
 
             if i_rnet < 1 then
-                con( 'c',       Color( 0, 255, 0 ), lang( 'lib_devop_check_pass' ) )
+                con( 'c',       Color( 0, 255, 0 ), ln( 'lib_devop_check_pass' ) )
             end
+
+    /***********************************************************************
+        RHOOK
+    ************************************************************************/
+
+        /*
+        *   output > rhook > header
+        */
+
+        con( 'c', 2 )
+        con( 'c', 0 )
+        con( 'c',       Color( 255, 255, 0 ), ln( 'lib_devop_hooks_t' ) )
+        con( 'c', 0 )
+        con( 'c', 1 )
+
+        /*
+        *   output > rhook > define count
+        */
+
+        local i_rh          = 0
+
+        /*
+            output > rhook > check rnet_registered specified for each module
+        */
+
+        for a, b in pairs( rcore.modules ) do
+            local name = pid( 'rnet_register', b.id )
+            if not rhook.exists( name ) then
+                local a1_d              = sf( '%-45s',  name )
+                local a2_d              = sf( '%-35s',  'missing rhook.new.rlib( ' .. name .. ' )' )
+
+                con( pl, clr_r, a1_d, clr_w, a2_d )
+
+                i_rh = i_rh + 1
+            end
+        end
+
+        for a, b in pairs( rcore.modules ) do
+            local name = string.format( '%s_rnet_register', b.id )
+            if not rhook.env( name ) then
+                local a1_d              = sf( '%-45s',  name )
+                local a2_d              = sf( '%-35s',  'missing in sh_env.lua [ ' .. b.id .. ' ]' )
+
+                con( pl, clr_r, a1_d, clr_w, a2_d )
+
+                i_rh = i_rh + 1
+            end
+        end
+
+        for a, b in pairs( rcore.modules ) do
+            local name = string.format( '%s_fonts_register', b.id )
+            if not rhook.env( name ) then
+                local a1_d              = sf( '%-45s',  name )
+                local a2_d              = sf( '%-35s',  'missing rhook.new.rlib( "' .. name .. '" )' )
+
+                con( pl, clr_r, a1_d, clr_w, a2_d )
+
+                i_rh = i_rh + 1
+            end
+        end
+
+        /*
+            output > rhook > no faults
+        */
+
+        if i_rh < 1 then
+            con( 'c',       Color( 0, 255, 0 ), ln( 'lib_devop_check_pass' ) )
+        end
 
     /*
     *   output > footer
@@ -1943,8 +2009,8 @@ local function rcc_admins( pl, cmd, args )
         local d1_d      = sf( '%-25s', m.name )
         local d2_d      = sf( '%-5s', '»' )
         local d3_d      = sf( '%-26s', l )
-        local d4_d      = sf( '%-13s', ( m.date_added ~= 0 and os.date( '%m-%d-%y', m.date_added ) ) or lang( 'timestamp_never' ) )
-        local d5_d      = sf( '%-13s', ( m.date_seen ~= 0 and os.date( '%m-%d-%y', m.date_seen ) ) or lang( 'timestamp_never' ) )
+        local d4_d      = sf( '%-13s', ( m.date_added ~= 0 and os.date( '%m-%d-%y', m.date_added ) ) or ln( 'timestamp_never' ) )
+        local d5_d      = sf( '%-13s', ( m.date_seen ~= 0 and os.date( '%m-%d-%y', m.date_seen ) ) or ln( 'timestamp_never' ) )
         local d6_d      = sf( '%-15s', m.conn or 0 )
 
         local clr_pl    = not m.is_root and clr_w or clr_p
@@ -1994,7 +2060,7 @@ local function rcc_uptime( pl, cmd, args )
     */
 
     local uptime = timex.secs.sh_cols( SysTime( ) - sys.uptime )
-    route( pl, false, script, sf( '%s ', lang( 'server_uptime' ) ), cfg.cmsg.clrs.target, tostring( uptime ) )
+    route( pl, false, script, sf( '%s ', ln( 'server_uptime' ) ), cfg.cmsg.clrs.target, tostring( uptime ) )
 
 end
 rcc.register( 'rlib_uptime', rcc_uptime )
@@ -2091,7 +2157,7 @@ local function rcc_workshops( pl, cmd, args )
     local ws = base.get:ws( ) or { }
 
     for l, m in SortedPairs( ws ) do
-        local collection_name = istable( m.steamapi ) and m.steamapi.title or lang( 'ws_no_steam_data' )
+        local collection_name = istable( m.steamapi ) and m.steamapi.title or ln( 'ws_no_steam_data' )
 
         if CLIENT then
             steamworks.FileInfo( l, function( res )

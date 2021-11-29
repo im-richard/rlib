@@ -1217,6 +1217,12 @@ end
 hook.Add( pid( 'initialize.post' ), pid( 'initialize_modules' ), lib_initialize_modules )
 
 /*
+    access > SAP
+*/
+
+access.sap = { }
+
+/*
 *   access > ulx_getgroup
 *
 *   specifies the default usergroup that will be allowed to access a command.

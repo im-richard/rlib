@@ -5573,13 +5573,13 @@ local uclass = { }
             */
 
             local pos_x, pos_y      = input.GetCursorPos( )
+            local fnt_tippy         = pid( 'ucl_tippy' )
 
             /*
             *   set / get font text size
             */
 
-            surface.SetFont         ( pid( 'ucl_tippy' ) )
-            local sz_w, sz_h        = surface.GetTextSize( str )
+            local sz_w, sz_h        = helper.str:len( str, fnt_tippy )
             sz_w                    = sz_w + 50
             sz_h                    = sz_h + 8
 
@@ -5626,7 +5626,7 @@ local uclass = { }
                                         design.rbox( 4, 0, 0, sz_w, sz_h, clr_out )
                                         design.rbox( 4, 1, 1, sz_w - 2, sz_h - 2, clr_box )
 
-                                        draw.SimpleText( string.format( '%s' , str ), pid( 'ucl_tippy' ), ( w / 2 ), ( sz_h / 2 ), clr_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( string.format( '%s' , str ), fnt_tippy, ( w / 2 ), ( sz_h / 2 ), clr_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
         end

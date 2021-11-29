@@ -36,38 +36,45 @@ local helper                = base.h
 */
 
 local mf                    = base.manifest
-local pf                    = mf.prefix
 
 /*
-    category
+    declare > category
 */
 
 local dcat                  = 9
+/*
+    languages
+*/
+
+local function ln( ... )
+    return base:lang( ... )
+end
+
 
 /*
-*   simplifiy funcs
+    localize output functions
 */
 
 local function con( ... ) base:console( ... ) end
 local function log( ... ) base:log( ... ) end
 
 /*
-*   call id
-*
-*   @source : lua\autorun\libs\_calls
-*   @param  : str id
+    call id > get
+
+    @source : lua\autorun\libs\_calls
+    @param  : str id
 */
 
-local function call_id( id )
+local function g_CallID( id )
     return base:call( 'hooks', id )
 end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
-local function pref( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or pf
+local function cid( id, suffix )
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or mf.prefix
     affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
@@ -77,29 +84,29 @@ local function pref( id, suffix )
 end
 
 /*
-*	prefix > handle
+    prefix > get id
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
-    return pref( str, state )
+    local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
+    return cid( str, state )
 end
 
 /*
-*   define module
+    define module
 */
 
 module( 'rhook', package.seeall )
 
 /*
-*   local declarations
+    local declarations
 */
 
 local pkg                   = rhook
 local pkg_name              = _NAME or 'rhook'
 
 /*
-*   pkg declarations
+    pkg declarations
 */
 
 local manifest =
@@ -112,7 +119,7 @@ local manifest =
 }
 
 /*
-*   required tables
+    required tables
 */
 
 cfg                         = cfg   or { }
@@ -124,15 +131,15 @@ drop                        = drop  or { }
 session                     = session or { }
 
 /*
-*   net > debugging
-*
-*   determines if debugging mode is enabled
+    net > debugging
+
+    determines if debugging mode is enabled
 */
 
 cfg.debug                   = cfg.debug or false
 
 /*
-*	prefix > getid
+ 	prefix > getid
 */
 
 local function gid( id )
@@ -143,18 +150,51 @@ local function gid( id )
         return
     end
 
-    id = call_id( id )
+    id = g_CallID( id )
 
     return id
 end
 
 /*
-*   exists
-*
-*   returns if hook registered with library
-*
-*   @param  : str id
-*   @return : bool
+    package id
+
+    creates rcc command with package name appended to the front
+    of the string.
+
+    @param  : str str
+*/
+
+function g_PackageId( str )
+    str         = isstring( str ) and str ~= '' and str or false
+                if not str then return pkg_name end
+
+    return pid( str, pkg_name )
+end
+
+/*
+    env
+
+    returns registered hooks.
+    these are the entries added to the modules sh_env.lua file
+
+    @param  : str id
+    @return : bool
+*/
+
+function env( id )
+    local src = source( )
+    return src and src[ id ] and true or false
+end
+
+/*
+    exists
+
+    returns if hook was actually used within
+        rhook.new.rlib
+        rhook.new.gmod
+
+    @param  : str id
+    @return : bool
 */
 
 function exists( id )
@@ -162,11 +202,11 @@ function exists( id )
 end
 
 /*
-*   drop > rlib
-*
-*   @param  : str event
-*   @param  : str id
-*   @param  : fn fn
+    drop > rlib
+
+    @param  : str event
+    @param  : str id
+    @param  : fn fn
 */
 
 function drop.rlib( event, id )
@@ -176,11 +216,11 @@ function drop.rlib( event, id )
 end
 
 /*
-*   drop > gmod
-*
-*   @param  : str event
-*   @param  : str id
-*   @param  : fn fn
+    drop > gmod
+
+    @param  : str event
+    @param  : str id
+    @param  : fn fn
 */
 
 function drop.gmod( event, id )
@@ -189,10 +229,10 @@ function drop.gmod( event, id )
 end
 
 /*
-*   run > rlib
-*
-*   @param  : str event
-*   @param  : varg ...
+    run > rlib
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function run.rlib( event, ... )
@@ -201,10 +241,10 @@ function run.rlib( event, ... )
 end
 
 /*
-*   run > gmod
-*
-*   @param  : str event
-*   @param  : varg ...
+    run > gmod
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function run.gmod( event, ... )
@@ -213,15 +253,15 @@ function run.gmod( event, ... )
 end
 
 /*
-*   run > id
-*
-*   similar to run.rlib however throws the event id back
-*   in order to fetch the proper id being called
-*
-*   dont use unless you know what your doing
-*
-*   @param  : str event
-*   @param  : varg ...
+    run > id
+
+    similar to run.rlib however throws the event id back
+    in order to fetch the proper id being called
+
+    dont use unless you know what your doing
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function run.id( event, ... )
@@ -239,10 +279,10 @@ function run.id( event, ... )
 end
 
 /*
-*   call > rlib
-*
-*   @param  : str event
-*   @param  : varg ...
+    call > rlib
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function call.rlib( event, ... )
@@ -251,10 +291,10 @@ function call.rlib( event, ... )
 end
 
 /*
-*   call > gmod
-*
-*   @param  : str event
-*   @param  : varg ...
+    call > gmod
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function call.gmod( event, ... )
@@ -263,10 +303,10 @@ function call.gmod( event, ... )
 end
 
 /*
-*   call > id
-*
-*   @param  : str event
-*   @param  : varg ...
+    call > id
+
+    @param  : str event
+    @param  : varg ...
 */
 
 function call.id( event, ... )
@@ -284,22 +324,22 @@ function call.id( event, ... )
 end
 
 /*
-*   new > rlib
-*
-*   ( switching parameters )
-*       id      : can be either str or fn
-*                 if id is a function, id will match event name
-*
-*   @ex     : rhook.new.rlib( 'identix_pl_authenticate', 'custom_id', pl_validate )
-*           : rhook.new.rlib( 'identix_pl_authenticate', pl_validate )
-*
-*   @param  : str event
-*   @param  : varg ( ... )
+    new > rlib
+
+    ( switching parameters )
+        id      : can be either str or fn
+                  if id is a function, id will match event name
+
+    @ex     : rhook.new.rlib( 'identix_pl_authenticate', 'custom_id', pl_validate )
+            : rhook.new.rlib( 'identix_pl_authenticate', pl_validate )
+
+    @param  : str event
+    @param  : varg ( ... )
 */
 
 function new.rlib( event, ... )
     event           = gid( event )
-    SetSession      ( event )
+    s_Session       ( event )
 
     local a1        = select( 1, ... )
     local a2        = select( 2, ... )
@@ -327,11 +367,11 @@ function new.rlib( event, ... )
 end
 
 /*
-*   new > gmod
-*
-*   @param  : str event
-*   @param  : str id
-*   @param  : fn fn
+    new > gmod
+
+    @param  : str event
+    @param  : str id
+    @param  : fn fn
 */
 
 function new.gmod( event, id, fn )
@@ -341,16 +381,16 @@ function new.gmod( event, id, fn )
     end
 
     id              = gid( id )
-    SetSession      ( id )
+    s_Session       ( id )
 
     drop.gmod       ( event, id     )
     hook.Add        ( event, id, fn )
 end
 
 /*
-*   new > base
-*
-*   @param  : varg ( ... )
+    new > base
+
+    @param  : varg ( ... )
 */
 
 function new.base( ... )
@@ -358,11 +398,11 @@ function new.base( ... )
 end
 
 /*
-*   rnet > source
-*
-*   returns source tbl for timers
-*
-*   @return : tbl
+    rnet > source
+
+    returns source tbl for timers
+
+    @return : tbl
 */
 
 function source( )
@@ -370,11 +410,11 @@ function source( )
 end
 
 /*
-*   hook > count
-*
-*   returns a count of registered hooks
-*
-*   @return : int
+    hook > count
+
+    returns a count of registered hooks
+
+    @return : int
 */
 
 function count( )
@@ -388,32 +428,32 @@ function count( )
 end
 
 /*
-*   hook > session > set
+    hook > session > set
 */
 
-function SetSession( id, val )
+function s_Session( id, val )
     session             = session or { }
     session[ id ]       = val or id
 end
 
 /*
-*   hook > get session
+    hook > get session
 */
 
-function GetSession( )
+function g_Session( )
     return session or { }
 end
 
 /*
-*   rcc > base
-*
-*   base package command
+    rcc > base
+
+    base package command
 */
 
 local function rcc_rhook_base( pl, cmd, args )
 
     /*
-    *   permissions
+        permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'rhook' )
@@ -429,7 +469,7 @@ local function rcc_rhook_base( pl, cmd, args )
     end
 
     /*
-    *   output
+        output
     */
 
     con( pl, 1 )
@@ -456,33 +496,101 @@ local function rcc_rhook_base( pl, cmd, args )
 end
 
 /*
-*   rcc > register
+    rcc > rehash
+
+    refreshes all console commands
 */
 
-local function rcc_register( )
+local function rcc_rehash( pl, cmd, args )
+
+    /*
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rhook_rcc_rehash' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        execute
+    */
+
+    RegisterRCC( true )
+
+end
+
+/*
+    rcc > register
+
+    @param  : bool bOutput
+*/
+
+function RegisterRCC( bOutput )
+
     local pkg_commands =
     {
         [ pkg_name ] =
         {
             enabled         = true,
             warn            = true,
-            id              = pkg_name,
+            id              = g_PackageId( ),
             name            = pkg_name,
             desc            = 'returns package information',
             scope           = 2,
             clr             = Color( 255, 255, 0 ),
-            assoc = function( ... )
-                rcc_rhook_base( ... )
-            end,
+            assoc           = function( ... )
+                                rcc_rhook_base( ... )
+                            end,
+        },
+        [ pkg_name .. '_rcc_rehash' ] =
+        {
+            enabled     = true,
+            warn        = true,
+            id          = g_PackageId( 'rcc_rehash' ),
+            desc        = 'reload all module rcc commands',
+            scope       = 1,
+            clr         = Color( 255, 255, 0 ),
+            assoc       = function( ... )
+                            rcc_rehash( ... )
+                        end,
         },
     }
 
+    /*
+        rcc > register
+    */
+
     base.calls.commands:Register( pkg_commands )
+
+    /*
+        save output
+    */
+
+    if not bOutput then return end
+
+    local i = table.Count( pkg_commands )
+    base:log( RLIB_LOG_OK, ln( 'rcc_rehash_i', i, pkg_name ) )
 end
-hook.Add( pid( 'cmd.register' ), pid( '__rhook.cmd.register' ), rcc_register )
+hook.Add( pid( 'cmd.register' ), pid( '__rhook.cmd.register' ), RegisterRCC )
 
 /*
-*   register package
+    register package
 */
 
 local function register_pkg( )
@@ -492,7 +600,7 @@ end
 hook.Add( pid( 'pkg.register' ), pid( '__rhook.pkg.register' ), register_pkg )
 
 /*
-*   manifest
+    manifest
 */
 
 function pkg:manifest( )
@@ -500,7 +608,7 @@ function pkg:manifest( )
 end
 
 /*
-*   __tostring
+    __tostring
 */
 
 function pkg:__tostring( )
@@ -508,7 +616,7 @@ function pkg:__tostring( )
 end
 
 /*
-*   loader
+    loader
 */
 
 function pkg:loader( class )
@@ -518,7 +626,7 @@ function pkg:loader( class )
 end
 
 /*
-*   __index / manifest declarations
+    __index / manifest declarations
 */
 
 pkg.__manifest =

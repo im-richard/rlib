@@ -1,6 +1,12 @@
 {
     "unreleased": [],
     "releases": {
+      "3.6.0.0": [
+            "[ + ] added SAP",
+            "[ + ] added new type of notification",
+            "[ ^ ] removed numerous functions no longer needed",
+            "[ ^ ] rewrote several aspects"
+      ],
       "3.5.0.0": [
             "[ ^ ] initial slim-down of library"
       ],

@@ -2229,6 +2229,16 @@ end
 
     notification system that displays on the bottom right with icon
 
+    [ SERVER ]
+
+        local msg = { 'This is a demo message' }
+        pl:push ( '*', 'Demo Notification', msg )
+
+    [ CLIENT ]
+
+        local msg = { 'This is a demo message' }
+        design:push( 'Demo Notification', msg, '*' )
+
     @param  : str title
     @param  : tbk msgtbl
     @param  : str ico

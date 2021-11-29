@@ -51,4 +51,5 @@ base.c.timers =
     [ 'rlib_cmd_srv_restart_wait_s3_p1' ]       = { 'rlib.cmd.srv.restart.wait.s3.p1' },
     [ 'rlib_cmd_srv_restart_wait_s3_p2' ]       = { 'rlib.cmd.srv.restart.wait.s3.p2' },
     [ 'rlib_spew_run' ]                         = { 'rlib.spew.run' },
+    [ 'rlib_rnet_register' ]                    = { 'rlib.rnet.register' },
 }

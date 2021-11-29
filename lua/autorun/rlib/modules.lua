@@ -624,6 +624,25 @@ function base.modules:ents( mod )
 end
 
 /*
+    base > modules > sap
+
+    returns a list of registered hexes for module
+*/
+
+function base.modules:sap( mod )
+    if not mod then
+        log( 6, 'dependency not specified\n%s', debug.traceback( ) )
+        return false
+    end
+
+    if istable( rcore ) and ( isstring( mod ) and rcore.modules[ mod ] and rcore.modules[ mod ].enabled ) then
+        return rcore.modules[ mod ].sap
+    elseif istable( mod ) then
+        return mod.sap
+    end
+end
+
+/*
     base > module > count
 
     returns count of modules installed

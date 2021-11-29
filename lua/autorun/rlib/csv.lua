@@ -978,6 +978,45 @@ function base.checksum:verify( )
 end
 
 /*
+    checksum > encode
+*/
+
+function base.checksum:encode( var )
+
+    /*
+        check var
+    */
+
+    if not var then
+        log( RLIB_LOG_ERR, 'aborting checksum encode -- missing value' )
+        return
+    end
+
+    /*
+        inc sha1 module
+    */
+
+    if not file.Find( 'includes/modules/sha1.lua', 'LUA' ) then
+        log( 2, 'aborting checksum -- missing module sha1' )
+        return
+    end
+
+    include( 'includes/modules/sha1.lua' )
+
+    /*
+        verify module
+    */
+
+    if not sha1 then return false end
+
+    /*
+        verify module
+    */
+
+    return sha1.encrypt( var )
+end
+
+/*
 *   base > get > workshop info
 *
 *   fetches information about a steam workshop collection based on the provided collection_id
@@ -2834,7 +2873,7 @@ local function rcc_msg_test( pl )
     */
 
     local msg               = { 'This is a demo message' }
-    --pl:push                 ( '*', 'Demo Notification', msg )
+    pl:push                 ( '*', 'Demo Notification', msg )
 
     /*
         type > bubble
@@ -2861,7 +2900,7 @@ local function rcc_msg_test( pl )
         type > notify
     */
 
-    pl:notify               ( 2, 'dasd', 3, true )
+    -- pl:notify               ( 2, 'dasd', 3, true )
 
 
 end

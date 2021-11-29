@@ -1,83 +1,88 @@
 /*
-*   @package        : rlib
-*   @module         : rcc
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2020 - 2020
-*   @since          : 3.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @package        : rcc
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    library
 */
 
-rlib                    = rlib or { }
-local base              = rlib
-local mf                = base.manifest
-local prefix            = mf.prefix
+local base                  = rlib
+local access                = base.a
+local helper                = base.h
+/*
+    library > localize
+*/
+
+local mf                    = base.manifest
 
 /*
-*   module declarations
+    lua > localize
 */
 
-local dcat          = 9
+local dcat                  = 9
+local sf                    = string.format
 
 /*
-*   localizations
+    languages
 */
 
-local module        = module
-local sf            = string.format
-
-/*
-*   Localized translation func
-*/
-
-local function lang( ... )
+local function ln( ... )
     return base:lang( ... )
 end
 
 /*
-*   call id
-*
-*   @source : lua\autorun\libs\_calls
-*   @param  : str id
+    call id > get
+
+    @source : lua\autorun\libs\_calls
+    @param  : str id
 */
 
-local function call_id( id )
-    return rlib:call( 'commands', id )
+local function g_CallID( id )
+    return base:call( 'commands', id )
 end
 
 /*
-*	prefix > create id
+    prefix > create id
 */
 
-local function pref( id, suffix )
-    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or prefix
-    affix           = affix:sub( -1 ) ~= '.' and sf( '%s.', affix ) or affix
+local function cid( id, suffix )
+    local affix     = istable( suffix ) and suffix.id or isstring( suffix ) and suffix or mf.prefix
+    affix           = affix:sub( -1 ) ~= '.' and string.format( '%s.', affix ) or affix
 
     id              = isstring( id ) and id or 'noname'
     id              = id:gsub( '[%p%c%s]', '.' )
 
-    return sf( '%s%s', affix, id )
+    return string.format( '%s%s', affix, id )
 end
 
 /*
-*	prefix > handle
+    prefix > get id
 */
 
 local function pid( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and mf.prefix ) or false
-    return pref( str, state )
+    return cid( str, state )
 end
 
 /*
@@ -138,9 +143,25 @@ local function gid( id )
         return
     end
 
-    id = call_id( id )
+    id = g_CallID( id )
 
     return id
+end
+
+/*
+    rcc id
+
+    creates rcc command with package name appended to the front
+    of the string.
+
+    @param  : str str
+*/
+
+function g_PackageId( str )
+    str         = isstring( str ) and str ~= '' and str or false
+                if not str then return pkg_name end
+
+    return pid( str, pkg_name )
 end
 
 /*
@@ -299,15 +320,140 @@ function source( )
 end
 
 /*
+    rcc > base
+
+    base package command
+*/
+
+local function rcc_base( pl, cmd, args )
+
+    /*
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rcc' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        output
+    */
+
+    base.msg:route( pl, false, pkg_name, mf.name .. ' package' )
+    base.msg:route( pl, false, pkg_name, 'v' .. rlib.get:ver2str( manifest.version ) .. ' build-' .. manifest.build )
+    base.msg:route( pl, false, pkg_name, 'developed by ' .. manifest.author )
+    base.msg:route( pl, false, pkg_name, manifest.desc .. '\n' )
+
+end
+
+/*
+    rcc > rehash
+
+    refreshes all console commands
+*/
+
+local function rcc_rehash( pl, cmd, args )
+
+    /*
+        permissions
+    */
+
+    local ccmd = base.calls:get( 'commands', 'rcc_rehash' )
+
+    /*
+        scope
+    */
+
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
+        access:deny_consoleonly( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        perms
+    */
+
+    if not access:bIsRoot( pl ) then
+        access:deny_permission( pl, mf.name, ccmd.id )
+        return
+    end
+
+    /*
+        execute
+    */
+
+    RegisterRCC( true )
+
+end
+
+/*
 *   rcc > register
 */
 
-local function rcc_register( )
-    local pkg_commands = { }
+function RegisterRCC( bOutput )
+
+    local pkg_commands =
+    {
+        [ pkg_name ] =
+        {
+            enabled         = true,
+            warn            = true,
+            id              = g_PackageId( ),
+            name            = pkg_name,
+            desc            = 'returns package information',
+            scope           = 2,
+            clr             = Color( 255, 255, 0 ),
+            assoc           = function( ... )
+                                rcc_base( ... )
+                            end,
+        },
+        [ pkg_name .. '_rehash' ] =
+        {
+            enabled     = true,
+            warn        = true,
+            id          = g_PackageId( 'rehash' ),
+            name        = 'Rehash commands',
+            desc        = 'reload all module rcc commands',
+            scope       = 1,
+            clr         = Color( 255, 255, 0 ),
+            assoc       = function( ... )
+                            rcc_rehash( ... )
+                        end,
+        },
+    }
+
+    /*
+        rcc > register
+    */
 
     base.calls.commands:Register( pkg_commands )
+
+    /*
+        save output
+    */
+
+    if not bOutput then return end
+
+    local i = table.Count( pkg_commands )
+    base:log( RLIB_LOG_OK, ln( 'rcc_rehash_i', i, pkg_name ) )
 end
-hook.Add( pid( 'cmd.register' ), pid( '__rcc.cmd.register' ), rcc_register )
+hook.Add( pid( 'cmd.register' ), pid( '__rcc.cmd.register' ), RegisterRCC )
 
 /*
 *   register package
