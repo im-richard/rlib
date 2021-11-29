@@ -311,3 +311,51 @@ function materials:call( mod, id, ref )
 
     return mod._cache.mats[ id ] and mod._cache.mats[ id ][ ref ] or '__error'
 end
+
+/*
+    ratio > height
+
+    scales an image based on a new provided scale
+    takes height as the primary
+
+    ratio   = W / H
+    W       = H * ratio
+    H       = W / ratio
+*/
+
+function materials:ratioHeight( mat, h )
+    local src               = materials:ok( mat ) and mat or istable( mat ) and mat.material or isstring( mat ) and mat
+    src                     = isstring( src ) and Material( src, 'noclamp smooth' ) or src or mat_def
+    h                       = h or 1
+
+    local mat_w, mat_h      = mat:Width( ), mat:Height( )
+    local ratio             = mat_w / mat_h     -- original width / original height
+    local new_h             = h                 -- ratio * desired height
+    local new_w             = ratio * new_h     -- desired height * ratio
+
+    return new_w, new_h
+end
+
+/*
+    ratio > width
+
+    scales an image based on a new provided scale
+    takes width as the primary
+
+    ratio   = W / H
+    W       = H * ratio
+    H       = W / ratio
+*/
+
+function materials:ratioWidth( mat, w )
+    local src               = materials:ok( mat ) and mat or istable( mat ) and mat.material or isstring( mat ) and mat
+    src                     = isstring( src ) and Material( src, 'noclamp smooth' ) or src or mat_def
+    w                       = w or 1
+
+    local mat_w, mat_h      = mat:Width( ), mat:Height( )
+    local ratio             = mat_w / mat_h     -- original width / original height
+    local new_w             = w                 -- ratio * desired height
+    local new_h             = new_w / ratio     -- desired height * ratio
+
+    return new_w, new_h
+end

@@ -4815,13 +4815,15 @@ local uclass = { }
     *   @param  : pnl panel
     *   @param  : str id
     *   @param  : str, tbl mod
+    *   @param  : int dur
     *   @param  : int delay
     */
 
-    function uclass.dispatch( pnl, panel, id, mod, delay )
+    function uclass.dispatch( pnl, panel, id, mod, dur, delay )
         pnl[ 'DoClick' ] = function( s, ... )
-            delay = isnumber( delay ) and delay or 0
-            panel:AlphaTo( 0, delay, 0, function( )
+            dur         = isnumber( dur ) and dur or 0
+            delay       = isnumber( delay ) and delay or 0.1
+            panel:AlphaTo( 0, dur, delay, function( )
                 ui:dispatch( id, mod )
             end )
         end
@@ -5794,8 +5796,8 @@ local uclass = { }
         local bAnim     = cvar:GetBool( 'rlib_animations_enabled' )
 
         local w, h      = pnl:GetSize( )
-        time            = ( bAnim and isnumber( time ) and time or 0 ) or 0
-        from            = ( bAnim and isnumber( time ) and time or 3 ) or 3
+        time            = ( bAnim and time or 0 ) or 0
+        from            = ( bAnim and from or 3 ) or 3
 
         local sta_w, sta_h  = -w, ( ScrH( ) / 2 ) - ( h / 2 )
         local end_w, end_h  = ScrW( ) / 2 - w / 2, ScrH( ) / 2 - h / 2
