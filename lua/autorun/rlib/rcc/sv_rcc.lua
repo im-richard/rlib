@@ -93,27 +93,27 @@ local function oort( ... )
 end
 
 /*
-*   rcc > user
-*
-*   manages a players access with rlib
-*
-*   : subargs
-*       : add < player >
-*       : remove < player >
-*
-*   @call   : rlib.user < subarg > < player >
+    rcc > user
+
+    manages a players access with rlib
+
+    : subargs
+        : add < player >
+        : remove < player >
+
+    @call   : rlib.user < subarg > < player >
 */
 
 local function rcc_user( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_user' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -122,13 +122,13 @@ local function rcc_user( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then return end
 
     /*
-    *   functionality
+        functionality
     */
 
     local subarg = args and args[ 1 ] or nil
@@ -219,21 +219,21 @@ end
 rcc.register( 'rlib_user', rcc_user )
 
 /*
-*   rcc > debug > clean
-*
-*   cleans files in debug log folder
+    rcc > debug > clean
+
+    cleans files in debug log folder
 */
 
 local function rcc_debug_clean( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_debug_clean' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -242,7 +242,7 @@ local function rcc_debug_clean( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -251,7 +251,7 @@ local function rcc_debug_clean( pl, cmd, args, str )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_flag          = args and args[ 1 ] or false
@@ -291,21 +291,21 @@ end
 rcc.register( 'rlib_debug_clean', rcc_debug_clean )
 
 /*
-*   rcc > debug > diag
-*
-*   checks a variety of areas to prep from dev -> production
+    rcc > debug > diag
+
+    checks a variety of areas to prep from dev -> production
 */
 
 local function rcc_debug_diag( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_debug_diag' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -314,7 +314,7 @@ local function rcc_debug_diag( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -323,7 +323,7 @@ local function rcc_debug_diag( pl, cmd, args, str )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     con( pl, '\n' )
@@ -390,7 +390,7 @@ local function rcc_debug_diag( pl, cmd, args, str )
     end
 
     /*
-    *   rcore output
+        rcore output
     */
 
     if not istable( rcore ) then
@@ -437,21 +437,21 @@ end
 rcc.register( 'rlib_debug_diag', rcc_debug_diag )
 
 /*
-*   rcc > checksum > new
-*
-*   writes the lib checksums to data/rlib/checksum.txt
+    rcc > checksum > new
+
+    writes the lib checksums to data/rlib/checksum.txt
 */
 
 local function rcc_checksum_new( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_cs_new' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -460,7 +460,7 @@ local function rcc_checksum_new( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -471,7 +471,7 @@ local function rcc_checksum_new( pl, cmd, args, str )
     local deploy = base.checksum:new( true )
 
     /*
-    *   confirm msg to pl
+        confirm msg to pl
     */
 
     if pl and not access:bIsConsole( pl ) then
@@ -484,22 +484,22 @@ end
 rcc.register( 'rlib_cs_new', rcc_checksum_new )
 
 /*
-*   rcc > checksum > verify
-*
-*   verifies released lib checksums with any files that may be modified on the server
-*   and reports the differences
+    rcc > checksum > verify
+
+    verifies released lib checksums with any files that may be modified on the server
+    and reports the differences
 */
 
 local function rcc_checksum_verify( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_cs_verify' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -508,7 +508,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -517,7 +517,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     end
 
     /*
-    *   check > see if checksums table valid
+        check > see if checksums table valid
     */
 
     local checksums = base.checksum:verify( )
@@ -527,7 +527,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     end
 
     /*
-    *   output > header
+        output > header
     */
 
     local i = table.Count( checksums )
@@ -537,7 +537,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     con( pl, 0 )
 
     /*
-    *   output > check > files verified
+        output > check > files verified
     */
 
     if i == 0 then
@@ -547,7 +547,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     end
 
     /*
-    *   output > subheader
+        output > subheader
     */
 
     con( pl, clr_w, ln( 'files_listed_have_been_modified' ) )
@@ -555,7 +555,7 @@ local function rcc_checksum_verify( pl, cmd, args, str )
     con( pl, 0 )
 
     /*
-    *   columns
+        columns
     */
 
     local l1_l      = sf( '%-40s',    ln( 'col_file'        ) )
@@ -595,21 +595,21 @@ end
 rcc.register( 'rlib_cs_verify', rcc_checksum_verify )
 
 /*
-*   rcc > checksum > obf
-*
-*   release prepwork
+    rcc > checksum > obf
+
+    release prepwork
 */
 
 local function rcc_checksum_obf( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_cs_obf' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -618,7 +618,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -627,7 +627,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     end
 
     /*
-    *   data > read
+        data > read
     */
 
     con( pl, 1 )
@@ -635,7 +635,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     con( pl, 0 )
 
     /*
-    *   data > define
+        data > define
     */
 
     local _r                = string.format( '%s/dec.txt', mf.paths[ 'dir_obf' ] )
@@ -643,7 +643,7 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     local _r_data           = file.Read( _r, 'DATA' )
 
     /*
-    *   data > dec not found
+        data > dec not found
     */
 
     if not _r_data then
@@ -653,19 +653,19 @@ local function rcc_checksum_obf( pl, cmd, args, str )
     end
 
     /*
-    *   data > enc
+        data > enc
     */
 
     local enc               = _r_data:gsub( '.', function( bb ) return '\\' .. bb:byte( ) end ) or _r_data .. '\''
 
     /*
-    *   data > write enc
+        data > write enc
     */
 
     file.Write( _w, enc )
 
     /*
-    *   data > response
+        data > response
     */
 
     con( pl, clr_w, 'Wrote obf data to ', clr_y, _w )
@@ -681,13 +681,13 @@ rcc.register( 'rlib_cs_obf', rcc_checksum_obf )
 local function rcc_sap_encode( pl, cmd, args, str )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_sap_encode' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
@@ -696,7 +696,7 @@ local function rcc_sap_encode( pl, cmd, args, str )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -759,22 +759,22 @@ end
 rcc.register( 'rlib_sap_encode', rcc_sap_encode )
 
 /*
-*   rcc > udm
-*
-*   toggles the update notification for the remainder of the session and will revert to default when
-*   the server is rebooted.
+    rcc > udm
+
+    toggles the update notification for the remainder of the session and will revert to default when
+    the server is rebooted.
 */
 
 local function rcc_udm( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_udm' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -783,7 +783,7 @@ local function rcc_udm( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -792,7 +792,7 @@ local function rcc_udm( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local timer_id          = 'rlib_udm_notice'
@@ -806,7 +806,7 @@ local function rcc_udm( pl, cmd, args )
     end
 
     /*
-    *   param > run updater
+        param > run updater
     */
 
     if status and status == 'run' then
@@ -855,26 +855,26 @@ end
 rcc.register( 'rlib_udm', rcc_udm )
 
 /*
-*   rcc > calls
-*
-*   returns a list of all registered calls associated to rlib / rcore
-*
-*   @usage : rlib.calls <returns all calls>
-*   @usage : rlib.calls rlib <returns rlib only>
-*   @usage : rlib.calls -s termhere <returns entries matching term>
-*   @usage : rlib.calls -r <returns raw output>
+    rcc > calls
+
+    returns a list of all registered calls associated to rlib / rcore
+
+    @usage : rlib.calls <returns all calls>
+    @usage : rlib.calls rlib <returns rlib only>
+    @usage : rlib.calls -s termhere <returns entries matching term>
+    @usage : rlib.calls -r <returns raw output>
 */
 
 local function rcc_calls( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_calls' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -883,13 +883,13 @@ local function rcc_calls( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then return end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_flag          = args and args[ 1 ] or false
@@ -908,7 +908,7 @@ local function rcc_calls( pl, cmd, args )
     con( pl, output )
 
     /*
-    *   loop calls table
+        loop calls table
     */
 
     local cat_islisted, cat_id = false, ''
@@ -1013,21 +1013,21 @@ end
 rcc.register( 'rlib_calls', rcc_calls )
 
 /*
-*   rcc > modules > error logs
-*
-*   displays any registered errors with the specified module
+    rcc > modules > error logs
+
+    displays any registered errors with the specified module
 */
 
 local function rcc_modules_errlog( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = rlib.calls:get( 'commands', 'rlib_modules_errlog' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not rlib.con:Is( pl ) ) then
@@ -1036,7 +1036,7 @@ local function rcc_modules_errlog( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1045,7 +1045,7 @@ local function rcc_modules_errlog( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     con             ( pl, 1 )
@@ -1053,7 +1053,7 @@ local function rcc_modules_errlog( pl, cmd, args )
     con             ( pl, 0 )
 
     /*
-    *   outdated libraries
+        outdated libraries
     */
 
     con             ( pl, clr_y, '» ', clr_w, 'Outdated\n' )
@@ -1086,21 +1086,21 @@ end
 rcc.register( 'rlib_modules_errlog', rcc_modules_errlog )
 
 /*
-*   rcc > modules > reroute
-*
-*   lists all installed modules
+    rcc > modules > reroute
+
+    lists all installed modules
 */
 
 local function rcc_modules( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = rlib.calls:get( 'commands', 'rlib_modules' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not rlib.con:Is( pl ) ) then
@@ -1109,7 +1109,7 @@ local function rcc_modules( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1118,14 +1118,14 @@ local function rcc_modules( pl, cmd, args )
     end
 
     /*
-    *   declarations
+        declarations
     */
 
     local arg_flag  = args and args[ 1 ] or false
     local gcf_path  = rlib.calls:gcflag( 'rlib_modules', 'paths' )
 
     /*
-    *   functionality
+        functionality
     */
 
     con             ( pl, '\n\n [' .. base.manifest.name .. '] Active Modules' )
@@ -1155,21 +1155,21 @@ end
 rcc.register( 'rlib_modules', rcc_modules )
 
 /*
-*   rcc > modules > reload
-*
-*   reloads all modules
+    rcc > modules > reload
+
+    reloads all modules
 */
 
 local function rcc_modules_reload( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = rlib.calls:get( 'commands', 'rlib_modules_reload' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not rlib.con:Is( pl ) ) then
@@ -1178,7 +1178,7 @@ local function rcc_modules_reload( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1187,7 +1187,7 @@ local function rcc_modules_reload( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     rcore:modules_initialize( )
@@ -1196,22 +1196,22 @@ end
 rcc.register( 'rlib_modules_reload', rcc_modules_reload )
 
 /*
-*   rcc > tools > asay
-*
-*   sends a message to all players in chat who have the permission 'rlib_asay'
-*   similar to ulx asay
+    rcc > tools > asay
+
+    sends a message to all players in chat who have the permission 'rlib_asay'
+    similar to ulx asay
 */
 
 local function rcc_tools_asay( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_asay' )
 
     /*
-    *   check > permissions
+        check > permissions
     */
 
     if ( ccmd.no_console and access:bIsConsole( pl ) ) then
@@ -1220,7 +1220,7 @@ local function rcc_tools_asay( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1229,13 +1229,13 @@ local function rcc_tools_asay( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local asay_message = table.concat( args, ' ' )
 
     /*
-    *   check if asay str empty; return error
+        check if asay str empty; return error
     */
 
     if not helper.str:ok( asay_message ) then
@@ -1244,7 +1244,7 @@ local function rcc_tools_asay( pl, cmd, args )
     end
 
     /*
-    *   run asay hook
+        run asay hook
     */
 
     hook.Run( 'asay.broadcast', pl, asay_message )
@@ -1253,22 +1253,22 @@ end
 rcc.register( 'rlib_asay', rcc_tools_asay )
 
 /*
-*   rcc > tools > pco
-*
-*   player client optimizations, which sets specific command variables for the calling player which
-*   helps increase frames ( if enabled )
+    rcc > tools > pco
+
+    player client optimizations, which sets specific command variables for the calling player which
+    helps increase frames ( if enabled )
 */
 
 local function rcc_tools_pco( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_tools_pco' )
 
     /*
-    *   check > permissions
+        check > permissions
     */
 
     if ( ccmd.no_console and access:bIsConsole( pl ) ) then
@@ -1277,7 +1277,7 @@ local function rcc_tools_pco( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1286,7 +1286,7 @@ local function rcc_tools_pco( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_toggle    = args and args[ 1 ]
@@ -1305,24 +1305,24 @@ end
 rcc.register( 'rlib_tools_pco', rcc_tools_pco )
 
 /*
-*   rcc > tools > rdo
-*
-*   set the rendermode on entities
-*
-*   @usage  : rlib.rdo <returns state>
-*   @usage  : rlib.rdo enable|disable <set rdo active state>
+    rcc > tools > rdo
+
+    set the rendermode on entities
+
+    @usage  : rlib.rdo <returns state>
+    @usage  : rlib.rdo enable|disable <set rdo active state>
 */
 
 local function rcc_tools_rdo( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_tools_rdo' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -1331,13 +1331,13 @@ local function rcc_tools_rdo( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then return end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_toggle    = args and args[ 1 ]
@@ -1359,21 +1359,21 @@ end
 rcc.register( 'rlib_tools_rdo', rcc_tools_rdo )
 
 /*
-*   rcc > session
-*
-*   returns the current session id
+    rcc > session
+
+    returns the current session id
 */
 
 local function rcc_session( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_session' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -1382,7 +1382,7 @@ local function rcc_session( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1391,7 +1391,7 @@ local function rcc_session( pl, cmd, args )
     end
 
     /*
-    *   check > command disabled
+        check > command disabled
     */
 
     if not ccmd.enabled then
@@ -1400,7 +1400,7 @@ local function rcc_session( pl, cmd, args )
     end
 
     /*
-    *   return session id
+        return session id
     */
 
     route( pl, false, script, ln( 'lib_session_id', sys.startups ) )
@@ -1409,21 +1409,21 @@ end
 rcc.register( 'rlib_session', rcc_session )
 
 /*
-*   rcc > setup
-*
-*   sets up rlib after the initial install
+    rcc > setup
+
+    sets up rlib after the initial install
 */
 
 local function rcc_setup( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_setup' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -1432,7 +1432,7 @@ local function rcc_setup( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1441,7 +1441,7 @@ local function rcc_setup( pl, cmd, args )
     end
 
     /*
-    *   check > command disabled
+        check > command disabled
     */
 
     if not ccmd.enabled then
@@ -1450,7 +1450,7 @@ local function rcc_setup( pl, cmd, args )
     end
 
     /*
-    *   check > already has root usr
+        check > already has root usr
     */
 
     local bHasRoot, rootuser = access:root( )
@@ -1460,7 +1460,7 @@ local function rcc_setup( pl, cmd, args )
     end
 
     /*
-    *   check > server initialized
+        check > server initialized
     */
 
     if not base:bInitialized( ) then
@@ -1469,7 +1469,7 @@ local function rcc_setup( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local target = args and args[ 1 ] or false
@@ -1518,7 +1518,7 @@ local function rcc_setup( pl, cmd, args )
             con( pl, clr_w, 'Review the list of useful commands below to get started\n\n' )
 
             /*
-            *   loop > setup > useful commands
+                loop > setup > useful commands
             */
 
             for v in helper.get.data( rlib.calls:get( 'commands' ), true ) do
@@ -1543,22 +1543,22 @@ end
 rcc.register( 'rlib_setup', rcc_setup )
 
 /*
-*   rcc > status
-*
-*   returns various types of information related to installed packages, library stats, debugging,
-*   installed modules and base core module
+    rcc > status
+
+    returns various types of information related to installed packages, library stats, debugging,
+    installed modules and base core module
 */
 
 local function rcc_status( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_status' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -1567,7 +1567,7 @@ local function rcc_status( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1576,7 +1576,7 @@ local function rcc_status( pl, cmd, args )
     end
 
     /*
-    *   header output
+        header output
     */
 
     con( pl, 1 )
@@ -1587,7 +1587,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, sf( '%s » %s', cat, subcat ) )
 
     /*
-    *   manifest output
+        manifest output
     */
 
     con( pl, 1 )
@@ -1637,7 +1637,7 @@ local function rcc_status( pl, cmd, args )
     end
 
     /*
-    *   appends version to the manifest output
+        appends version to the manifest output
     */
 
     local v1_d          = sf( '%-20s', ln( 'label_version' ) )
@@ -1650,7 +1650,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   stats output
+        stats output
     */
 
     local s0_c          = sf( '%s » %s', script, ln( 'stats' ) )
@@ -1694,7 +1694,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   stats output
+        stats output
     */
 
     local o0_c          = sf( '%s » %s', script, ln( 'oort' ) )
@@ -1712,9 +1712,8 @@ local function rcc_status( pl, cmd, args )
 
     local tbl_oort =
     {
-        -- { id = ln( 'status_col_validated' ),      val = sys.validate and ln( 'opt_yes' ) or ln( 'opt_no' ) },
         { id = ln( 'status_col_owner' ),          val = bHasRoot and owner_id or 'unregistered' },
-        { id = ln( 'status_col_validated' ),      val = mf.astra.oort.validated and ln( 'opt_yes' ) or ln( 'opt_no' ) },
+        { id = ln( 'status_col_validated' ),      val = base.oort:Validated( ) and ln( 'opt_yes' ) or ln( 'opt_no' ) },
         { id = ln( 'status_col_latest_ver' ),     val = mf.astra.oort.has_latest and ln( 'opt_yes' ) or ln( 'opt_no' ) },
         { id = ln( 'status_col_heartbeat' ),      val = hb or 0 },
         { id = ln( 'status_col_sess_id' ),        val = mf.astra.oort.sess_id or 'null' },
@@ -1738,7 +1737,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   paths
+        paths
     */
 
     local t1_c          = sf( '%s » %s', script, ln( 'storage' ) )
@@ -1785,7 +1784,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   packages output
+        packages output
     */
 
     local p1_c          = sf( '%s » %s', script, ln( 'packages' ) )
@@ -1813,7 +1812,7 @@ local function rcc_status( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   rcore output
+        rcore output
     */
 
     if not istable( rcore ) then
@@ -1850,7 +1849,7 @@ local function rcc_status( pl, cmd, args )
     end
 
     /*
-    *   rcore > module list
+        rcore > module list
     */
 
     con( pl, 2 )
@@ -1886,21 +1885,21 @@ end
 rcc.register( 'rlib_status', rcc_status )
 
 /*
-*   rcc > list packages
-*
-*   returns a list of installed / running packages
+    rcc > list packages
+
+    returns a list of installed / running packages
 */
 
 local function rcc_packages( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_packages' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not rlib.con:Is( pl ) ) then
@@ -1909,7 +1908,7 @@ local function rcc_packages( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1918,7 +1917,7 @@ local function rcc_packages( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     con( pl, 2 )
@@ -1958,21 +1957,21 @@ end
 rcc.register( 'rlib_packages', rcc_packages )
 
 /*
-*   rcc > license
-*
-*   returns license information associated with the library
+    rcc > license
+
+    returns license information associated with the library
 */
 
 local function rcc_license( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_license' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -1981,7 +1980,7 @@ local function rcc_license( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1990,7 +1989,7 @@ local function rcc_license( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     con( pl, 1 )
@@ -2046,21 +2045,21 @@ end
 rcc.register( 'rlib_license', rcc_license )
 
 /*
-*   rcc > map > ents
-*
-*   returns list of map ents
+    rcc > map > ents
+
+    returns list of map ents
 */
 
 local function rcc_map_ents( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_map_ents' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2069,7 +2068,7 @@ local function rcc_map_ents( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -2078,7 +2077,7 @@ local function rcc_map_ents( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local path          = storage.mft:getpath( 'dir_sys' )
@@ -2110,21 +2109,21 @@ end
 rcc.register( 'rlib_map_ents', rcc_map_ents )
 
 /*
-*   rcc > check oort
-*
-*   checks the status of oort
+    rcc > check oort
+
+    checks the status of oort
 */
 
 local function rcc_oort( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_oort' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2133,7 +2132,7 @@ local function rcc_oort( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -2142,7 +2141,7 @@ local function rcc_oort( pl, cmd, args )
     end
 
     /*
-    *   args / flags
+        args / flags
     */
 
     local arg_flag          = args and args[ 1 ] or false
@@ -2151,13 +2150,13 @@ local function rcc_oort( pl, cmd, args )
     local gcf_set           = base.calls:gcflag( 'rlib_oort', 'set' )
 
     /*
-    *   flag > set
+        flag > set
     */
 
     if arg_flag and arg_flag == gcf_set then
 
         /*
-        *   rlib.oort -s debug
+            rlib.oort -s debug
         */
 
         if arg_act == 'debug' then
@@ -2179,7 +2178,7 @@ local function rcc_oort( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local has_oort = cfg.oort.enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
@@ -2188,21 +2187,21 @@ end
 rcc.register( 'rlib_oort', rcc_oort )
 
 /*
-*   rcc > oort > update
-*
-*   forces oort to update server stats to database
+    rcc > oort > update
+
+    forces oort to update server stats to database
 */
 
 local function rcc_oort_update( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_oort_update' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2211,7 +2210,7 @@ local function rcc_oort_update( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -2220,7 +2219,7 @@ local function rcc_oort_update( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     rlib.oort:Authorize( true )
@@ -2228,21 +2227,21 @@ end
 rcc.register( 'rlib_oort_update', rcc_oort_update )
 
 /*
-*   rcc > oort > next update
-*
-*   returns the update timer duration for oort stats
+    rcc > oort > next update
+
+    returns the update timer duration for oort stats
 */
 
 local function rcc_oort_next( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_oort_next' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2251,7 +2250,7 @@ local function rcc_oort_next( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -2260,7 +2259,7 @@ local function rcc_oort_next( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local remains   = timex.remains( 'rlib.oort.stats' )
@@ -2280,21 +2279,21 @@ end
 rcc.register( 'rlib_oort_next', rcc_oort_next )
 
 /*
-*   rcc > oort > sendlog
-*
-*   returns the update timer duration for oort stats
+    rcc > oort > sendlog
+
+    returns the update timer duration for oort stats
 */
 
 local function rcc_oort_sendlog( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_oort_sendlog' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2303,7 +2302,7 @@ local function rcc_oort_sendlog( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsDev( pl ) then
@@ -2312,7 +2311,7 @@ local function rcc_oort_sendlog( pl, cmd, args )
     end
 
     /*
-    *   prepare log
+        prepare log
     */
 
     base.oort:PrepareLog( false )
@@ -2321,9 +2320,9 @@ end
 rcc.register( 'rlib_oort_sendlog', rcc_oort_sendlog )
 
 /*
-*   concommand > cancel restart
-*
-*   allows for a player/console to cancel a server restart using either the restart concommand or timed.
+    concommand > cancel restart
+
+    allows for a player/console to cancel a server restart using either the restart concommand or timed.
 */
 
 local function restart_cancel( pl )
@@ -2361,21 +2360,21 @@ local function restart_cancel( pl )
 end
 
 /*
-*   rcc > server restart
-*
-*   gives a counter in public chat which forces a server restart after timer expires
+    rcc > server restart
+
+    gives a counter in public chat which forces a server restart after timer expires
 */
 
 local function rcc_restart( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_restart' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2384,7 +2383,7 @@ local function rcc_restart( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -2393,7 +2392,7 @@ local function rcc_restart( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local restart_timer     = 5
@@ -2423,24 +2422,24 @@ end
 rcc.register( 'rlib_restart', rcc_restart )
 
 /*
-*   rcc > timed server restart
-*
-*   gives a counter in public chat which forces a server restart after timer expires
-*   yes we know the method of used to restart is 'hacky', but most servers utilize some type of hosting
-*   that auto-detects a downed server and restarts it. this method basically crashes the server and then
-*   the hosting servers take over.
+    rcc > timed server restart
+
+    gives a counter in public chat which forces a server restart after timer expires
+    yes we know the method of used to restart is 'hacky', but most servers utilize some type of hosting
+    that auto-detects a downed server and restarts it. this method basically crashes the server and then
+    the hosting servers take over.
 */
 
 local function rcc_trestart( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_trestart' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2449,7 +2448,7 @@ local function rcc_trestart( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -2458,7 +2457,7 @@ local function rcc_trestart( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_time      = args and args[ 1 ] or 60
@@ -2538,21 +2537,21 @@ end
 rcc.register( 'rlib_trestart', rcc_trestart )
 
 /*
-*   rcc > rpm
-*
-*   rlib package manager
+    rcc > rpm
+
+    rlib package manager
 */
 
 local function rcc_rpm( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_rpm' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2561,7 +2560,7 @@ local function rcc_rpm( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -2570,7 +2569,7 @@ local function rcc_rpm( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local arg_flag          = args and args[ 1 ] or false
@@ -2589,15 +2588,15 @@ local function rcc_rpm( pl, cmd, args )
     con( pl, 1  )
 
     /*
-    *   arg_flag : -l
+        arg_flag : -l
     */
 
     if arg_flag and ( arg_flag == gcf_list ) then
 
         /*
-        *   retrieval will start here
-        *
-        *   @todo    : add promise
+            retrieval will start here
+
+            @todo    : add promise
         */
 
         base.get:Rpm( )
@@ -2606,7 +2605,7 @@ local function rcc_rpm( pl, cmd, args )
     end
 
     /*
-    *   arg_flag : -i
+        arg_flag : -i
     */
 
     if arg_flag and ( arg_flag == gcf_inst ) then
