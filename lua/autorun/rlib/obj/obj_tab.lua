@@ -76,7 +76,7 @@ function PANEL:Init( )
                                         local clr_marker    = self:GetClrMarker( )
                                         local clr_tab       = ColorAlpha( clr_marker, pulse_a )
 
-                                        design.box( 0, m_padding, w, h - ( m_padding * 2 ), clr_tab )
+                                        design.box( 0, m_padding + 1, w, h - ( m_padding * 2 ) - 2, clr_tab )
                                     end )
 
                                     :logic( function( s )
