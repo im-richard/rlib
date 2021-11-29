@@ -569,16 +569,30 @@ function base:log( mod, cat, msg, ... )
         return false
     end
 
-    local mod_data      = { }
-    local bLoaded       = false
-    local bPostnow      = true
-    local args          = { ... }
-    local result, msg   = pcall( sf, msg, unpack( args ) )
+    local mod_data          = { }
+    local bLoaded           = false
+    local bPostnow          = true
+    local args              = { ... }
+    local result, msg       = pcall( sf, msg, unpack( args ) )
 
     if isstring( mod ) then
+
         if self.modules[ mod ] and self.modules[ mod ].enabled then
+
+            /*
+            *   valid module > string
+            */
+
             bLoaded         = true
             mod_data        = self.modules[ mod ]
+        else
+
+            /*
+            *   custom folder > string
+            */
+
+            bLoaded         = true
+            mod_data        = { id = mod, logging = true }
         end
     elseif istable( mod ) then
         if mod.enabled then

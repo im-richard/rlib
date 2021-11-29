@@ -1505,10 +1505,10 @@ function ui:dispatch( id, mod, bMouse )
 end
 
 /*
-*   ui > registered > stage
+*   ui > stage
 *
 *   shows a registered pnl
-*   ensures a pnl is a valid pnl first
+*   supports both registered and default valid panels.
 *
 *   @param  : str id
 *   @param  : str, tbl mod
@@ -1517,8 +1517,11 @@ end
 */
 
 function ui:stage( id, mod, bMouse )
-    if not helper.str:valid( id ) or not istable( mod ) then
-        self:show( id )
+    if mod then
+        local pnl       = self:call( id, mod )
+                        if not self:ok( pnl ) then return false end
+
+        self:show( pnl )
 
         if bMouse then
             gui.EnableScreenClicker( true )
@@ -1527,21 +1530,19 @@ function ui:stage( id, mod, bMouse )
         return
     end
 
-    local pnl       = self:call( id, mod )
-                    if not self:ok( pnl ) then return false end
+    if not self:ok( id ) then return end
 
-    self:show( pnl )
-
+    self:show( id )
     if bMouse then
         gui.EnableScreenClicker( true )
     end
 end
 
 /*
-*   ui > registered > unstage
+*   ui > unstage
 *
 *   hides a registered pnl
-*   ensures a pnl is a valid pnl first
+*   supports both registered and default valid panels.
 *
 *   @param  : str id
 *   @param  : str, tbl mod
@@ -1550,8 +1551,11 @@ end
 */
 
 function ui:unstage( id, mod, bMouse )
-    if not helper.str:valid( id ) or not istable( mod ) then
-        self:hide( id )
+    if mod then
+        local pnl       = self:call( id, mod )
+                        if not self:ok( pnl ) then return false end
+
+        self:hide( pnl )
 
         if bMouse then
             gui.EnableScreenClicker( false )
@@ -1560,10 +1564,9 @@ function ui:unstage( id, mod, bMouse )
         return
     end
 
-    local pnl       = self:call( id, mod )
-                    if not self:ok( pnl ) then return false end
+    if not self:ok( id ) then return end
 
-    self:hide( pnl )
+    self:hide( id )
 
     if bMouse then
         gui.EnableScreenClicker( false )
