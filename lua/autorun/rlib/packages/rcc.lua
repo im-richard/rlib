@@ -276,6 +276,7 @@ function prepare( source )
 
     for k, v in pairs( source ) do
         if not v.enabled then continue end
+        if v.bInternal then continue end -- for commands like rlib_rnet_reload; otherwise function will be overwritten
 
         if SERVER and ( v.scope == 1 or v.scope == 2 ) then
             local fn = rcc.get( k )

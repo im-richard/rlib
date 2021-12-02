@@ -2019,6 +2019,54 @@ function helper.str:len( str, font, oset_w, oset_h, min_x, max_x, min_y, max_y )
 end
 
 /*
+    helper > str : length ( width )
+
+    returns width of text
+
+    @param  : str str
+    @param  : str font
+    @param  : int oset_w
+*/
+
+function helper.str:lenW( str, font, oset_w )
+    if not str then return 0, 0 end
+
+    str         = tostring( str )
+    oset_w      = isnumber( oset_w ) and oset_w or 0
+
+    surface.SetFont( font )
+
+    local x, y  = surface.GetTextSize( str )
+    x           = x + oset_w
+
+    return x
+end
+
+/*
+    helper > str : length ( height )
+
+    returns height of text
+
+    @param  : str str
+    @param  : str font
+    @param  : int oset_h
+*/
+
+function helper.str:lenH( str, font, oset_h )
+    if not str then return 0, 0 end
+
+    str         = tostring( str )
+    oset_h      = isnumber( oset_h ) and oset_h or 0
+
+    surface.SetFont( font )
+
+    local x, y  = surface.GetTextSize( str )
+    y           = y + oset_h
+
+    return y
+end
+
+/*
 *   helper > str > empty str
 *
 *   checks for a valid string but also checks for blank or space chars

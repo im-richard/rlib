@@ -29,27 +29,28 @@
 local base                  = rlib
 
 /*
-*   associated commands
-*
-*   :   parameters
-*
-*       enabled     :   determines if the command be useable or not
-*       is_base     :   will be considered the base command of the lib.
-*       is_hidden   :   determines if the command should be shown or not in the main list
-*                   :   do not make more than one command the base or you may have issues.
-*       id          :   command that must be typed in console to access
-*       clr         :   color to display command in when searched / seen in console list
-*       pubc        :   public command to execute command
-*       desc        :   description of command
-*       args        :   additional args that command supports
-*       scope       :   what scope the command can be accessed from ( 1 = sv, 2 = sh, 3 = cl )
-*       showsetup   :   displays the command in the help info after the server owner has been recognized using ?setup
-*       official    :   official rlib command; displayed within console when 'rlib' command input
-*       ex          :   examples of how the command can be utilized; used as visual help for user
-*       flags       :   command arg flags that can be used to access different sub-features
-*       notes       :   important notes to display when user searches help for a command
-*       warn        :   displays a warning to the user about using this command and non-liability
-*       no_console  :   cannot be executed by server-console. must have a valid player running command
+    associated commands
+
+    :   parameters
+
+        enabled     :   determines if the command be useable or not
+        bInternal   :   for internal cmds like rlib_rnet_reload; otherwise function will be overwritten
+        is_base     :   will be considered the base command of the lib.
+        is_hidden   :   determines if the command should be shown or not in the main list
+                    :   do not make more than one command the base or you may have issues.
+        id          :   command that must be typed in console to access
+        clr         :   color to display command in when searched / seen in console list
+        pubc        :   public command to execute command
+        desc        :   description of command
+        args        :   additional args that command supports
+        scope       :   what scope the command can be accessed from ( 1 = sv, 2 = sh, 3 = cl )
+        showsetup   :   displays the command in the help info after the server owner has been recognized using ?setup
+        official    :   official rlib command; displayed within console when 'rlib' command input
+        ex          :   examples of how the command can be utilized; used as visual help for user
+        flags       :   command arg flags that can be used to access different sub-features
+        notes       :   important notes to display when user searches help for a command
+        warn        :   displays a warning to the user about using this command and non-liability
+        no_console  :   cannot be executed by server-console. must have a valid player running command
 */
 
 base.c.commands =
@@ -497,17 +498,26 @@ base.c.commands =
         enabled             = true,
         id                  = 'rlib.restart',
         name                = 'Restart',
-        desc                = 'restart server / cancel timed restarts',
+        desc                = 'server restart | Def: 30s',
+        args                = '[ <seconds> ]',
         scope               = 1,
         official            = true,
         flags =
         {
-            [ 'cancel' ]    = { flag = '-c' },
+            [ 'cancel' ]    = { flag = { '-c', 'cancel', '-cancel' }, desc = 'cancel restart' },
+            [ 'instant' ]   = { flag = { '-i', 'instant', '-instant' }, desc = 'instant restart' },
         },
         ex =
         {
             'rlib.restart',
             'rlib.restart -c',
+            'rlib.restart -i',
+        },
+        notes =
+        {
+            'Can be cancelled with the command [ rlib.restart -c ]',
+            'Default: 30 seconds',
+            'Use rlib.restart -i for instant restart'
         },
     },
     [ 'rlib_rpm' ] =
@@ -559,30 +569,6 @@ base.c.commands =
         flags =
         {
             [ 'search' ]    = { flag = '-s', desc = 'search results' },
-        },
-    },
-    [ 'rlib_trestart' ] =
-    {
-        enabled             = true,
-        id                  = 'rlib.trestart',
-        name                = 'Restart » Timed',
-        desc                = 'delayed restart | Def: 30s',
-        args                = '[ <seconds> ]',
-        scope               = 1,
-        official            = true,
-        flags =
-        {
-            [ 'cancel' ]    = { flag = '-c' },
-        },
-        ex =
-        {
-            'rlib.trestart',
-            'rlib.trestart -c',
-        },
-        notes =
-        {
-            'Can be cancelled with the command [ rlib.trestart -c ]',
-            'Default: 30 seconds'
         },
     },
     [ 'rlib_tools_pco' ] =
@@ -717,6 +703,17 @@ base.c.commands =
         desc                = 'workshop ids loaded between modules / lib',
         scope               = 2,
         showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_rnet_reload' ] =
+    {
+        bInternal           = true,
+        enabled             = true,
+        id                  = 'rlib.rnet.reload',
+        name                = 'Reload RNet',
+        desc                = 'reload all registered rnet entries',
+        scope               = 1,
+        showsetup           = false,
         official            = true,
     },
 }

@@ -709,7 +709,7 @@ local function rcc_sap_encode( pl, cmd, args, str )
     */
 
     con( pl, 3 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'SAP > Encode' )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'SAP » Encode' )
     con( pl, 0 )
 
     /*
@@ -2320,21 +2320,21 @@ end
 rcc.register( 'rlib_oort_sendlog', rcc_oort_sendlog )
 
 /*
-    concommand > cancel restart
+    restart > action > cancel
 
-    allows for a player/console to cancel a server restart using either the restart concommand or timed.
+    allows for a player/console to cancel a server restart
+    using either the restart concommand or timed.
 */
 
-local function restart_cancel( pl )
+local function rs_cancel( pl )
     local bIsActive = false
     local timers =
     {
-        'rlib_cmd_srv_restart',
-        'rlib_cmd_srv_restart_wait',
-        'rlib_cmd_srv_restart_wait_s1',
-        'rlib_cmd_srv_restart_wait_s2',
-        'rlib_cmd_srv_restart_wait_s3_p1',
-        'rlib_cmd_srv_restart_wait_s3_p2',
+        'rlib_rs',
+        'rlib_rs_signal_cl',
+        'rlib_rs_signal',
+        'rlib_rs_delay_s2',
+        'rlib_rs_delay_s3',
     }
 
     for v in helper.get.data( timers ) do
@@ -2343,7 +2343,9 @@ local function restart_cancel( pl )
         bIsActive = true
     end
 
-    hook.Remove( 'Tick', pf .. 'timer.srv.restart' )
+    rhook.drop.gmod( 'Tick', 'rlib_rs' )
+
+    rnet.send.all( 'rlib_rs_broadcast', { active = false, remains = 0 } )
 
     if not bIsActive then
         log( 1, ln( 'restart_none_active' ) )
@@ -2353,22 +2355,39 @@ local function restart_cancel( pl )
     local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
 
     route( nil, true, script, 'Server restart', cfg.cmsg.clrs.target_tri, 'CANCELLED' )
-    storage:log( 7, false, '[ %s ] » cancelled an active server restart', admin_name )
-    log( 4, 'server restart cancelled by player [ %s ]', admin_name )
+    --storage:log( 7, false, '[ %s ] » cancelled an active server restart', admin_name )
+    log( RLIB_LOG_OK, 'server restart cancelled by player [ %s ]', admin_name )
 
     return false
 end
 
 /*
-    rcc > server restart
+    action > restart
+*/
+
+local function restart_action( )
+    base:log( RLIB_LOG_OK, ln( 'restart_now' ) )
+    rhook.drop.gmod( 'Tick', 'rlib_rs' )
+
+    base:push( 'A server restart has been activated' )
+
+    local cmd = string.format( '_restart%s', '\n' )
+    game.ConsoleCommand( cmd )
+end
+
+/*
+    rcc > restart
 
     gives a counter in public chat which forces a server restart after timer expires
+    yes we know the method of used to restart is 'hacky', but most servers utilize some type of hosting
+    that auto-detects a downed server and restarts it. this method basically crashes the server and then
+    the hosting servers take over.
 */
 
 local function rcc_restart( pl, cmd, args )
 
     /*
-        define command
+        get command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_restart' )
@@ -2392,149 +2411,179 @@ local function rcc_restart( pl, cmd, args )
     end
 
     /*
-        functionality
+        params
     */
 
-    local restart_timer     = 5
-    local arg_flag          = args and args[ 1 ] or false
+    local arg_a             = args and args[ 1 ] or 60
+    local arg_flag          = arg_a or false
     arg_flag                = helper.str:ok( arg_flag ) and arg_flag:lower( ) or false
 
-    local gcf_cancel = base.calls:gcflag( 'rlib_restart', 'cancel' )
+    /*
+        params
+    */
 
-    if ( arg_flag and ( arg_flag == gcf_cancel ) or ( arg_flag == '-cancel' or arg_flag == 'cancel' ) ) then
-        restart_cancel( pl )
+    local gcf_cancel        = base.calls:gcflag( ccmd.call, 'cancel' )
+    local gcf_instant       = base.calls:gcflag( ccmd.call, 'instant' )
+
+    /*
+        params > cancel
+
+        @ex     : rlib.restart -c
+    */
+
+    if base.calls:gcflagMatch( gcf_cancel, arg_flag ) then
+        rs_cancel( pl )
         return false
     end
 
-    if not timex.exists( 'rlib_cmd_srv_restart' ) then
-        local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
-
-        storage:log( 7, false, '[ %s ] » forced a server restart', admin_name )
-        log( 4, '[ %s ] » forced a server restart', admin_name )
-
-        timex.create( 'rlib_cmd_srv_restart', restart_timer, 1, function( )
-            log( 4, ln( 'restart_now' ) )
-        end )
-
-        route( nil, true, script, 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( restart_timer ), cfg.cmsg.clrs.msg, 'seconds' )
-    end
-end
-rcc.register( 'rlib_restart', rcc_restart )
-
-/*
-    rcc > timed server restart
-
-    gives a counter in public chat which forces a server restart after timer expires
-    yes we know the method of used to restart is 'hacky', but most servers utilize some type of hosting
-    that auto-detects a downed server and restarts it. this method basically crashes the server and then
-    the hosting servers take over.
-*/
-
-local function rcc_trestart( pl, cmd, args )
-
     /*
-        define command
+        params > instant
+
+        @ex     : rlib.restart -i
     */
 
-    local ccmd = base.calls:get( 'commands', 'rlib_trestart' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        functionality
-    */
-
-    local arg_time      = args and args[ 1 ] or 60
-    local arg_flag      = arg_time
-    arg_flag            = helper.str:ok( arg_flag ) and arg_flag:lower( ) or false
-
-    local gcf_cancel    = base.calls:gcflag( 'rlib_trestart', 'cancel' )
-
-    if ( arg_flag and ( arg_flag == gcf_cancel ) or ( arg_flag == '-cancel' or arg_flag == 'cancel' ) ) then
-        restart_cancel( pl )
+    if base.calls:gcflagMatch( gcf_instant, arg_flag ) then
+        restart_action( )
         return false
     end
 
-    local time_step2    = arg_time / 2 -- half of original arg time
-    local timex_cd      = 10 -- when to start the second-by-second last countdown
+    /*
+        unknown argument
+    */
 
-    if tonumber( arg_time ) > 300 then
-        route( pl, false, 'RESTART', 'Forced restart time cannot exceed', cfg.cmsg.clrs.target_tri, '300', cfg.cmsg.clrs.msg, 'seconds' )
+    if not helper:bIsNum( arg_a ) then
+
+        con( pl, 3  )
+        con( pl, 0  )
+        con( pl, clr_y, sf( '%s » %s', script, ccmd.name ) )
+        con( pl, 1  )
+        con( pl, 'Unknown flag   ', clr_y, arg_a )
+        con( pl, 1  )
+        con( pl, clr_y, 'Help » ', clr_w, 'Type ', clr_r, sf( ' %s ', ccmd.id:gsub( '[%p]', ' ' ) ), clr_w, ' for information about this command'  )
+        con( pl, 0  )
+        con( pl, 3  )
+
         return
     end
 
-    local step2_OK, step3_OK = false, false
+    /*
+        argument should be duration at this point; convert to number
+    */
 
-    if not timex.exists( 'rlib_cmd_srv_restart_delay' ) then
+    arg_a = tonumber( arg_a )
 
-        local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
+    /*
+        declare > times
+    */
 
-        route( nil, true, script, 'Server will restart in', cfg.cmsg.clrs.target_tri, tostring( arg_time ), cfg.cmsg.clrs.msg, 'seconds' )
-        log( 4, 'Server restart in [ %s ] seconds', arg_time )
-        storage:log( 7, false, '[ %s ] has forced a timed server restart in [ %i ] seconds', admin_name, arg_time )
+    local i_step2           = arg_a / 2      -- half of original arg time
+    local i_last10          = 10                -- when to start the second-by-second last countdown
+    local i_max             = 300               -- max allowed time
+    local bStep2, bStep3    = false, false
 
-        -- overall timer action to execute when timer runs out
-        timex.create( 'rlib_cmd_srv_restart_delay', arg_time, 1, function( )
-            log( 4, ln( 'restart_now' ) )
-            for v in helper.get.ents( ) do v:SetPos( Vector( 99999999999999999, 0, 0 ) ) end
-            hook.Remove( 'Tick', pf .. 'timer.srv.restart' )
-        end )
+    /*
+        if delay greater than max allowed
+    */
 
-        local function restart_execute( )
-            local exec_cd = timex_cd
-            if not timex.exists( 'rlib_cmd_srv_restart_wait_s3_p2' ) then
-                timex.create( 'rlib_cmd_srv_restart_wait_s3_p2', 1, timex_cd, function( )
-                    if exec_cd ~= 11 then
-                        local term = ( exec_cd == 1 ) and 'second' or 'seconds'
-                        if ULib then ULib.csay( _, 'Server restart in [ ' .. tostring( exec_cd ) .. ' ] ' .. term ) end
-                        route( nil, true, script, 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( exec_cd ), cfg.cmsg.clrs.msg, term )
-                        log( 4, 'Server restart in [ %s ] %s', tostring( exec_cd ), term )
-                    end
-                    exec_cd = exec_cd - 1
-                end )
+    if tonumber( arg_a ) > i_max then
+        base:log( RLIB_LOG_ERR, 'Restart time cannot exceed %s', i_max )
+        return
+    end
+
+    /*
+        disallow starting a timed restart if one already active
+    */
+
+    if timex.exists( 'rlib_rs_signal' ) then
+        base:log( RLIB_LOG_ERR, ln( 'rs_exists' ) )
+        return
+    end
+
+    /*
+        overall timer action to execute when timer runs out
+        holds the final code to run when the restart takes place
+    */
+
+    timex.create( 'rlib_rs_signal', arg_a, 1, function( )
+        restart_action( )
+    end )
+
+    /*
+        tracking the remaining time client-side makes things too unreliable, especially on a laggy server.
+        create timer with # of reps equal to restart time and broadcast to players
+    */
+
+    timex.create( 'rlib_rs_signal_cl', 1, arg_a, function( )
+        local remains = timex.reps( 'rlib_rs_signal_cl' )
+        rnet.send.all( 'rlib_rs_broadcast', { active = true, remains = remains }, true )
+    end )
+
+    /*
+        restart > countdown from 10
+
+        executes when the final 10 seconds are remaining in the countdown
+    */
+
+    local function rs_count10( )
+        local i_remains = i_last10
+        if timex.exists( 'rlib_rs' ) then return end
+
+        timex.create( 'rlib_rs', 1, i_last10, function( )
+            if i_remains ~= ( i_last10 + 1 ) then
+                term = helper.str:plural( ln( 'time_sec_ln' ), i_remains )
+
+                if ULib then ULib.csay( _, ln( 'rs_msg_ulx', i_remains, term ) ) end
+
+                route( nil, true, 'RESTART', 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( i_remains ), cfg.cmsg.clrs.msg, term )
+                base:log( RLIB_LOG_OK, ln( 'rs_msg', i_remains, term ) )
             end
+            i_remains = i_remains - 1
+        end )
+    end
+
+    /*
+        tick :: track restart progress
+    */
+
+    rhook.new.gmod( 'Tick', 'rlib_rs', function( )
+        local rs_remains    = timex.remains( 'rlib_rs_signal' )
+        rs_remains          = math.Round( rs_remains )
+
+        /*
+            restart > step 2
+
+            shows a notification in chat when the restart hits the half-way mark
+        */
+
+        if ( rs_remains == i_step2 and not bStep2 ) and not timex.exists( 'rlib_rs_delay_s2' ) then
+            timex.create( 'rlib_rs_delay_s2', 0.01, 1, function( )
+                term = helper.str:plural( ln( 'time_sec_ln' ), i_remains )
+
+                route( nil, true, 'RESTART', 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( i_step2 ), cfg.cmsg.clrs.msg, 'seconds' )
+                base:log( RLIB_LOG_OK, ln( 'rs_msg', i_step2, term ) )
+
+                bStep2 = true
+            end )
         end
 
-        hook.Add( 'Tick', pf .. 'timer.srv.restart', function( )
-            local timex_remains     = timex.remains( 'rlib_cmd_srv_restart_wait' )
-            timex_remains           = math.Round( timex_remains )
+        /*
+            restart > step 3
 
-            if ( timex_remains == time_step2 and not step2_OK ) and not timex.exists( 'rlib_cmd_srv_restart_wait_s2' ) then
-                timex.create( 'rlib_cmd_srv_restart_wait_s2', 0.01, 1, function( )
-                    route( nil, true, script, 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( time_step2 ), cfg.cmsg.clrs.msg, 'seconds' )
-                    log( 4, 'Server restart in [ %s ] seconds', tostring( time_step2 ) )
-                    step2_OK = true
-                end )
-            end
+            starts a 10 second countdown
+        */
 
-            if ( timex_remains == timex_cd and not step3_OK ) and not timex.exists( 'rlib_cmd_srv_restart_wait_s3_p1' ) then
-                timex.create( 'rlib_cmd_srv_restart_wait_s3_p1', 0.01, 1, function( )
-                    step3_OK = true
-                    hook.Remove( 'Tick', pf .. 'timer.srv.restart' )
-                    restart_execute( )
-                end )
-            end
-        end )
+        if ( rs_remains == i_last10 and not bStep3 ) and not timex.exists( 'rlib_rs_delay_s3' ) then
+            timex.create( 'rlib_rs_delay_s3', 0.01, 1, function( )
+                rhook.drop.gmod( 'Tick', 'rlib_rs' )
+                rs_count10( )
 
-    end
+                bStep3 = true
+            end )
+        end
+    end )
+
 end
-rcc.register( 'rlib_trestart', rcc_trestart )
+rcc.register( 'rlib_restart', rcc_restart )
 
 /*
     rcc > rpm
@@ -2582,7 +2631,7 @@ local function rcc_rpm( pl, cmd, args )
     con( pl, 1  )
     con( pl, 0  )
     con( pl, clr_y, resp )
-    con( pl, 0  )
+    con( pl, 1  )
     con( pl, 'Allows you to mount packages that are available for rlib.' )
     con( pl, 0  )
     con( pl, 1  )
@@ -2611,7 +2660,7 @@ local function rcc_rpm( pl, cmd, args )
     if arg_flag and ( arg_flag == gcf_inst ) then
         local arg_pkg   = args and args[ 2 ] or false
         if not helper.str:ok( arg_pkg ) then
-            con( pl, 'Requires parameter' )
+            con( pl, 'Requires package name to install' )
 
             con( pl, 1  )
             con( pl, 0  )
@@ -2625,10 +2674,22 @@ local function rcc_rpm( pl, cmd, args )
 
     con( pl, 'Requires parameter' )
 
-    con( pl, 1  )
     con( pl, 0  )
-    con( pl, clr_y, 'View list of list of packages with ', clr_r, 'rlib.rpm -l' )
-    con( pl, 2  )
+    con( pl, 1  )
+
+    l1_d    = sf( '%-25s', 'rlib.rpm -l' )
+    s1_l    = sf( '%-5s', '»' )
+    l2_d    = sf( '%-15s', 'View packages' )
+
+    con( pl, clr_y, l1_d, clr_p, s1_l, clr_w, l2_d )
+
+    l1_d    = sf( '%-25s', 'rlib.rpm -i <pkg>' )
+    s1_l    = sf( '%-5s', '»' )
+    l2_d    = sf( '%-15s', 'Install a package' )
+
+    con( pl, clr_y, l1_d, clr_p, s1_l, clr_w, l2_d )
+
+    con( pl, 3  )
 
 end
 rcc.register( 'rlib_rpm', rcc_rpm )

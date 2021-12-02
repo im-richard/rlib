@@ -80,6 +80,7 @@ local function target   ( ... ) base.msg:target( ... ) end
 
 local clr_r                 = Color( 255, 0, 0 )
 local clr_y                 = Color( 255, 255, 0 )
+local clr_g                 = Color( 0, 255, 0 )
 local clr_w                 = Color( 255, 255, 255 )
 local clr_p                 = Color( 255, 0, 255 )
 
@@ -325,7 +326,7 @@ local function rcc_base( pl, cmd, args )
             con( pl, clr_y, f1_l, clr_w, f1_2 )
 
             for v in helper.get.data( item.flags, SortedPairs ) do
-                local i_flag        = v.flag or '-'
+                local i_flag        = istable( v.flag ) and v.flag[ 1 ] or v.flag or '-'
                 local i_desc        = v.desc or 'no desc'
 
                 local f1_d          = sf( '%-5s',   '' )
@@ -1205,10 +1206,18 @@ local function rcc_running( pl, cmd, args )
 
     local lst               = base.modules:listf( )
 
-    con( pl, 1 )
-    con( pl, 'rlib » running modules » ', cfg.smsg.clrs.t1, lst )
-    con( pl, 1 )
+    /*
+        output > header
+    */
 
+    con( pl, 3 )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'Running Modules' )
+    con( pl, 0 )
+
+    con( pl, clr_g, lst )
+
+    con( pl, 0 )
+    con( pl, 3 )
 end
 rcc.register( 'rlib_running', rcc_running )
 
@@ -1380,7 +1389,7 @@ local function rcc_help( pl, cmd, args )
     *   functionality
     */
 
-    con( pl, 0 )
+    con( pl, 3 )
 
     local h1_l      = sf( '%-20s', 'rlib » help' )
     local h2_l      = sf( '%-15s', '' )
@@ -1421,7 +1430,7 @@ local function rcc_help( pl, cmd, args )
     con( pl, clr_y, 'Help » ', clr_w, 'Access the command list by typing ', Color( 0, 255, 0 ), base_cmd, clr_w, ' in console'  )
     con( pl, clr_y, 'Help » ', clr_w, 'Syntax: ', Color( 0, 255, 0 ), base_cmd )
 
-    con( pl, 0 )
+    con( pl, 3 )
 
 end
 rcc.register( 'rlib_help', rcc_help )
@@ -2056,11 +2065,21 @@ local function rcc_uptime( pl, cmd, args )
     end
 
     /*
+        output > header
+    */
+
+    con( pl, 3 )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'Uptime' )
+    con( pl, 0 )
+
+    /*
     *   functionality
     */
 
     local uptime = timex.secs.sh_cols( SysTime( ) - sys.uptime )
-    route( pl, false, script, sf( '%s ', ln( 'server_uptime' ) ), cfg.cmsg.clrs.target, tostring( uptime ) )
+    con( pl, clr_g, tostring( uptime ) )
+
+    con( pl, 3 )
 
 end
 rcc.register( 'rlib_uptime', rcc_uptime )
@@ -2142,16 +2161,11 @@ local function rcc_workshops( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        output > header
     */
 
-    con( pl, 0 )
-
-    local h1_l  = sf( '%-15s', 'rlib » workshops' )
-    local h2_l  = sf( '%-15s', '' )
-    local h3_l  = sf( '%s %s', h1_l, h2_l )
-
-    con( pl, clr_r, h3_l )
+    con( pl, 3 )
+    con( pl, clr_y, script, clr_p, ' » ', clr_w, 'Workshops' )
     con( pl, 0 )
 
     local ws = base.get:ws( ) or { }
@@ -2175,7 +2189,7 @@ local function rcc_workshops( pl, cmd, args )
         con( pl, clr_y, h1_d, clr_p, h2_d, clr_w, h3_d, clr_p, h4_d, clr_w, h5_d )
     end
 
-    con( pl, 0 )
+    con( pl, 3 )
 
 end
 rcc.register( 'rlib_workshops', rcc_workshops )

@@ -180,9 +180,17 @@ local function fonts_register( pl )
     */
 
         _f( pref( 'design_nms_name' ),	                { size = 46, weight = 100, antialias = true, shadow = true, font = 'Segoe UI Light' } )
-        _f( pref( 'design_nms_msg' ),		            { size = 20, weight = 100, antialias = true, shadow = false, font = 'Roboto' } )
+        _f( pref( 'design_nms_msg' ),		            { size = 26, weight = 100, antialias = true, shadow = false, font = 'Segoe UI Light' } )
         _f( pref( 'design_nms_ico' ),                   { size = 68, weight = 800, antialias = true, font = 'GSym Solid', extended = true } )
         _f( pref( 'design_nms_qclose' ),	            { size = 20, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
+
+    /*
+        fonts > notification > restart
+    */
+
+        _f( pref( 'design_rs_title' ),                  { size = math.Round( 20 * fs ), weight = 400, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_rs_cntdown' ),                { size = math.Round( 48 * fs ), weight = 200, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_rs_status' ),                 { size = math.Round( 30 * fs ), weight = 200, antialias = true, shadow = false, font = 'Segoe UI Light' } )
 
     /*
         fonts > elements

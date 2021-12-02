@@ -287,6 +287,26 @@ function base.calls:gcflag_valid( cmd, flag )
 end
 
 /*
+    calls > gcflag > match
+
+    checks the argument provided by user against the actual command's flag
+
+    @param  : tbl cmd
+    @param  : str arg
+    @return : bool
+*/
+
+function base.calls:gcflagMatch( cmd, arg )
+    if istable( cmd ) then
+        return table.HasValue( cmd, arg )
+    else
+        return cmd:lower( ) == arg:lower( )
+    end
+
+    return false
+end
+
+/*
     calls > post load
 
     executed after all calls have been setup and loaded
@@ -334,7 +354,9 @@ function base.calls:get( t, s )
                     if not data then return end
 
     if s and data[ s ] then
-        return data[ s ]
+        local tbl           = data[ s ]
+        tbl[ 'call' ]       = s -- insert the original command
+        return tbl
     else
         return data
     end

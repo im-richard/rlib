@@ -1874,8 +1874,8 @@ function design:nms( msg, title, ico )
                                         end
 
                                         -- text
-                                        design.txt( title, w / 2, h / 2 - 17, ColorAlpha( clr_txt, c_alpha ), fnt_name, 1, 1 )
-                                        design.txt( msg, w / 2, h / 2 + 17, ColorAlpha( clr_txt, c_alpha ), fnt_msg, 1, 1 )
+                                        design.txt( title, w / 2, h / 2 - 19, ColorAlpha( clr_txt, c_alpha ), fnt_name, 1, 1 )
+                                        design.txt( msg, w / 2, h / 2 + 19, ColorAlpha( clr_txt, c_alpha ), fnt_msg, 1, 1 )
                                         design.txt( ln( 'dialog_key_close', key_close ), w / 2, h - h * .10 / 2 + 15, ColorAlpha( clr_txt, c_alpha ), fnt_qclose, 1, 1 )
 
                                         local time          = math.Remap( CurTime( ) - m_ctime, 0, dur, w, 0 )
@@ -2251,15 +2251,9 @@ end
 */
 
 function design:push( msgtbl, title, ico, clr_title, clr_box )
-    msgtbl                  = istable( msgtbl ) and msgtbl or { 'Error Occured' }
+    msgtbl                  = msgtbl or { 'Error Occured' }
     title                   = helper.str:ok( title ) and title or 'Notice'
     ico                     = helper.str:ok( ico ) and ico or ''
-
-    /*
-        check
-    */
-
-    if not istable( msgtbl ) then return end
 
     /*
         destroy existing
@@ -2272,15 +2266,19 @@ function design:push( msgtbl, title, ico, clr_title, clr_box )
     */
 
     local msg, i = '', 0
-    for k, v in pairs( msgtbl ) do
-        if isstring( v ) then
-            if i == 0 then
-                msg = v
-            else
-                msg = msg .. v
+    if istable( msgtbl ) then
+        for k, v in pairs( msgtbl ) do
+            if isstring( v ) then
+                if i == 0 then
+                    msg = v
+                else
+                    msg = msg .. v
+                end
+                i = i + 1
             end
-            i = i + 1
         end
+    else
+        msg, i = msgtbl, 2
     end
 
     /*
@@ -2379,16 +2377,20 @@ function design:push( msgtbl, title, ico, clr_title, clr_box )
         obj > determine string and color keys
     */
 
-    for k, v in pairs( msgtbl ) do
-        if IsColor( v ) then
-            body:InsertColorChange( v.r, v.g, v.b, v.a  )
-        elseif isstring( v ) and v ~= '\n' then
-            local txt = v .. ' '
-            body:AppendText( txt )
-        elseif v == '\n' then
-            local txt = v
-            body:AppendText( txt )
+    if istable( msgtbl ) then
+        for k, v in pairs( msgtbl ) do
+            if IsColor( v ) then
+                body:InsertColorChange( v.r, v.g, v.b, v.a  )
+            elseif isstring( v ) and v ~= '\n' then
+                local txt = v .. ' '
+                body:AppendText( txt )
+            elseif v == '\n' then
+                local txt = v
+                body:AppendText( txt )
+            end
         end
+    else
+        body:AppendText( msgtbl )
     end
 
     /*
@@ -2841,6 +2843,124 @@ function design:inform( mtype, msg, title, dur )
     end
 
 end
+
+/*
+    design > restart
+*/
+
+function design:restart( msg )
+
+    /*
+        dispatch existing
+    */
+
+    ui:dispatch( base.restart )
+
+    /*
+        declare
+    */
+
+    msg                     = helper.ok.str( msg ) or ln( 'rs_in' )
+    local sz_w              = RSW( ) * 0.10
+    local sz_h              = RSH( ) * 0.10
+    local sz_txt_h          = helper.str:lenH( msg, pref( 'design_rs_title' ), 10 )
+
+    /*
+        declare > colors
+    */
+
+    local clr_box_ol        = Hex( '282828' )
+    local clr_box_n         = Hex( '232323' )
+    local clr_header        = Hex( 'E06B6B' )
+    local clr_img           = Hex( 'FFFFFF', 1 )
+    local clr_txt_cntdown   = Hex( 'FFFFFF' )
+
+    /*
+        parent
+    */
+
+    local obj                       = ui.new( 'pnl'                         )
+    :size                           ( sz_w, sz_h                            )
+    :pos                            ( ScrW( ) / 2 - ( sz_w / 2 ), -sz_h     )
+    :drawtop                        ( true                                  )
+
+                                    :draw( function( s, w, h )
+                                        design.rbox( 4, 0, 0, w, h, clr_box_ol )
+                                        design.rbox( 4, 2, 2, w - 4, h - 4, clr_box_n )
+
+                                        surface.SetDrawColor( clr_img )
+                                        surface.DrawTexturedRectRotated( w + 50, 0, w, h * 3, -145 )
+                                    end )
+
+    /*
+        header
+    */
+
+    local header                    = ui.new( 'pnl', obj                    )
+    :top                            ( 'm', 0, 5, 0, 0                       )
+    :tall                           ( sz_txt_h                              )
+
+                                    :draw( function( s, w, h )
+                                        draw.SimpleText( msg, pref( 'design_rs_title' ), w / 2, h / 2, clr_header, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+        body
+    */
+
+    local body                      = ui.new( 'pnl', obj                    )
+    :nodraw                         (                                       )
+    :fill                           ( 'm', 0, 0, 0, 5                       )
+
+    /*
+        label > countdown
+    */
+
+    local l_cd                      = ui.new( 'lbl', body                   )
+    :fill                           ( 'm', 0, 5, 0, 5                       )
+    :notext                         (                                       )
+    :align                          ( 5                                     )
+    :font                           ( pref( 'design_rs_cntdown' )           )
+    :textclr                        ( clr_txt_cntdown                       )
+    :align                          ( 5                                     )
+
+    /*
+        create object
+    */
+
+    if ui:ok( obj ) then
+        base.restart = obj
+        obj:MoveTo( ScrW( ) / 2 - ( sz_w / 2 ), 5, 1.01, 1, -1 )
+    end
+
+    /*
+        logic
+    */
+
+    local function logic_restart( )
+        if not ui:ok( base.restart ) then
+            rhook.drop.gmod( 'Think', 'rlib_design_notice_rs' )
+            return
+        end
+
+        if ui:visible( l_cd ) then
+            local remains   = base.sys.rs_remains
+            print( remains )
+            local resp      = ( isnumber( remains ) and remains ) or 0
+            resp            = resp > 0 and timex.secs.sh_simple( resp ) or ln( 'restart_status' )
+
+            l_cd:SetText( resp )
+            if resp == ln( 'restart_status' ) then
+                l_cd:SetFont( pref( 'design_rs_status' ) )
+            end
+        end
+    end
+    rhook.new.gmod( 'Think', 'rlib_design_notice_rs', logic_restart )
+
+end
+
+rhook.drop.gmod( 'Think', 'rlib_design_notice_rs' )
+ui:dispatch( base.restart )
 
 /*
 *   design > animted scrolling text

@@ -59,15 +59,15 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1627623174
+    mf.released                     = 1638480653
     mf.version                      = { 3, 6, 0, 0 }
     mf.showcopyright                = true
 
     /*
-        packages
+        files
     */
 
-    mf.packages =
+    mf.files =
     {
         core =
         {
@@ -101,6 +101,18 @@ function rlib.autoload:Run( parent )
             { file = 'fonts',                   scope = 3 },
             { file = 'design',                  scope = 3 },
         },
+        post =
+        {
+            { file = 'rnet',                    scope = 2 },
+        },
+    }
+
+    /*
+        packages
+    */
+
+    mf.packages =
+    {
         pre =
         {
             'rcc',
@@ -392,11 +404,8 @@ loaded and are now ready to install additional modules.
         localization
     */
 
-    local cfg           = base.settings
-    local path_lib      = mf.folder
-    local sf            = string.format
-    local inc           = include
-    local acs           = AddCSLuaFile
+    local cfg               = base.settings
+    local path_lib          = mf.folder
 
     /*
         load lua modules
@@ -412,8 +421,8 @@ loaded and are now ready to install additional modules.
 
     for k, v in ipairs( modules_lua ) do
         if file.Exists( 'includes/modules/' .. v .. '.lua', 'LUA' ) then
-            inc( 'includes/modules/' .. v .. '.lua' )
-            if SERVER then acs( 'includes/modules/' .. v .. '.lua' ) end
+            include( 'includes/modules/' .. v .. '.lua' )
+            if SERVER then AddCSLuaFile( 'includes/modules/' .. v .. '.lua' ) end
         end
     end
 
@@ -466,10 +475,10 @@ loaded and are now ready to install additional modules.
     */
 
     for _, v in ipairs( parent.manifest.calls ) do
-        local path_c = sf( '%s/%s/%s/%s.lua', path_lib, 'calls', 'catalog', v )
+        local path_c = string.format( '%s/%s/%s/%s.lua', path_lib, 'calls', 'catalog', v )
         if not file.Exists( path_c, 'LUA' ) then continue end
-        if SERVER then acs( path_c ) end
-        inc( path_c )
+        if SERVER then AddCSLuaFile( path_c ) end
+        include( path_c )
     end
 
     /*
@@ -477,25 +486,25 @@ loaded and are now ready to install additional modules.
     */
 
     for _, v in ipairs( parent.manifest.resources ) do
-        local path = sf( '%s/%s/%s.lua', path_lib, 'resources', v )
+        local path = string.format( '%s/%s/%s.lua', path_lib, 'resources', v )
         if not file.Exists( path, 'LUA' ) then continue end
-        if SERVER then acs( path ) end
-        inc( path )
+        if SERVER then AddCSLuaFile( path ) end
+        include( path )
     end
 
     /*
-        local manifest > load packages > pre
+        packages > load > pre
     */
 
     for _, v in ipairs( mf.packages.pre ) do
-        local path = sf( '%s/%s/%s.lua', path_lib, 'packages', v )
+        local path = string.format( '%s/%s/%s.lua', path_lib, 'packages', v )
         if not file.Exists( path, 'LUA' ) then continue end
-        if SERVER then acs( path ) end
-        inc( path )
+        if SERVER then AddCSLuaFile( path ) end
+        include( path )
     end
 
     /*
-        load > core packages
+        core > load files
 
         do not modify these under any circumstance. we need certain stuff to load first before the
         recursive loader does its job. It's always nice to have a little more control.
@@ -514,65 +523,30 @@ loaded and are now ready to install additional modules.
             seg     : dir of file [ excl filename ] [ def path_lib ]
     */
 
-    for _, v in ipairs( mf.packages.core ) do
-        if not v.file then continue end
-        if not v.seg then v.seg = path_lib end
-
-        local path_prio = sf( '%s/%s.lua', v.seg, v.file )
-
-        if not v.scope then
-            MsgC( Color( 255, 0, 0 ), '[' .. mf.name .. '] [L] ERR: ' .. path_prio .. ' :: [ missing scope ]\n' )
-            continue
-        end
-
-        if v.scope == 1 then
-            if not file.Exists( path_prio, 'LUA' ) then continue end
-            if SERVER then inc( path_prio ) end
-            if cfg.debug.enabled then
-                MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SV] ' .. path_prio .. '\n' )
-            end
-        elseif v.scope == 2 then
-            if not file.Exists( path_prio, 'LUA' ) then continue end
-            inc( path_prio )
-            if SERVER then acs( path_prio ) end
-            if cfg.debug.enabled then
-                MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SH] ' .. path_prio .. '\n' )
-            end
-        elseif v.scope == 3 then
-            if not file.Exists( path_prio, 'LUA' ) then continue end
-            if SERVER then
-                acs( path_prio )
-            else
-                inc( path_prio )
-            end
-            if cfg.debug.enabled then
-                MsgC( Color( 255, 255, 0), '[' .. mf.name .. '] [L-CL] ' .. path_prio .. '\n' )
-            end
-        end
-    end
+    self:Files( mf.files.core )
 
     /*
-        local manifest > load packages > post
+        packages > load > post
     */
 
     for _, v in ipairs( mf.packages.post ) do
-        local path = sf( '%s/%s/%s.lua', path_lib, 'packages', v )
+        local path = string.format( '%s/%s/%s.lua', path_lib, 'packages', v )
         if not file.Exists( path, 'LUA' ) then continue end
-        if SERVER then acs( path ) end
-        inc( path )
+        if SERVER then AddCSLuaFile( path ) end
+        include( path )
     end
 
     /*
         load > languages
     */
 
-    local path_lang     = sf( '%s/%s', mf.folder, 'languages' )
+    local path_lang     = string.format( '%s/%s', mf.folder, 'languages' )
     local files, _      = file.Find( path_lang .. '/*', 'LUA' )
 
     for v in base.h.get.data( files ) do
-        local path = sf( '%s/%s', path_lang, v )
-        inc( path )
-        acs( path )
+        local path = string.format( '%s/%s', path_lang, v )
+        include( path )
+        AddCSLuaFile( path )
         base:log( 6, '+ lang [ %s ]', path )
     end
 
@@ -584,11 +558,11 @@ loaded and are now ready to install additional modules.
 
     local files_obj, _ = file.Find( path_lib .. '/obj/' .. '*', 'LUA' )
     for ui in base.h.get.data( files_obj ) do
-        local path = sf( '%s/%s/%s', path_lib, 'obj', ui )
+        local path = string.format( '%s/%s/%s', path_lib, 'obj', ui )
         if SERVER then
-            acs( path )
+            AddCSLuaFile( path )
         else
-            inc( path )
+            include( path )
         end
         base:log( 6, '+ obj [ %s ]', path )
     end
@@ -601,11 +575,11 @@ loaded and are now ready to install additional modules.
 
     local files_inf, _ = file.Find( path_lib .. '/layout/' .. '*', 'LUA' )
     for inf in base.h.get.data( files_inf ) do
-        local path = sf( '%s/%s/%s', path_lib, 'layout', inf )
+        local path = string.format( '%s/%s/%s', path_lib, 'layout', inf )
         if SERVER then
-            acs( path )
+            AddCSLuaFile( path )
         else
-            inc( path )
+            include( path )
         end
         base:log( 6, '+ lo [ %s ]', path )
     end
@@ -651,4 +625,62 @@ loaded and are now ready to install additional modules.
         RunConsoleCommand( 'sv_hibernate_think', '1' )
     end
 
+    /*
+        files > post load
+    */
+
+    self:Files( mf.files.post )
+
+end
+
+/*
+    rlib > autoload > files
+
+    load files for library
+
+    @param  : tbl src
+*/
+
+function rlib.autoload:Files( src )
+    if not istable( src ) then
+        MsgC( Color( 255, 0, 0 ), '[' .. rlib.manifest.name .. '] [L] Error: invalid path ( autoload:Files( ) )\n' )
+        return
+    end
+
+    for _, v in ipairs( src ) do
+        if not v.file then continue end
+        if not v.seg then v.seg = rlib.manifest.folder end
+
+        local path_prio = string.format( '%s/%s.lua', v.seg, v.file )
+
+        if not v.scope then
+            MsgC( Color( 255, 0, 0 ), '[' .. mf.name .. '] [L] ERR: ' .. path_prio .. ' :: [ missing scope ]\n' )
+            continue
+        end
+
+        if v.scope == 1 then
+            if not file.Exists( path_prio, 'LUA' ) then continue end
+            if SERVER then include( path_prio ) end
+            if rlib.settings.debug.enabled then
+                MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SV] ' .. path_prio .. '\n' )
+            end
+        elseif v.scope == 2 then
+            if not file.Exists( path_prio, 'LUA' ) then continue end
+            include( path_prio )
+            if SERVER then AddCSLuaFile( path_prio ) end
+            if rlib.settings.debug.enabled then
+                MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SH] ' .. path_prio .. '\n' )
+            end
+        elseif v.scope == 3 then
+            if not file.Exists( path_prio, 'LUA' ) then continue end
+            if SERVER then
+                AddCSLuaFile( path_prio )
+            else
+                include( path_prio )
+            end
+            if rlib.settings.debug.enabled then
+                MsgC( Color( 255, 255, 0), '[' .. mf.name .. '] [L-CL] ' .. path_prio .. '\n' )
+            end
+        end
+    end
 end
