@@ -177,10 +177,6 @@ function base.calls:load( bPrefix, affix )
         self:Catalog( )
     end
 
-    if rnet then
-        rhook.run.rlib( 'rlib_rnet_register' )
-    end
-
     rhook.run.rlib( 'rlib_calls_post' )
 end
 

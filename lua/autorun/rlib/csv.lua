@@ -1238,12 +1238,18 @@ hook.Add( 'PlayerSpawn', pid( 'pl_drawdistance' ), pl_rdo_drawdistance )
 function base:Startup( )
 
     /*
+        log
+    */
+
+    base:log( RLIB_LOG_SYSTEM, 'Server starting up ...' )
+
+    /*
         writedata > history
 
         outputs the current startup to data/rlib
     */
 
-    local index             = 0
+    local i                 = 0
     local data              = { }
     data.history            = { }
     data.startups           = 0
@@ -1254,17 +1260,17 @@ function base:Startup( )
         if gdata then
             for k, v in pairs( gdata.history ) do
                 data.history[ k ] = v
-                index = index + 1
+                i = i + 1
             end
         end
     end
 
-    index                   = index + 1
-    data.startups           = index
-    data.history[ index ]   = os.time( )
+    i                       = i + 1
+    data.startups           = i
+    data.history[ i ]       = os.time( )
 
     local history_sz        = file.Size( path_hist, 'DATA' )
-    sys.startups            = index
+    sys.startups            = i
     sys.history_sz          = calc.fs.size( history_sz ) or 0
     sys.history_ct          = history_sz and 1 or 0
 
@@ -1276,11 +1282,6 @@ function base:Startup( )
 
     SetGlobalString( 'rlib_sess', sys.startups )
 
-    /*
-        log
-    */
-
-    base:log( RLIB_LOG_SYSTEM, 'Server starting up ...' )
 end
 
 /*
@@ -1447,6 +1448,7 @@ local function __lib_initpostentity( )
 
     rhook.run.rlib( 'rlib_cmd_register' )
     rhook.run.rlib( 'rlib_pkg_register' )
+    rhook.run.rlib( 'rlib_rnet_register' )
 
     /*
         register commands
@@ -2626,7 +2628,7 @@ local function netlib_report( len, pl )
         fetch server console log
     */
 
-    local console_log = file.Exists( 'console.log', 'GAME' ) and file.Read( 'console.log', 'GAME' ) or ln( 'none' )
+    local console_log       = file.Exists( 'console.log', 'GAME' ) and file.Read( 'console.log', 'GAME' ) or ln( 'none' )
 
     /*
         create report table
@@ -2634,18 +2636,18 @@ local function netlib_report( len, pl )
 
     local report_data =
     {
-        reporter        = pl:SteamID64( ),
-        reporter_msg    = reporter_input or ln( 'none' ),
-        rlib_build      = mf.version,
-        server_ip       = base.get:ip( ),
-        server_port     = ts( base.get:port( ) ),
-        server_name     = base.get:host( ),
-        server_os       = base.get:os( ),
-        server_gm       = base.get:gm( true ),
-        avg_ping        = helper.get.avgping( )( ),
-        consolelog      = console_log,
-        has_ulx         = ulx and true or false,
-        authcode        = authcode
+        reporter            = pl:SteamID64( ),
+        reporter_msg        = reporter_input or ln( 'none' ),
+        rlib_build          = mf.version,
+        server_ip           = base.get:ip( ),
+        server_port         = ts( base.get:port( ) ),
+        server_name         = base.get:host( ),
+        server_os           = base.get:os( ),
+        server_gm           = base.get:gm( true ),
+        avg_ping            = helper.get.avgping( )( ),
+        consolelog          = console_log,
+        has_ulx             = ulx and true or false,
+        authcode            = authcode
     }
 
     /*

@@ -51,12 +51,19 @@ local function rnet_register( pl )
     if ( ( helper.ok.ply( pl ) or access:bIsConsole( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
 
     /*
+        rnet > fonts > reload
+    */
+
+    rnet.new            ( 'workshop_fonts_reload'       )
+    rnet.run            ( 						        )
+
+    /*
         concommand > reload
     */
 
     if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
         base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', mod.name )
-        if not base.con.Is( pl ) then
+        if not access:bIsConsole( pl ) then
             base.msg:target( pl, mod.name, 'rnet module successfully rehashed.' )
         end
     end

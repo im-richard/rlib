@@ -2959,9 +2959,6 @@ function design:restart( msg )
 
 end
 
-rhook.drop.gmod( 'Think', 'rlib_design_notice_rs' )
-ui:dispatch( base.restart )
-
 /*
 *   design > animted scrolling text
 *

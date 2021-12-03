@@ -250,7 +250,7 @@ ui.cvars =
 }
 
 /*
-*   Localized translation func
+    language
 */
 
 local function lang( ... )

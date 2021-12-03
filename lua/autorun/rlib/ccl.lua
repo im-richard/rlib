@@ -241,9 +241,9 @@ end
 */
 
 function helper.str:crop( phrase, len, font )
-    local phrase_len    = 0
-    local pattern       = '(%s?[%S]+)'
-    local c             = 1
+    local phrase_len        = 0
+    local pattern           = '(%s?[%S]+)'
+    local c                 = 1
 
     if not phrase or not len then
         local notfound = not phrase and 'phrase' or not len and 'length'
@@ -252,12 +252,12 @@ function helper.str:crop( phrase, len, font )
     end
 
     if phrase and phrase == '' then
-        log( 6, 'phrase contains empty str' )
+        log( RLIB_LOG_DEBUG, 'phrase contains empty str' )
     end
 
     if not font then
         font = 'Marlett'
-        log( 6, 'strcrop font not specified, defaulting to [%s]', font )
+        log( RLIB_LOG_DEBUG, 'strcrop font not specified, defaulting to [%s]', font )
     end
 
     surface.SetFont( font )
@@ -470,6 +470,7 @@ hook.Add( 'Initialize', pid( '__lib_initialize' ), initialize )
 *   registration hooks include
 *       : commands      rlib.cmd.register
 *       : packages      rlib.pkg.register
+*       : net           rlib.net.register
 *       : fonts         rlib.fonts.register
 *
 *   commonly used for actions such as registering permissions, concommands, etc.
@@ -478,21 +479,22 @@ hook.Add( 'Initialize', pid( '__lib_initialize' ), initialize )
 local function __lib_initpostentity( )
 
     /*
-    *   hooks > register
+        hooks > register
     */
 
     rhook.run.rlib( 'rlib_cmd_register' )
     rhook.run.rlib( 'rlib_pkg_register' )
+    rhook.run.rlib( 'rlib_rnet_register' )
     rhook.run.rlib( 'rlib_fonts_register' )
 
     /*
-    *   register commands
+        register commands
     */
 
     rcc.prepare( )
 
     /*
-    *   hooks > initialize
+        hooks > initialize
     */
 
     rhook.run.rlib( 'rlib_initialize_post' )

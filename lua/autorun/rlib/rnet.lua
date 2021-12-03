@@ -74,7 +74,7 @@ local function rnet_register( pl )
 
     if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
         base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', base.manifest.name )
-        if not base.con.Is( pl ) then
+        if not access:bIsConsole( pl ) then
             base.msg:target( pl, base.manifest.name, 'rnet module successfully rehashed.' )
         end
     end
@@ -82,6 +82,10 @@ local function rnet_register( pl )
 end
 rhook.new.rlib( 'rlib_rnet_register', rnet_register )
 rcc.new.rlib( 'rlib_rnet_reload', rnet_register )
+
+/*
+    CLIENT
+*/
 
 if CLIENT then
 
@@ -92,11 +96,9 @@ if CLIENT then
         local bActive       = data.active or false
         local remains       = data.remains or 0
 
-        print( 'rnet remains ', remains )
         base.sys.rs_remains = remains
 
         if not bActive then
-            print('not active')
             ui:dispatch( base.restart )
             return
         end

@@ -690,7 +690,7 @@ local function rcc_sap_encode( pl, cmd, args, str )
         scope
     */
 
-    if ( ccmd.scope == 1 and not base.con:Is( pl ) ) then
+    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
         access:deny_consoleonly( pl, script, ccmd.id )
         return
     end

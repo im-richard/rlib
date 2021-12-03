@@ -1660,15 +1660,13 @@ hook.Add( pid( 'cmd.register' ), pid( '__rnet.cmd.register' ), RegisterRCC )
 */
 
 local function register_rnet_libs( )
-    timex.create( 'rlib_rnet_register', 5, 1, function( )
-        new         ( 'rlib_eff_add'     )
-            add     ( 'src', RNET_TBL    )
-        run         (                    )
+    new         ( 'rlib_eff_add'     )
+        add     ( 'src', RNET_TBL    )
+    run         (                    )
 
-        new         ( 'rlib_eff_rem'     )
-            add     ( 'src', RNET_TBL    )
-        run         (                    )
-    end )
+    new         ( 'rlib_eff_rem'     )
+        add     ( 'src', RNET_TBL    )
+    run         (                    )
 end
 hook.Add( pid( 'rnet.register' ), pid( '__rnet.rnet.register' ), register_rnet_libs )
 

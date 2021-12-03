@@ -77,7 +77,8 @@
 
     MODULE.calls.commands =
     {
-        [ 'base_rnet_reload' ]              = { 'base.rnet.reload' },
+        [ 'base_rnet_reload' ]                  = { 'base.rnet.reload' },
+        [ 'base_fonts_reload' ]                 = { 'base.fonts.reload' },
     }
 
 /*
@@ -86,7 +87,8 @@
 
     MODULE.calls.hooks =
     {
-        [ 'base_rnet_register' ]            = { 'base.rnet.register' },
+        [ 'base_rnet_register' ]                = { 'base.rnet.register' },
+        [ 'base_fonts_register' ]               = { 'base.fonts.register' },
     }
 
 /*
@@ -95,7 +97,7 @@
 
     MODULE.calls.net =
     {
-        [ 'base_sys_time_upd' ]             = { 'base.sys.time.upd' },
+        [ 'base_fonts_reload' ]                 = { 'base.fonts.reload' },
     }
 
 /*
@@ -104,8 +106,8 @@
 
     MODULE.calls.timers =
     {
-        [ 'base_sv_sys_runtime' ]           = { 'base.sv.sys.runtime' },
-        [ 'base_sv_sys_loader' ]            = { 'base.sv.sys.loader' },
+        [ 'base_sv_sys_runtime' ]               = { 'base.sv.sys.runtime' },
+        [ 'base_sv_sys_loader' ]                = { 'base.sv.sys.loader' },
     }
 
 /*

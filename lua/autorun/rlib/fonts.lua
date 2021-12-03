@@ -259,7 +259,7 @@ local function fonts_register( pl )
 
         if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
             base:log( 4, '[ %s ] reloaded fonts', base.manifest.name )
-            if not base.con.Is( pl ) then
+            if not access:bIsConsole( pl ) then
                 base.msg:target( pl, base.manifest.name, 'reloaded fonts' )
             end
         end

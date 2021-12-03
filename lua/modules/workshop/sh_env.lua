@@ -24,7 +24,7 @@
 */
 
 /*
-*   module data
+    module data
 */
 
     MODULE                  = { }
@@ -43,20 +43,20 @@
     MODULE.released		    = 1607503498
 
 /*
-*   fonts
-*
-*   adding fonts to this list will ensure they are included when the server boots up
-*   utilizing resource.AddFile( )
+    fonts
+
+    adding fonts to this list will ensure they are included when the server boots up
+    utilizing resource.AddFile( )
 */
 
     MODULE.fonts = { }
 
 /*
-*   workshops
-*
-*   this section allows you to include workshop collections that
-*   will be automatically mounted when the server boots up and
-*   when players connect.
+    workshops
+
+    this section allows you to include workshop collections that
+    will be automatically mounted when the server boots up and
+    when players connect.
 */
 
     MODULE.fastdl 	            = true
@@ -65,112 +65,114 @@
     MODULE.ws_lst               = { }
 
 /*
-*   storage
+    storage
 */
 
     MODULE.storage = { }
 
 /*
-*   ext files
+    ext files
 */
 
     MODULE.ext = { }
 
 /*
-*   translations
+    translations
 */
 
     MODULE.language = { }
 
 /*
-*   materials
+    materials
 */
 
     MODULE.materials = { }
 
 /*
-*   datafolder
+    datafolder
 */
 
     MODULE.datafolder = { }
 
 /*
-*   permissions
+    permissions
 */
 
     MODULE.permissions = { }
 
 /*
-*   entities
+    entities
 */
 
     MODULE.ents = { }
 
 /*
-*   module :: calls :: net
+    module > calls > net
 */
 
-    MODULE.calls.net = { }
+    MODULE.calls.net =
+    {
+        [ 'workshop_fonts_reload' ]             = { 'workshop.fonts.reload' },
+    }
 
 /*
-*   module :: calls :: hooks
+    module > calls > hooks
 */
 
     MODULE.calls.hooks =
     {
         [ 'workshop_rnet_register' ]            = { 'workshop.rnet.register' },
+        [ 'workshop_fonts_register' ]           = { 'workshop.fonts.register' },
     }
 
 /*
-*   module :: calls :: commands
+    module > calls > commands
 */
 
     MODULE.calls.commands =
     {
         [ 'workshop_rnet_reload' ]              = { 'workshop.rnet.reload' },
+        [ 'workshop_fonts_reload' ]             = { 'workshop.fonts.reload' },
     }
 
 /*
-*   module :: calls :: timers
+    module > calls > timers
 */
 
     MODULE.calls.timers = { }
 
 /*
-*   resources :: particles
+    resources > particles
 */
 
     MODULE.resources.ptc  = { }
 
 /*
-*   resources :: sounds
+    resources > sounds
 */
 
     MODULE.resources.snd = { }
 
 /*
-*   resources :: models
+    resources > models
 */
 
     MODULE.resources.mdl = { }
 
 /*
-*   resources :: panels
+    resources > panels
 */
 
     MODULE.resources.pnl = { }
 
 /*
-*   doclick
+    doclick
 */
 
     MODULE.doclick = function( ) end
 
 /*
-*   dependencies
+    dependencies
 */
 
-    MODULE.dependencies =
-    {
-
-    }
+    MODULE.dependencies = { }

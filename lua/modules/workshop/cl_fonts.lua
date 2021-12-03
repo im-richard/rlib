@@ -1,6 +1,6 @@
 /*
     @library        : rlib
-    @module         : base
+    @module         : workshop
     @docs           : https://docs.rlib.io
 
     IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
@@ -31,16 +31,17 @@ local base                  = rlib
 local storage               = base.s
 local helper                = base.h
 local access                = base.a
+local font                  = base.f
 
 /*
     module
 */
 
-local mod, pf       	    = base.modules:req( 'base' )
+local mod, pf       	    = base.modules:req( 'workshop' )
 local cfg               	= base.modules:cfg( mod )
 
 /*
-*   Localized translation func
+    language
 */
 
 local function ln( ... )
@@ -48,35 +49,54 @@ local function ln( ... )
 end
 
 /*
-    register net libraries
+    misc localization
 */
 
-local function rnet_register( pl )
+local _f                    = font.new
+
+/*
+    fonts > primary
+*/
+
+local function fonts_register( pl )
 
     /*
-        permission > rnet refresh
+        perm > reload
     */
 
-    if ( ( helper.ok.ply( pl ) or access:bIsConsole( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
+        if ( ( helper.ok.ply( pl ) or access:bIsConsole( pl ) ) and not access:allow_throwExcept( pl, 'rlib_root' ) ) then return end
 
     /*
-        rnet > fonts > reload
+        scaling
     */
 
-    rnet.new            ( 'base_fonts_reload'           )
-    rnet.run            ( 						        )
+        local scale         = RScale( 0.4 )
 
     /*
-        concommand > reload
+    *	general
     */
 
-    if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
-        base:log( RLIB_LOG_OK, '[ %s ] rnet reloaded', mod.name )
-        if not access:bIsConsole( pl ) then
-            base.msg:target( pl, mod.name, 'rnet module successfully rehashed.' )
+        _f( pf, '{{ user_id }}',                    'Segoe UI Light', 34, 100 )
+    /*
+    *   concommand > reload
+    */
+
+        if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
+            base:log( 4, '[ %s ] reloaded fonts', mod.name )
+            if not access:bIsConsole( pl ) then
+                base.msg:target( pl, mod.name, 'reloaded fonts' )
+            end
         end
-    end
 
 end
-rhook.new.rlib( 'base_rnet_register', rnet_register )
-rcc.new.rlib( 'base_rnet_reload', rnet_register )
+rhook.new.rlib( 'workshop_fonts_register', fonts_register )
+rcc.new.rlib( 'workshop_fonts_reload', fonts_register )
+
+/*
+    fonts > rnet > reload
+*/
+
+local function fonts_rnet_reload( data )
+    fonts_register( LocalPlayer( ) )
+end
+rnet.call( 'workshop_fonts_reload', fonts_rnet_reload )
