@@ -161,7 +161,7 @@ end
 function PANEL:Think( )
     self.BaseClass.Think( self )
 
-    if ( input.IsKeyDown( KEY_ESCAPE ) or gui.IsGameUIVisible( ) ) and not self.bNoDestroy then self:Destroy( ) end
+    if ( input.IsKeyDown( KEY_ESCAPE ) or gui.IsGameUIVisible( ) ) and not self:GetNoDestroy( ) then self:Destroy( ) end
 
     local mousex = math.Clamp( gui.MouseX( ), 1, ScrW( ) - 1 )
     local mousey = math.Clamp( gui.MouseY( ), 1, ScrH( ) - 1 )
@@ -289,11 +289,11 @@ end
 /*
 *   NoDestroy
 *
-*   @param  : bool bool
+*   @param  : bool b
 */
 
-function PANEL:NoDestroy( bool )
-    self.bNoDestroy = bool or false
+function PANEL:NoDestroy( b )
+    self.bNoDestroy = helper:val2bool( b )
 end
 
 /*

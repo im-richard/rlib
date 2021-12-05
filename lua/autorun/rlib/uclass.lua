@@ -1976,7 +1976,7 @@ local uclass = { }
         if not ui:ok( child ) then return end
         pnl:Attach( child )
         if bNoDestroy and pnl.NoDestroy then
-            pnl:NoDestroy( )
+            pnl:NoDestroy( true )
         end
     end
 
@@ -1993,7 +1993,7 @@ local uclass = { }
         if not ui:ok( parent ) then return end
         parent:Attach( pnl )
         if bNoDestroy and parent.NoDestroy then
-            parent:NoDestroy( )
+            parent:NoDestroy( true )
         end
     end
 
