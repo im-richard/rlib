@@ -3576,9 +3576,7 @@ end
 */
 
 function helper:clr_ishex( val )
-    if not isstring( val ) then return false end
-    val = val:gsub( '#', '' )
-    return ( val:match( '^%x%x%x' ) or val:match( '^%x%x%x%x%x%x' ) ) and true or false
+    return ( val:match '^#?%x%x%x$' or val:match '^#?%x%x%x%x%x%x$' ) ~= nil
 end
 
 /*

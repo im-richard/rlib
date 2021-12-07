@@ -2379,9 +2379,13 @@ function design:push( msgtbl, title, ico, clr_title, clr_box )
 
     if istable( msgtbl ) then
         for k, v in pairs( msgtbl ) do
+            local asd = helper:clr_ishex( v )
             if IsColor( v ) then
                 body:InsertColorChange( v.r, v.g, v.b, v.a  )
-            elseif isstring( v ) and v ~= '\n' then
+            elseif helper:clr_ishex( v ) then
+                local clr = Hex( v )
+                body:InsertColorChange( clr.r, clr.g, clr.b, clr.a  )
+            elseif isstring( v ) and v ~= '\n' and not helper:clr_ishex( v ) then
                 local txt = v .. ' '
                 body:AppendText( txt )
             elseif v == '\n' then
@@ -2945,7 +2949,6 @@ function design:restart( msg )
 
         if ui:visible( l_cd ) then
             local remains   = base.sys.rs_remains
-            print( remains )
             local resp      = ( isnumber( remains ) and remains ) or 0
             resp            = resp > 0 and timex.secs.sh_simple( resp ) or ln( 'restart_status' )
 
