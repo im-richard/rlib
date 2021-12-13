@@ -378,6 +378,19 @@ end
 hook.Add( pid( 'initialize.post' ), pid( 'initialize_perms' ), access.initialize )
 
 /*
+    rnet > debug > switch
+
+    returns debug mode on / off for client
+*/
+
+local function netlib_debug_switch( len, pl )
+    local b             = net.ReadBool( )
+
+    base.settings.debug.enabled = b
+end
+net.Receive( 'rlib.debug.sw', netlib_debug_switch )
+
+/*
 *   netlib :: debug :: ui
 *
 *   prompts an in-game notification for issues

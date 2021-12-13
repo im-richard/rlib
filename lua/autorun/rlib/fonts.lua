@@ -193,6 +193,14 @@ local function fonts_register( pl )
         _f( pref( 'design_rs_status' ),                 { size = math.Round( 30 * fs ), weight = 200, antialias = true, shadow = false, font = 'Segoe UI Light' } )
 
     /*
+        fonts > notification > debug
+    */
+
+        _f( pref( 'design_debug_title' ),               { size = math.Round( 20 * fs ), weight = 400, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_debug_cntdown' ),             { size = math.Round( 48 * fs ), weight = 200, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+        _f( pref( 'design_debug_status' ),              { size = math.Round( 30 * fs ), weight = 200, antialias = true, shadow = false, font = 'Segoe UI Light' } )
+
+    /*
         fonts > elements
     */
 

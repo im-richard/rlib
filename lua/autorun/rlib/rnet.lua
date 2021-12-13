@@ -63,10 +63,19 @@ local function rnet_register( pl )
         rnet > restart > broadcast
     */
 
-    rnet.new		( 'rlib_rs_broadcast'       )
-        rnet.add    ( 'active',     RNET_BOOL   )
-        rnet.add    ( 'remains',    RNET_INT8   )
-    rnet.run	    (                           )
+    rnet.new		( 'rlib_rs_broadcast'           )
+        rnet.add    ( 'active',     RNET_BOOL       )
+        rnet.add    ( 'remains',    RNET_UINT32     )
+    rnet.run	    (                               )
+
+    /*
+        rnet > debug > broadcast
+    */
+
+    rnet.new		( 'rlib_debug_broadcast'        )
+        rnet.add    ( 'active',     RNET_BOOL       )
+        rnet.add    ( 'remains',    RNET_UINT32     )
+    rnet.run	    (                               )
 
     /*
         concommand > reload
@@ -92,6 +101,10 @@ if CLIENT then
     local ui            = base.i
     local design        = base.d
 
+    /*
+        broadcast > restart
+    */
+
     local function rnet_rs_broadcast( data )
         local bActive       = data.active or false
         local remains       = data.remains or 0
@@ -106,8 +119,28 @@ if CLIENT then
         if not ui:ok( base.restart ) then
             design:restart( msg )
         end
-
     end
     rnet.call( 'rlib_rs_broadcast', rnet_rs_broadcast )
+
+    /*
+        broadcast > debug
+    */
+
+    local function rnet_debug_broadcast( data )
+        local bActive       = data.active or false
+        local remains       = data.remains or 0
+
+        base.sys.debug      = remains
+
+        if not bActive then
+            ui:dispatch( base.debug )
+            return
+        end
+
+        if not ui:ok( base.debug ) then
+            design:debug( )
+        end
+    end
+    rnet.call( 'rlib_debug_broadcast', rnet_debug_broadcast )
 
 end

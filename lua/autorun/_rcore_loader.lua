@@ -313,14 +313,14 @@ function rcore.autoload:Run( )
         if v.scope == 1 then
             if not file.Exists( path_prio, 'LUA' ) then continue end
             if SERVER then include( path_prio ) end
-            if rlib:bDebug( ) then
+            if rlib:g_Debug( ) then
                 MsgC( Color( 255, 255, 0 ), '[' .. rlib.manifest.name .. '] [L-SV] ' .. path_prio .. '\n' )
             end
         elseif v.scope == 2 then
             if not file.Exists( path_prio, 'LUA' ) then continue end
             include( path_prio )
             if SERVER then AddCSLuaFile( path_prio ) end
-            if rlib:bDebug( ) then
+            if rlib:g_Debug( ) then
                 MsgC( Color( 255, 255, 0 ), '[' .. rlib.manifest.name .. '] [L-SH] ' .. path_prio .. '\n' )
             end
         elseif v.scope == 3 then
@@ -330,7 +330,7 @@ function rcore.autoload:Run( )
             else
                 include( path_prio )
             end
-            if rlib:bDebug( ) then
+            if rlib:g_Debug( ) then
                 MsgC( Color( 255, 255, 0), '[' .. rlib.manifest.name .. '] [L-CL] ' .. path_prio .. '\n' )
             end
         end
@@ -379,7 +379,7 @@ function rcore.autoload:Run( )
             for _, File in SortedPairs( file.Find( dir_recur .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                 if id == 1 or id == 2 then include( dir_recur .. '/' .. File ) end
                 if id == 2 or id == 3 then AddCSLuaFile( dir_recur .. '/' .. File ) end
-                if rlib:bDebug( ) then
+                if rlib:g_Debug( ) then
                     MsgC( Color( 255, 255, 0 ), '[' .. rlib.manifest.name .. '] [L-' .. scope_id[ id ] .. '] ' .. File .. '\n' )
                 end
             end
@@ -388,7 +388,7 @@ function rcore.autoload:Run( )
                 for _, FileSub in SortedPairs( file.Find( dir_recur .. '/' .. m .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                     if id == 1 or id == 2 then include( dir_recur .. '/' .. m .. '/' .. FileSub ) end
                     if id == 2 or id == 3 then AddCSLuaFile( dir_recur .. '/' .. m .. '/' .. FileSub ) end
-                    if rlib:bDebug( ) then
+                    if rlib:g_Debug( ) then
                         MsgC( Color( 255, 255, 0), '[' .. rlib.manifest.name .. '] [L-' .. scope_id[ id ] .. '] ' .. FileSub .. '\n' )
                     end
                 end
@@ -422,7 +422,7 @@ function rcore.autoload:Run( )
 
             for _, File in SortedPairs( file.Find( dir_recur .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                 include( dir_base .. '/' .. File )
-                if rlib:bDebug( ) then
+                if rlib:g_Debug( ) then
                     MsgC( Color( 255, 255, 0 ), '[' .. rlib.manifest.name .. '] [L-' .. scope_id[ id ] .. '] ' .. File .. '\n' )
                 end
             end
@@ -430,7 +430,7 @@ function rcore.autoload:Run( )
             for l, m in pairs( dir_sub ) do
                 for _, FileSub in SortedPairs( file.Find( dir_recur .. '/' .. m .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                     include( dir_base  .. '/' .. m .. '/' .. FileSub )
-                    if rlib:bDebug( ) then
+                    if rlib:g_Debug( ) then
                         MsgC( Color( 255, 255, 0 ), '[' .. rlib.manifest.name .. '] [L-' .. scope_id[ id ] .. '] ' .. FileSub .. '\n' )
                     end
                 end

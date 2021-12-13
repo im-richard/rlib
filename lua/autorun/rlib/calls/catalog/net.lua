@@ -37,4 +37,5 @@ base.c.net =
     [ 'rlib_eff_add' ]              = { 'rlib.eff.add' },
     [ 'rlib_eff_rem' ]              = { 'rlib.eff.rem' },
     [ 'rlib_rs_broadcast' ]         = { 'rlib.rs.broadcast' },
+    [ 'rlib_debug_broadcast' ]      = { 'rlib.debug.broadcast' },
 }

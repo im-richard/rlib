@@ -1610,52 +1610,10 @@ local function rcc_debug( pl, cmd, args )
     *   functionality
     */
 
-    local time_id       = 'rlib_debug_delay'
     local status        = args and args[ 1 ] or false
     local dur           = args and args[ 2 ] or cfg.debug.time_default
 
-    if status then
-        local param_status = helper.util:toggle( status )
-        if param_status then
-            if timex.exists( time_id ) then
-                local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, ln( 'debug_enabled_already', remains ) )
-                return
-            end
-
-            if dur and not helper:bIsNum( dur ) then
-                log( 2, ln( 'debug_err_duration' ) )
-                return
-            end
-
-            cfg.debug.enabled = true
-            log( 4, ln( 'debug_set_enabled_dur', dur ) )
-
-            timex.create( time_id, dur, 1, function( )
-                log( 4, ln( 'debug_auto_disable' ) )
-                cfg.debug.enabled = false
-            end )
-        else
-            timex.expire( time_id )
-            cfg.debug.enabled = false
-            log( 4, ln( 'debug_set_disabled' ) )
-        end
-    else
-        if base:bDebug( ) then
-            if timex.exists( time_id ) then
-                local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( 4, ln( 'debug_enabled_time', remains ) )
-            else
-                log( 4, ln( 'debug_enabled' ) )
-            end
-            return
-        else
-            log( 1, ln( 'debug_disabled' ) )
-        end
-
-        log( 1, ln( 'debug_help_info_1' ) )
-        log( 1, ln( 'debug_help_info_2' ) )
-    end
+    base.sys:Debug( status, dur )
 end
 rcc.register( 'rlib_debug', rcc_debug )
 
@@ -1695,13 +1653,13 @@ local function rcc_debug_status( pl, cmd, args )
     *   functionality
     */
 
-    local dbtimer       = timex.remains( 'rlib_debug_delay' ) or false
-    local status        = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
+    local dbtimer           = timex.remains( 'rlib_debug_signal_sv' ) or false
+    local status            = base:g_Debug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' )
 
-    log( 1, ln( 'debug_status', status ) )
+    log( RLIB_LOG_INFO, ln( 'debug_status', status ) )
 
     if dbtimer then
-        log( 1, ln( 'debug_auto_remains', timex.secs.sh_cols_steps( dbtimer ) ) )
+        log( RLIB_LOG_INFO, ln( 'debug_auto_remains', timex.secs.sh_cols_steps( dbtimer ) ) )
     end
 end
 rcc.register( 'rlib_debug_status', rcc_debug_status )

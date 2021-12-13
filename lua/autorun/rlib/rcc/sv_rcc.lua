@@ -339,7 +339,7 @@ local function rcc_debug_diag( pl, cmd, args, str )
     {
         { id = ln( 'status_col_branch' ),         val = cvar:GetStr( 'rlib_branch', 'stable' ) },
         { id = ln( 'status_col_basecmd' ),        val = sys.calls_basecmd or ln( 'none' ) },
-        { id = ln( 'status_col_debug' ),          val = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_debug' ),          val = base:g_Debug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
         { id = ln( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
         { id = ln( 'status_col_rnet_debug' ),     val = rnet and rnet.cfg.debug and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
         { id = ln( 'status_col_rcore' ),          val = istable( rcore ) and ln( 'opt_yes' ) or ln( 'opt_no' ) },
@@ -1670,7 +1670,7 @@ local function rcc_status( pl, cmd, args )
         { id = ln( 'status_col_basecmd' ),        val = sys.calls_basecmd or ln( 'none' ) },
         { id = ln( 'status_col_init' ),           val = sys.initialized and ln( 'opt_yes' ) or ln( 'opt_no' ) },
         { id = ln( 'status_col_conncnt' ),        val = sys.connections or 0 },
-        { id = ln( 'status_col_debug_mode' ),     val = base:bDebug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
+        { id = ln( 'status_col_debug_mode' ),     val = base:g_Debug( ) and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
         { id = ln( 'status_col_rnet_route' ),     val = rnet and rnet.sys.nrouter_enabled and ln( 'opt_enabled' ) or ln( 'opt_disabled' ) },
         { id = ln( 'status_col_rcore' ),          val = istable( rcore ) and ln( 'opt_yes' ) or ln( 'opt_no' ) },
         { id = ln( 'status_col_starttime' ),      val = sys.starttime or 0 },

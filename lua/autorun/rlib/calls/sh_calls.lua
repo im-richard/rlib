@@ -192,7 +192,7 @@ end
 function base.calls:valid( t )
     if not t or not isstring( t ) or t == '' then
         log( 2, ln( 'calls_type_missing_spec' ) )
-        local response, cnt_calls, i = '', #base._rcalls, 0
+        local response, cnt_calls, i = '', table.Count( #base._rcalls ), 0
         for k, v in pairs( base._rcalls ) do
             response = response .. k
             i = i + 1

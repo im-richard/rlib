@@ -2259,7 +2259,7 @@ function design:push( msgtbl, title, ico, clr_title, clr_box )
         destroy existing
     */
 
-    base.push                       = istable( base.push ) and base.push or { }
+    base.push               = istable( base.push ) and base.push or { }
 
     /*
         merge string values
@@ -2959,6 +2959,128 @@ function design:restart( msg )
         end
     end
     rhook.new.gmod( 'Think', 'rlib_design_notice_rs', logic_restart )
+
+end
+
+/*
+    design > debug
+
+    shows debug mode visually clientside
+*/
+
+function design:debug( msg )
+
+    /*
+        dispatch existing
+    */
+
+    ui:dispatch( base.debug )
+
+    /*
+        declare
+    */
+
+    msg                     = helper.ok.str( msg ) or ln( 'debug_bc_title' )
+    local sz_w              = RSW( ) * 0.10
+    local sz_h              = RSH( ) * 0.10
+    local sz_txt_h          = helper.str:lenH( msg, pref( 'design_debug_title' ), 10 )
+
+    /*
+        declare > colors
+    */
+
+    local clr_box_ol        = Hex( '282828' )
+    local clr_box_n         = Hex( '232323' )
+    local clr_header        = Hex( 'E06B6B' )
+    local clr_img           = Hex( 'FFFFFF', 1 )
+    local clr_txt_cntdown   = Hex( 'FFFFFF' )
+
+    /*
+        parent
+    */
+
+    local obj                       = ui.new( 'pnl'                         )
+    :size                           ( sz_w, sz_h                            )
+    :pos                            ( ScrW( ) / 2 - ( sz_w / 2 ), -sz_h     )
+    :drawtop                        ( true                                  )
+
+                                    :draw( function( s, w, h )
+                                        design.rbox( 4, 0, 0, w, h, clr_box_ol )
+                                        design.rbox( 4, 2, 2, w - 4, h - 4, clr_box_n )
+
+                                        surface.SetDrawColor( clr_img )
+                                        surface.DrawTexturedRectRotated( w + 50, 0, w, h * 3, -145 )
+                                    end )
+
+                                    :logic( function( s )
+                                        if not base:g_Debug( ) then
+                                            ui:dispatch( base.debug )
+                                        end
+                                    end )
+
+    /*
+        header
+    */
+
+    local header                    = ui.new( 'pnl', obj                    )
+    :top                            ( 'm', 0, 5, 0, 0                       )
+    :tall                           ( sz_txt_h                              )
+
+                                    :draw( function( s, w, h )
+                                        draw.SimpleText( msg, pref( 'design_debug_title' ), w / 2, h / 2, clr_header, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                    end )
+
+    /*
+        body
+    */
+
+    local body                      = ui.new( 'pnl', obj                    )
+    :nodraw                         (                                       )
+    :fill                           ( 'm', 0, 0, 0, 5                       )
+
+    /*
+        label > countdown
+    */
+
+    local l_cd                      = ui.new( 'lbl', body                   )
+    :fill                           ( 'm', 0, 5, 0, 5                       )
+    :notext                         (                                       )
+    :align                          ( 5                                     )
+    :font                           ( pref( 'design_rs_cntdown' )           )
+    :textclr                        ( clr_txt_cntdown                       )
+    :align                          ( 5                                     )
+
+    /*
+        create object
+    */
+
+    if ui:ok( obj ) then
+        base.debug = obj
+        obj:MoveTo( ScrW( ) / 2 - ( sz_w / 2 ), 5, 1.01, 1, -1 )
+    end
+
+    /*
+        logic
+    */
+
+    local function logic_debug( )
+        if ( not ui:ok( base.debug ) ) then
+            rhook.drop.gmod( 'Think', 'rlib_design_notice_debug' )
+            return
+        end
+
+        if ui:visible( l_cd ) then
+            local remains   = base.sys.debug
+            local resp      = ( isnumber( remains ) and remains ) or 0
+            resp            = resp > 0 and timex.secs.sh_simple( resp ) or ln( 'debug_bc_disabling' )
+
+            l_cd:SetText( resp )
+            if resp == ln( 'debug_bc_disabling' ) then
+                l_cd:SetFont( pref( 'design_rs_status' ) )
+            end
+        end
+    end
+    rhook.new.gmod( 'Think', 'rlib_design_notice_debug', logic_debug )
 
 end
 

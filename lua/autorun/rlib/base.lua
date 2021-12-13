@@ -95,11 +95,28 @@ function base:bInitialized( )
 end
 
 /*
-    debug mode
+    debug mode > get
 */
 
-function base:bDebug( )
-    return base.settings.debug.enabled or false
+function base:g_Debug( )
+    return base.settings.debug.enabled
+end
+
+/*
+    debug mode > set
+
+    switches the state of debug mode.
+    sends the new state client-side.
+*/
+
+function base:s_Debug( b )
+    local bEnabled      = b or false
+
+    cfg.debug.enabled   = bEnabled
+
+    net.Start           ( 'rlib.debug.sw'       )
+    net.WriteBool       ( bEnabled              )
+    net.Broadcast       ( self                  )
 end
 
 /*
@@ -300,7 +317,7 @@ function base:log( cat, msg, ... )
         debug only
     */
 
-    if not self:bDebug( ) then
+    if not self:g_Debug( ) then
         if cat == RLIB_LOG_DEBUG then return end
         if cat == RLIB_LOG_CACHE then return end
         if cat == RLIB_LOG_FONT then return end
@@ -707,6 +724,11 @@ end
     sys :: debug
 
     toggles debug mode
+
+    @ex     : base.sys:Debug( 'on', 30 )
+
+    @param  : str state
+    @param  : int dur
 */
 
 function base.sys:Debug( ... )
@@ -717,51 +739,82 @@ function base.sys:Debug( ... )
         functionality
     */
 
-    local time_id           = 'rlib_debug_delay'
-    local status            = args and args[ 1 ] or false
+    local time_id_sv        = 'rlib_debug_signal_sv'
+    local time_id_cl        = 'rlib_debug_signal_cl'
+    local state             = args and args[ 1 ] or false
     local dur               = args and args[ 2 ] or cfg.debug.time_default
 
-    if status then
-        local param_status = helper.util:toggle( status )
-        if param_status then
-            if timex.exists( time_id ) then
-                local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( RLIB_LOG_DEBUG, ln( 'debug_enabled_already', remains ) )
-                return
-            end
+    /*
+        no state param
 
-            if dur and not helper:bIsNum( dur ) then
-                log( RLIB_LOG_ERR, ln( 'debug_err_duration' ) )
-                return
-            end
+        returns debug current status
+    */
 
-            cfg.debug.enabled = true
-            log( RLIB_LOG_DEBUG, ln( 'debug_set_enabled_dur', dur ) )
-
-            timex.create( time_id, dur, 1, function( )
-                log( RLIB_LOG_DEBUG, ln( 'debug_auto_disable' ) )
-                cfg.debug.enabled = false
-            end )
-        else
-            timex.expire( time_id )
-            cfg.debug.enabled = false
-            log( RLIB_LOG_DEBUG, ln( 'debug_set_disabled' ) )
-        end
-    else
-        if self:bDebug( ) then
-            if timex.exists( time_id ) then
-                local remains = timex.secs.sh_cols_steps( timex.remains( time_id ) ) or 0
-                log( RLIB_LOG_DEBUG, ln( 'debug_enabled_time', remains ) )
+    if not state then
+        if base:g_Debug( ) then
+            if timex.exists( time_id_sv ) then
+                local remains = timex.secs.sh_hms( timex.remains( time_id_sv ), true ) or 0
+                log( RLIB_LOG_OK, ln( 'debug_enabled_time', remains ) )
             else
-                log( RLIB_LOG_DEBUG, ln( 'debug_enabled' ) )
+                log( RLIB_LOG_OK, ln( 'debug_enabled' ) )
             end
             return
         else
             log( RLIB_LOG_INFO, ln( 'debug_disabled' ) )
         end
 
-        log( 1, ln( 'debug_help_info_1' ) )
-        log( 1, ln( 'debug_help_info_2' ) )
+        log( RLIB_LOG_INFO, ln( 'debug_help_info_1' ) )
+        log( RLIB_LOG_INFO, ln( 'debug_help_info_2' ) )
+
+        return
+    end
+
+    /*
+        debug > set state
+    */
+
+    local param_status = helper.util:toggle( state )
+    if param_status then
+        if timex.exists( time_id_sv ) then
+            local remains = timex.secs.sh_hms( timex.remains( time_id_sv ), true ) or 0
+            log( RLIB_LOG_OK, ln( 'debug_enabled_already', remains ) )
+            return
+        end
+
+        if dur and not helper:bIsNum( dur ) then
+            log( RLIB_LOG_ERR, ln( 'debug_err_duration' ) )
+            return
+        end
+
+        /*
+            debug > set state
+        */
+
+        base:s_Debug( true )
+
+        log( RLIB_LOG_OK, ln( 'debug_set_enabled_dur', dur ) )
+
+        /*
+            timer > signal > client
+        */
+
+        timex.create( time_id_cl, 1, dur, function( )
+            local remains = timex.reps( time_id_cl )
+            rnet.send.all( 'rlib_debug_broadcast', { active = true, remains = remains }, true )
+        end )
+
+        /*
+            timer > signal > server
+        */
+
+        timex.create( time_id_sv, dur, 1, function( )
+            log( RLIB_LOG_OK, ln( 'debug_auto_disable' ) )
+            base:s_Debug( false )
+        end )
+    else
+        timex.expire( time_id_sv )
+        base:s_Debug( false )
+        log( RLIB_LOG_OK, ln( 'debug_set_disabled' ) )
     end
 
 end

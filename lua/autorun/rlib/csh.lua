@@ -314,6 +314,32 @@ function helper.ok.sid64( sid )
 end
 
 /*
+*   ok > validate > http
+*
+*   @param  : str url
+*   @return : mix
+*/
+
+function helper.ok.http( url )
+    if not helper.str:ok( url ) then return false end
+    if not helper.str:startsw( url, 'http://' ) and not helper.str:startsw( url, 'https://' ) then return false end
+    return true
+end
+
+/*
+*   ok > validate > image
+*
+*   @param  : str url
+*   @return : mix
+*/
+
+function helper.ok.img( url )
+    if not helper.str:ok( url ) then return false end
+    if not helper.str:endsw( url, '.png' ) and not helper.str:endsw( url, '.jpg' ) and not helper.str:endsw( url, '.jpeg' ) and not helper.str:endsw( url, '.gif' ) then return false end
+    return true
+end
+
+/*
 *   helper > ok > str
 *
 *   checks for a valid string but also checks for blank or space chars
@@ -2145,7 +2171,7 @@ end
 *   @return : int
 */
 
-function helper.str:count_spaces( str )
+function helper.str:iSpaces( str )
     str         = tostring( str )
     local i     = 0
     for k in string.gmatch( str:Trim( ), '.' ) do
@@ -2996,7 +3022,7 @@ function base.msg:target( pl, subcat, ... )
         args[ k ] = v .. ' '
     end
 
-    local sub_c = ( helper.str:ok( subcat ) and '[' .. subcat .. '] ' ) or '[' .. mf.name .. '] '
+    local sub_c = ( helper.str:ok( subcat ) and '[' .. subcat .. '] ' ) or ''
 
     if CLIENT then
         chat.AddText( cmsg.clrs.cat, '[' .. cmsg.tag_private .. '] ', cmsg.clrs.subcat, sub_c, cmsg.clrs.msg, unpack( args ) )

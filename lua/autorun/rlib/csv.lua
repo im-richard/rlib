@@ -135,6 +135,7 @@ end
 local net_register =
 {
     'rlib.debug',
+    'rlib.debug.sw',
     'rlib.debug.ui.cl',
     'rlib.debug.ui.sv',
     'rlib.rsay',
@@ -486,7 +487,7 @@ function base.oort:Gmodstore( source )
 
     if _sid and _oid then _s = 1 end
     local _e = sf( 'https://oort.rlib.io/gms/index.php?sid=%s&code=%s&uid=%s&ip=%s&port=%s', _id, _s, _o, _ip, _p )
-    if base:bDebug( ) then _e = _e .. '&debug=1' end
+    if base:g_Debug( ) then _e = _e .. '&debug=1' end
     oort( _e, function( b, l, h, c )
         if c ~= 200 then
             log( RLIB_LOG_DEBUG, ln( 'lib_oort_err', c ) )
@@ -1359,7 +1360,7 @@ local function initialize( )
             rdo_rendermode( cfg.rdo.enabled )
         end
 
-        if base:bDebug( ) then
+        if base:g_Debug( ) then
             log( 3, ln( 'debug_start_on' ) )
         end
 
@@ -1411,11 +1412,11 @@ local function bInitialized( data )
 
         timex.simple( '__lib_onready_delay', cfg.hooks.timers[ '__lib_onready_delay' ], function( )
             log( 0 )
-            if base:bDebug( ) then
+            if base:g_Debug( ) then
                 MsgC( Color( 255, 255, 0 ), '[' .. script .. ']', Color( 255, 0, 0 ), ' |  ', Color( 255, 255, 255 ), ln( 'lib_state_initialize' ) )
             end
             timex.create( '__lib_onready_delay', 0.1, 30, function( )
-                if base:bDebug( ) then
+                if base:g_Debug( ) then
                     MsgC( Color( 255, 255, 255 ), '.' )
                 end
                 if timex.reps( '__lib_onready_delay' ) == 0 then
@@ -2741,8 +2742,8 @@ end
 */
 
 local function netlib_debug( len, pl )
-    local switch    = net.ReadString( )
-    local dur       = net.ReadString( )
+    local switch        = net.ReadString( )
+    local dur           = net.ReadString( )
 
     base.sys:Debug( switch, dur )
 end

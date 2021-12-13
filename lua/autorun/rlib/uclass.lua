@@ -4104,15 +4104,15 @@ local uclass = { }
         face        = isstring( face ) and face
         clr         = IsColor( clr ) and clr or Color( 255, 255, 255, 255 )
 
-        local _f    = font.get( mod, face )
-
         pnl:SetTextColor    ( clr   )
 
         if face then
+            local _f        = font.get( mod, face )
             pnl:SetFont     ( _f    )
         end
 
-        pnl:SetText         ( text  )
+        local ln            = base:translate( mod, text )
+        pnl:SetText         ( ln  )
 
         if bautosz then
             pnl:SizeToContents( )
@@ -5277,7 +5277,11 @@ local uclass = { }
     */
 
     function uclass.keeptop( pnl, zpos )
-        pnl.Think = function( s )
+        local name = 'Think'
+        local orig = pnl[ name ]
+
+        pnl[ name ] = function( s, ... )
+            if isfunction( orig ) then orig( s, ... ) end
             pnl:MoveToFront( )
             if isnumber( zpos ) then
                 pnl:SetZPos( zpos )

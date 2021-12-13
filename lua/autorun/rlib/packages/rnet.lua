@@ -748,7 +748,7 @@ local function prepare( id, data, bSilence )
     local obj   = index[ id ]
 
     if not istable( obj ) then
-        base:log( RLIB_LOG_ERR, 'prepare [ %s ] :: failed prep unregistered object | %s', id, 'rnet.register' )
+        base:log( RLIB_LOG_ERR, 'prepare [ %s ] :: unregistered object failed', id )
         return
     end
 
