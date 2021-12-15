@@ -39,6 +39,7 @@
 local base                  = rlib
 local helper                = base.h
 local materials             = base.m
+materials._cache            = { }
 
 /*
     library > localize
@@ -47,6 +48,12 @@ local materials             = base.m
 local cfg                   = base.settings
 local mf                    = base.manifest
 local pf                    = mf.prefix
+
+/*
+    storage
+*/
+
+local path_mats             = mf.paths[ 'dir_mats' ]
 
 /*
     languages
@@ -79,6 +86,70 @@ function mat2d( mat, params )
     params          = isstring( params ) and params or 'noclamp smooth'
 
     return Material( mat, params )
+end
+
+/*
+    materials > cached > get
+
+    @param  : str path
+    @return : material
+*/
+
+function materials.g_Cached( path )
+	return Material( 'data/' .. path, 'smooth mips' )
+end
+
+/*
+    materials > cached > get
+
+    materials.g_Download( "https://cdn.rlib.io/wp/a/gmod.png", function( mat )
+        mat:SetInt( "$flags", bit.bor( mat:GetInt( "$flags" ), 32768 ) )
+        print( mat )
+    end )
+
+    materials.g_Download( "https://cdn.rlib.io/wp/a/gmod.png", function( mat ) end )
+
+    @param  : str url
+    @param  : func cb
+    @param  : str cb_err
+    @return : material
+*/
+
+function materials.g_Download( url, cb, cb_err )
+	local uid           = util.CRC( url )
+    cb                  = isfunction( cb ) and cb or false
+    cb_err              = cb_err or string.format( 'Error downloading material from [ %s ]', url )
+
+	if materials._cache[ uid ] then return cb( materials._cache[ uid ] ) end
+
+    local path          = string.format( '%s/%s_%s', path_mats, uid, url:match( "([^/]+)$" ) )
+
+	if file.Exists( path, 'DATA' ) then
+		materials._cache[ uid ] = materials.g_Cached( path )
+        if isfunction( cb ) then
+            base:log( RLIB_LOG_DEBUG, '[ %s ] » material ( cache ) » [ %s ]', mf.name, url )
+		    return cb( materials._cache[ uid ] )
+        else
+            base:log( RLIB_LOG_DEBUG, '[ %s ] » material ( cache ) » [ %s ]', mf.name, url )
+            return materials._cache[ uid ]
+        end
+	end
+
+	http.Fetch( url, function( body )
+		if not helper.str:ok( body ) then return end
+
+		file.Write( path, body )
+
+		materials._cache[ uid ] = materials.g_Cached( path )
+
+        if isfunction( cb ) then
+            base:log( RLIB_LOG_DEBUG, '[ %s ] » material ( new ) » [ %s ]', mf.name, url )
+		    cb( materials._cache[ uid ] )
+        else
+            base:log( RLIB_LOG_DEBUG, '[ %s ] » material ( new ) » [ %s ]', mf.name, url )
+            return materials._cache[ uid ]
+        end
+	end, cb_err )
 end
 
 /*

@@ -327,6 +327,17 @@ function helper.ok.http( url )
 end
 
 /*
+*   ok > validate > url
+*
+*   @param  : str url
+*   @return : bool
+*/
+
+function helper.ok.url( url )
+	return url:find( 'https?://[%w-_%.%?%.:/%+=&]+' ) and true or false
+end
+
+/*
 *   ok > validate > image
 *
 *   @param  : str url

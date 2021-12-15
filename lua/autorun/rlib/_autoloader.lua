@@ -186,6 +186,7 @@ function rlib.autoload:Run( parent )
     {
         [ 'base' ]                  = 'rlib',
         [ 'bin' ]                   = 'rlib/bin',
+        [ 'dir_mats' ]              = 'rlib/materials',
         [ 'dir_alogs' ]             = 'rlib/alogs',
         [ 'dir_debug' ]             = 'rlib/debug',
         [ 'dir_logs' ]              = 'rlib/logs',

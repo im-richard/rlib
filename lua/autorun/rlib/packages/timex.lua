@@ -133,8 +133,9 @@ local manifest =
 settings                    = settings  or { }
 sys                         = sys       or { }
 secs                        = secs      or { }
-bw                          = bw        or { }
 ts                          = ts        or { }
+when                        = when      or { }
+bw                          = bw        or { }
 
 /*
 *	pf > getid
@@ -170,6 +171,57 @@ function g_PackageId( str )
 end
 
 /*
+    directory
+
+    :   exists
+    :   expire
+    :   pause
+    :   paused
+    :   adjust
+    :   resume
+    :   remains
+    :   reps
+    :   only
+    :   create
+    :   unique
+    :   simple
+    :   source
+    :   list
+    :   count
+    :   cleantime
+    :   when.midnight
+    :   when.mins
+    :   when.mins_sv
+    :   midnight_until
+    :   midnight_human
+    :   midnight_human_cl
+    :   secs.curtime
+    :   secs.ctime
+    :   secs.duration
+    :   secs.merged
+    :   secs.sh_simple
+    :   secs.sh_simple_nz
+    :   secs.sh_hms
+    :   secs.sh_secsonly
+    :   secs.sh_uhour
+    :   secs.sh_cols
+    :   secs.sh_cols_steps
+    :   secs.ms
+    :   secs.benchmark
+    :   secs.ago
+    :   secs.sh_cols_steps_nz
+    :   ts.pastdays
+    :   ts.remains
+    :   ts.remains_sv
+    :   ts.past
+    :   ts.past_sv
+    :   ts.pasthours
+    :   ts.pasthours_d
+    :   bw.structtime
+    :   bw.playtime
+*/
+
+/*
 *   timex > exists
 *
 *   checks to see if a timer exists
@@ -200,7 +252,8 @@ function expire( id )
         timer.Remove( id )
     end
 end
-kill = expire
+kill        = expire
+destroy     = expire
 
 /*
 *   timex > pause
@@ -219,6 +272,26 @@ function pause( id )
     end
 end
 stop = pause
+
+/*
+*   timex > check paused
+*
+*   check if timer is currently paused.
+*   by default, paused timers return negative values.
+*   may not be the most technical way, but works
+*
+*   @param  : str id
+*/
+
+function paused( id )
+    id = gid( id )
+    if not exists( id ) then return false end
+
+    local remains = timex.remains( id )
+    if remains < 0 then return true end
+
+    return false
+end
 
 /*
 *   timex > adjust
@@ -291,6 +364,33 @@ function reps( id )
     return bExists and math.Round( timer.RepsLeft( id ) ) or 0
 end
 life = reps
+
+/*
+*   timex > only
+*
+*   creates a timer. will force the timer to first expire if
+*   one already exists with that same id
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int rep
+*   @param  : func fn
+*/
+
+function only( id, delay, rep, fn )
+    id          = gid( id )
+    delay       = delay or 0.1
+    rep         = rep or 1
+
+    expire( id )
+
+    if not fn or not base:isfunc( fn ) then
+        log( RLIB_LOG_DEBUG, '[ %s ] :: timer created with no func', pkg_name )
+        fn = function( ) end
+    end
+
+    timer.Create( id, delay, rep, fn )
+end
 
 /*
 *   timex > create
@@ -367,7 +467,7 @@ function simple( a, b, fn )
     local delay     = isnumber( b ) and b or isnumber( a ) and a or 0.1
     local func      = isfunction( fn ) and fn or isfunction( b ) and b or nil
 
-    if not func or not isfunction( func ) then
+    if not isfunction( func ) then
         log( 6, '[%s] :: simple timer created with no func', pkg_name )
         func = function( ) end
     end
@@ -473,6 +573,137 @@ end
 
 function midnight( days )
     return os.time( ) - tonumber( os.date( '%H' ) ) * 3600 - tonumber( os.date( '%M' ) ) * 60 - tonumber( os.date( '%S' ) ) + 86400 * ( days or 1 )
+end
+when.midnight = midnight
+
+/*
+*   when > mins
+*
+*   returns the timestamp based on x number of minutes in the future
+*
+*   timex.when.mins( 5 )
+*       >   returns time now + 5 minutes in the future
+*
+*   @ex     : timex.when.mins( 5 )
+*/
+
+function when.mins( min )
+    mins        = mins or 1
+    local prev  = os.time( ) - ( os.time( ) % ( mins * 60 ) )
+
+    return prev + ( mins * 60 )
+end
+
+/*
+*   when > mins > server
+*
+*   returns the timestamp based on x number of minutes in the future
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   timex.when.mins( 5 )
+*       >   returns time now + 5 minutes in the future
+*
+*   @ex     : timex.when.mins( 5 )
+*/
+
+function when.mins_sv( min )
+    mins                = mins or 1
+    local sv_ost        = ( rlib.sys.time ) or 0
+    local prev          = sv_ost - ( sv_ost % ( mins * 60 ) )
+
+    return prev + ( mins * 60 )
+end
+
+/*
+*   midnight > until
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight_until( 1 )
+*/
+
+function midnight_until( days )
+    days                    = isnumber( days ) and days or 0
+    local daily_time        = timex.midnight( days )
+    local s_until           = timex.ts.remains( daily_time )
+
+    return s_until
+end
+
+/*
+*   midnight > human
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight( 1 )
+*               >  04:07:20     ( 4 hours, 7 minutes until server midnight )
+*/
+
+function midnight_human( days, bSecs )
+    days                    = isnumber( days ) and days or 0
+    bSecs                   = helper:val2bool( bSecs )
+
+    local daily_time        = timex.midnight( days )
+    local ts_until          = timex.ts.remains( daily_time )
+    local ts_human          = timex.secs.sh_hms( ts_until, bSecs )
+
+    return ts_human
+end
+
+/*
+*   midnight > human > client
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight( 1 )
+*               >  04:07:20     ( 4 hours, 7 minutes until server midnight )
+*/
+
+function midnight_human_cl( days, bSecs )
+    days                    = isnumber( days ) and days or 0
+    bSecs                   = helper:val2bool( bSecs )
+
+    local daily_time        = rlib.sys.midnight
+    local ts_until          = timex.ts.remains_sv( daily_time )
+    local ts_human          = timex.secs.sh_hms( ts_until, bSecs )
+
+    return ts_human
+end
+
+/*
+*   seconds > curtime
+*
+*   compares stored curtime to current and returns time remaining
+*
+*   @param  : str str
+*   @return : str
+*/
+
+function secs.curtime( num )
+    local  time = ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
+    return math.Round( time, 0 ) or 0
+end
+
+/*
+*   seconds > ctime
+*
+*   similar to timex.curtime but returns a string with the seconds appended
+*
+*   @param  : str str
+*   @param  : bool bShort
+*   @return : str
+*/
+
+function secs.ctime( num, bShort )
+    local time  = ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
+    time        = math.Round( time )
+    if bShort then
+        return string.format( '%is', time )
+    else
+        local s = tonumber( time ) == 1 and 'second' or 'seconds'
+        return string.format( '%i %s', time, s )
+    end
 end
 
 /*
@@ -598,6 +829,40 @@ function secs.sh_simple( i )
         return '00:00'
     else
         min     = sf( '%02.f', floor( i / 60 ) )
+        sec     = sf( '%02.f', floor( i - min * 60 ) )
+
+        return min .. ':' .. sec
+    end
+end
+
+/*
+*   seconds > shorthand > simple ( non leading zeros )
+*
+*   calculates how many seconds are within the current timeframe.
+*   with how the time is formatted, it the time exceeds a type, it will progress to the next one up
+*
+*   does not support hours or days, so only use it for clocks that need 60 minutes and less.
+*
+*   @ex     :   60      1:00
+*                       displays as 1 min : 00 sec
+*
+*   @ex     :   3500    58:20
+*                       displays as 58 min : 20 sec
+*
+*   @param  : int i
+*   @return : str
+*/
+
+function secs.sh_simple_nz( i )
+    i = i and tonumber( i ) or 0
+    i = math.Round( i )
+
+    local min, sec = 0
+
+    if i <= 0 then
+        return '00:00'
+    else
+        min     = sf( '%2.f', floor( i / 60 ) )
         sec     = sf( '%02.f', floor( i - min * 60 ) )
 
         return min .. ':' .. sec
@@ -853,44 +1118,6 @@ function secs.benchmark( i, offset )
 end
 
 /*
-*   seconds > curtime
-*
-*   compares stored curtime to current and returns time remaining
-*
-*   @param  : str str
-*   @return : str
-*/
-
-function secs.curtime( num )
-    return ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
-end
-
-/*
-*   seconds > ctime
-*
-*   similar to timex.curtime but returns a string with the seconds appended
-*
-*   @ex     : timex.secs.ctime( pl.NextSpawn, false )
-*             '5 seconds'
-*
-*   @ex     : timex.secs.ctime( pl.NextSpawn, true )
-*             '5s'
-*
-*   @param  : str str
-*   @param  : bool bShort
-*   @return : str
-*/
-
-function secs.ctime( num, bShort )
-    local time  = ( num and calc.min( 0, num - CurTime( ) ) ) or CurTime( )
-    if bShort then
-        return string.format( '%is', time )
-    else
-        return string.format( '%i seconds', time )
-    end
-end
-
-/*
 *   seconds > ago
 *
 *   returns how long in the past an event occured
@@ -937,6 +1164,76 @@ function secs.mins( i )
 end
 
 /*
+*   seconds > shorthand > columnized > steps > no leading zeros
+*
+*   converts seconds to a human readable format with various different parameters so you can decide
+*   on what you want to see.
+*
+*   time displays in steps based on the higher type
+*   does not display seconds until the final 60 seconds
+*
+*   @ex     :   timex.secs.sh_cols_steps( 175 )
+*   @out    :   02m
+*               m
+*
+*   @ex     :   timex.secs.sh_cols_steps( 32 )
+*   @out    :   32s
+*               s
+*
+*   :   ( bool ) bShowEmpty
+*       will show all segments even if they are at 00.
+*
+*   :   ( bool ) bSeconds
+*       displays the seconds value on the end
+*
+*   @param  : int i
+*   @param  : bool bShowEmpty
+*   @param  : bool bSeconds
+*   @return : str
+*/
+
+function secs.sh_cols_steps_nz( i, bShowEmpty, bSeconds )
+    local str               = ''
+    local set_format        = '%2.f'
+
+    i                       = tonumber( i ) or 0
+                            if i < 0 then i = 0 end
+    i                       = math.Round( i )
+
+    local bBelowMin = i < 60 and true or false
+
+    local days      = sf( set_format, floor( ( i - i % 86400 ) / 86400 ) )
+    i               = i - days * 86400
+
+    local hours     = sf( set_format, floor( ( i - i % 3600 ) / 3600 ) )
+    i               = i - hours * 3600
+
+    local minutes   = sf( set_format, floor( ( i - i % 60 ) / 60 ) )
+    i               = i - minutes * 60
+
+    local seconds   = sf( '%02d', i )
+
+    if ( bBelowMin and ( ( not bShowEmpty and seconds ~= 0 ) or bShowEmpty ) ) or bSeconds then
+        seconds = sf( '%2d', math.abs( seconds ) )
+        str         = seconds .. 's'
+    end
+
+    if ( not bBelowMin and ( ( not bShowEmpty and tonumber( minutes ) ~= 0 ) or bShowEmpty ) ) then
+        str         = minutes .. 'm ' .. str
+    end
+
+    if ( not bBelowMin and ( ( not bShowEmpty and tonumber( hours ) ~= 0 ) or bShowEmpty ) ) then
+        str         = hours .. 'h ' .. str
+    end
+
+    if ( not bBelowMin and ( ( not bShowEmpty and tonumber( days ) ~= 0 ) or bShowEmpty ) ) then
+        str         = days .. 'd ' .. str
+    end
+
+    return str
+end
+
+/*
 *   timestamp > past > days
 *
 *   returns how many days have past based on the timestamp provided.
@@ -964,6 +1261,7 @@ end
 *   returns seconds
 *
 *   @ex     : ts.remains( 1627113692 )
+*             returns   00:56:51
 *
 *   @param  : int i
 *   @return : int
@@ -971,6 +1269,25 @@ end
 
 function ts.remains( i )
     return i - os.time( )
+end
+
+/*
+*   timestamp > remains > server
+*
+*   gets difference between provided timestamp and current timestamp.
+*   returns seconds
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   @ex     : ts.remains( 1627113692 )
+*             returns   00:56:51
+*
+*   @param  : int i
+*   @return : int
+*/
+
+function ts.remains_sv( i )
+    return i - ( rlib.sys.time or 0 )
 end
 
 /*
@@ -984,6 +1301,21 @@ end
 
 function ts.past( i )
     return os.time( ) - i
+end
+
+/*
+*   timestamp > past > server
+*
+*   used for timestamp ages which are in the past.
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   @param  : int i
+*   @return : int
+*/
+
+function ts.past_sv( i )
+    return ( rlib.sys.time or 0 ) - i
 end
 
 /*
@@ -1023,8 +1355,6 @@ end
 function ts.pasthours_d( i, now )
     i           = math.abs( i )
     local n     = i - now
-
-    print( 'now ', n )
 
     if n >= 3600 then
         return math.floor( n / 3600 )

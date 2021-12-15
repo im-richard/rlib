@@ -1468,6 +1468,7 @@ local function rcc_list( pl, cmd, args )
     for k, v in pairs( g_Index( ) ) do
         table.insert( lst, k )
     end
+    table.sort( lst, function( a, b ) return a[ 1 ] < b[ 1 ] end )
 
     con( 'c', 3 )
     con( 'c', 0 )
@@ -1483,7 +1484,7 @@ local function rcc_list( pl, cmd, args )
     con( 'c', 0 )
     con( 'c', 1 )
 
-    for k, v in pairs( lst ) do
+    for k, v in SortedPairs( lst ) do
         local a1_2      = sf( '%-35s',  v       )
         local a2_2      = sf( '%-5s',  '»'      )
         local a3_2      = sf( '%-35s',  k       )

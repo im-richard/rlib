@@ -28,6 +28,7 @@
 
 local base                  = rlib
 local helper                = base.h
+local storage               = base.s
 local design                = base.d
 local ui                    = base.i
 local access                = base.a
@@ -511,6 +512,14 @@ local function __lib_initpostentity( )
     */
 
     rhook.run.rlib( 'rlib_initialize_post' )
+
+    /*
+        storage > materials
+    */
+
+    local path          = storage.mft:getpath( 'dir_mats' )
+    storage.dir.create  ( path )
+
 end
 hook.Add( 'InitPostEntity', pid( '__lib_initpostentity' ), __lib_initpostentity )
 
