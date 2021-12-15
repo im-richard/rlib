@@ -35,6 +35,7 @@ local helper                = base.h
 */
 
 SAP                         = SAP or { }
+rclr                        = rclr or { }
 
 /*
     sap > registered
@@ -59,9 +60,115 @@ function SAP:Registered( mod, id )
 end
 
 /*
+    rclr > valid hex
+
+    returns if string is valid hex color
+
+    @ex     : rclr.bHex( 'FFFFFF' )
+              true
+
+            : rclr.bHex( '#FFF' )
+              true
+
+    @param  : str hex
+    @param  : int a
+    @return : tbl
+*/
+
+function rclr.bHex( val )
+    return ( val:match '^#?%x%x%x$' or val:match '^#?%x%x%x%x%x%x$' ) ~= nil
+end
+
+/*
+    globals > Hex to RGB
+
+    converts a valid hex color string into Color( x, x, x, x )
+
+    @ex     : rclr.Hex2RGB( '#FFF' )
+              return > 255, 255, 255, 255
+
+    @param  : str hex
+    @param  : int a
+    @return : tbl
+*/
+
+function rclr.Hex2RGB( hex, a )
+    hex         = hex:gsub( '#', '' )
+                if not rclr.bHex( hex ) then return end
+
+    a           = isnumber( a ) and a or 255
+
+    if hex:len( ) == 3 then
+        return tonumber( '0x' .. hex:sub( 1, 1 ) ) * 17, tonumber( '0x' .. hex:sub( 2, 2 ) ) * 17, tonumber( '0x' .. hex:sub( 3, 3 ) ) * 17, a
+    elseif hex:len( ) == 6 then
+        return tonumber( '0x' .. hex:sub( 1, 2 ) ), tonumber( '0x' .. hex:sub( 3, 4 ) ), tonumber( '0x' .. hex:sub( 5, 6 ) ), a
+    else
+        return 255, 255, 255, a
+    end
+end
+
+/*
+    globals > RGB to Hex
+
+    converts gmod color object / table into hex color
+
+    @note   : bNoClean removes 0X in front of string
+
+    @ex     : rclr.RGB2Hex( Color( 0, 0, 0 ) )
+              return > 000000
+
+            : rclr.RGB2Hex( { 0, 0, 0 } )
+              return > 000000
+
+            : rclr.RGB2Hex( { 0, 0, 0, 200 } )
+              return > 000000, 200
+
+    @param  : clr || tbl rgb
+    @param  : bool bClean
+
+    @return : str, int
+*/
+
+function rclr.RGB2Hex( rgb, bNoClean )
+    local hexdec        = '0X'
+    local alpha         = 255
+
+    if not istable( rgb ) and not IsColor( rgb ) then return end
+
+    if IsColor( rgb ) then
+        rgb = { rgb.r, rgb.g, rgb.b, rgb.a or alpha }
+    end
+
+    for k, v in pairs( rgb ) do
+        local hex       = ''
+        alpha           = k == 4 and v or alpha
+
+        if k == 4 then continue end -- alpha
+
+        while ( v > 0 ) do
+            local ind       = math.fmod( v, 16 ) + 1
+            v               = math.floor( v / 16 )
+            local substr    = '0123456789ABCDEF'
+            hex             = substr:sub( ind, ind ) .. hex
+        end
+
+        hex                 = ( hex:len( ) == 0 and '00' ) or ( hex:len( ) == 1 and '0' .. hex ) or hex
+        hexdec              = hexdec .. hex
+    end
+
+    if not bNoClean then
+        hexdec              = hexdec:gsub( '0X', '' )
+    end
+
+    return hexdec, alpha
+end
+
+/*
     globals > Hex
 
     hex to color
+
+    @note   : deprecate Hex global func
 
     @ex     : Hex( '#FFF' )
               return > Color( 255, 255, 255, 255 )
@@ -71,10 +178,18 @@ end
     @return : tbl
 */
 
-function Hex( hex, a )
-    local r, g, b = helper:clr_hex2rgb( hex, a )
+function rclr.Hex( hex, a )
+    if not rclr.bHex( hex ) then
+        base:log( RLIB_LOG_ERR, 'Hex > invalid hex specified [ %s ]', tostring( hex ) )
+        return Color( 255, 255, 255, 255 )
+    end
+
+    hex = helper.str:clean( hex, true )
+
+    local r, g, b, a = rclr.Hex2RGB( hex, a )
     return Color( r, g, b, a )
 end
+Hex = rclr.Hex
 
 /*
     globals > Hex > internal
@@ -89,16 +204,17 @@ end
 
     @param  : str hex
     @param  : int a
-    @return : tbl
+
+    @return : int, int, int, int
 */
 
-function iHex( hex, a )
-    if not hex then
-        base:log( RLIB_LOG_ERR, 'Hex » invalid code specified' )
+function rclr.HexObj( hex, a )
+    if not rclr.bHex( hex ) then
+        base:log( RLIB_LOG_ERR, 'Hex > invalid hex specified [ %s ]', tostring( hex ) )
         return Color( 255, 255, 255, 255 )
     end
 
-    local r, g, b, a = helper:clr_hex2rgb( hex, a )
+    local r, g, b, a = rclr.Hex2RGB( hex, a )
     return r, g, b, a
 end
 

@@ -136,7 +136,7 @@ local function rcc_materials_list( pl, cmd, args )
 
         bCatListed = a ~= cat_id and false or bCatListed
 
-        local mnfst = rlib.m:get_manifest( b )
+        local mnfst = rlib.m:g_Manifest( b )
         if not mnfst then continue end
 
         local i = 0

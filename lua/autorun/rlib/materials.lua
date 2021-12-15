@@ -82,7 +82,6 @@ function mat2d( mat, params )
     mat             = isstring( mat ) and mat or false
                     if not mat then return end
 
-
     params          = isstring( params ) and params or 'noclamp smooth'
 
     return Material( mat, params )
@@ -107,7 +106,11 @@ end
         print( mat )
     end )
 
-    materials.g_Download( "https://cdn.rlib.io/wp/a/gmod.png", function( mat ) end )
+    materials.g_Download( "https://cdn.rlib.io/wp/a/gmod.png", function( mat )
+        local mat_new = mat
+    end )
+
+    materials.g_Download( "https://cdn.rlib.io/wp/a/gmod.png" )
 
     @param  : str url
     @param  : func cb
@@ -166,12 +169,12 @@ function materials:get( mat, params )
 end
 
 /*
-*   materials :: valid
-*
-*   determines if the provided resource is a material
-*
-*   @param  : str mat
-*   @return : bool
+    materials :: valid
+
+    determines if the provided resource is a material
+
+    @param  : str mat
+    @return : bool
 */
 
 function materials:valid( mat )
@@ -180,17 +183,17 @@ end
 materials.ok = materials.valid
 
 /*
-*   materials :: get source materials table
-*
-*   returns specified module table
-*
-*   @since  : v3.0.0
-*
-*   @param  : str, tbl mod
-*   @return : tbl
+    materials :: get source materials table
+
+    returns specified module table
+
+    @since  : v3.0.0
+
+    @param  : str, tbl mod
+    @return : tbl
 */
 
-function materials:get_manifest( mod )
+function materials:g_Manifest( mod )
     if not mod then
         log( 2, 'specified module not available\n%s', debug.traceback( ) )
         return false
@@ -209,42 +212,42 @@ function materials:get_manifest( mod )
 end
 
 /*
-*   materials :: register
-*
-*   takes a list of materials provided in a table and loads them into a system which can be used later
-*   to call a material client-side, without the need to define the material.
-*
-*   source material folder takes 3 paramters:
-*
-*       [ 1 ] unique name, [ 2 ] path to image, [ 3 ] parameters
-*
-*   if [ 3 ] is not specified, it will automatically apply 'noclamp smooth' to each material.
-*   only use [ 3 ] if you wish to not use both noclamp and smooth as your material parameters.
-*
-*   @src    :   materials =
-*               {
-*                   { 'uniquename', 'materials/folder/image.png', 'noclamp smooth' }
-*               }
-*
-*   @call   : rlib.m.register( materials )
-*           : rlib.m.register( materials, 'base' )
-*           : rlib.m.register( materials, 'base', 'mat' )
-*
-*   @result : m_rlib_uniquename
-*           : mbase_uniquename
-*           : matbase_uniquename
-*
-*   @syntax : once your materials have been loaded, you can call for one such as the result examples above.
-*           : <append>_<suffix>_<src>
-*           : <m>_<rlib>_<uniquename
-*           : m_rlib_uniquename
-*
-*   @since  : v1.0.0
-*
-*   @param  : tbl src
-*   @param  : str suffix
-*   @param  : str append
-*   @return : void
+    materials :: register
+
+    takes a list of materials provided in a table and loads them into a system which can be used later
+    to call a material client-side, without the need to define the material.
+
+    source material folder takes 3 paramters:
+
+        [ 1 ] unique name, [ 2 ] path to image, [ 3 ] parameters
+
+    if [ 3 ] is not specified, it will automatically apply 'noclamp smooth' to each material.
+    only use [ 3 ] if you wish to not use both noclamp and smooth as your material parameters.
+
+    @src    :   materials =
+                {
+                    { 'uniquename', 'materials/folder/image.png', 'noclamp smooth' }
+                }
+
+    @call   : rlib.m.register( materials )
+            : rlib.m.register( materials, 'base' )
+            : rlib.m.register( materials, 'base', 'mat' )
+
+    @result : m_rlib_uniquename
+            : mbase_uniquename
+            : matbase_uniquename
+
+    @syntax : once your materials have been loaded, you can call for one such as the result examples above.
+            : <append>_<suffix>_<src>
+            : <m>_<rlib>_<uniquename
+            : m_rlib_uniquename
+
+    @since  : v1.0.0
+
+    @param  : tbl src
+    @param  : str suffix
+    @param  : str append
+    @return : void
 */
 
 function materials:register_v1( src, suffix, append )
@@ -276,12 +279,12 @@ function materials:register_v1( src, suffix, append )
 end
 
 /*
-*   materials :: register
-*
-*   @since  : v3.0.0
-*
-*   @param  : tbl, str src
-*   @return : void
+    materials :: register
+
+    @since  : v3.0.0
+
+    @param  : tbl, str src
+    @return : void
 */
 
 function materials:register( mod )
@@ -290,7 +293,7 @@ function materials:register( mod )
         return
     end
 
-    local mnfst_mats    = self:get_manifest( mod )
+    local mnfst_mats    = self:g_Manifest( mod )
     mod._cache          = mod._cache or { }
     mod._cache.mats     = { }
 
@@ -310,15 +313,15 @@ function materials:register( mod )
 end
 
 /*
-*   materials :: get cache
-*
-*   returns registered materials for a specified module
-*
-*   @since  : v3.0.0
-*
-*   @param  : str, tbl mod
-*   @param  : tbl
-*   @return : tbl
+    materials :: get cache
+
+    returns registered materials for a specified module
+
+    @since  : v3.0.0
+
+    @param  : str, tbl mod
+    @param  : tbl
+    @return : tbl
 */
 
 function materials:cache( mod, src )
@@ -352,19 +355,19 @@ function materials:cache( mod, src )
 end
 
 /*
-*   materials :: call
-*
-*   returns a registered material assigned via the id
-*   id is stored in the module manifest file
-*
-*   @ex     : materials:call( mod, id )
-*           : materials:call( mod, 'pnl_test' )
-*
-*   @since  : v3.0.0
-*
-*   @param  : tbl, str mod
-*   @param  : str id
-*   @param  : str ref
+    materials :: call
+
+    returns a registered material assigned via the id
+    id is stored in the module manifest file
+
+    @ex     : materials:call( mod, id )
+            : materials:call( mod, 'pnl_test' )
+
+    @since  : v3.0.0
+
+    @param  : tbl, str mod
+    @param  : str id
+    @param  : str ref
 */
 
 function materials:call( mod, id, ref )
