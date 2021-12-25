@@ -73,7 +73,7 @@ local function checkDependency( pl, p )
     if not base or not base.modules:bInstalled( mod ) then
         p                   = isstring( p ) and helper.ok.str( p ) or istable( p ) and ( p.ulx or p.id ) or 'unknown command'
         local msg           = { smsg.clrs.t2, p, smsg.clrs.msg, '\nAn error has occured with the library. Contact the developer or sys admin.' }
-        pl:push             ( '', 'Critical Error', 7, msg )
+        pl:push             ( msg, 'Critical Error', '' )
         return false
     end
     return true
