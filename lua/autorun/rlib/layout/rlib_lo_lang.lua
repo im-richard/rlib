@@ -26,13 +26,13 @@
     library
 */
 
-rlib                        = rlib or { }
 local base                  = rlib
-local cfg                   = base.settings
 local helper                = base.h
 local design                = base.d
 local ui                    = base.i
 local cvar                  = base.v
+
+local cfg                   = base.settings
 
 /*
     language
@@ -48,7 +48,7 @@ end
 
 local function pref( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and base.manifest.prefix ) or false
-    return rlib.get:pref( str, state )
+    return base.get:pref( str, state )
 end
 
 /*
@@ -64,6 +64,35 @@ local PANEL = { }
 AccessorFunc( PANEL, 'm_bDraggable', 'Draggable', FORCE_BOOL )
 
 /*
+    _Declare
+*/
+
+function PANEL:_Declare( )
+    self.sz_desc                    = RSH( ) *  0.065
+    self.sz_cbo_h                   = RSH( ) *  0.038
+end
+
+/*
+    _Call
+*/
+
+function PANEL:_Call( )
+    self.cv_lang                    = cvar:GetStr( 'rlib_language' )
+    self.cv_lang_hu                 = cfg.langlst[ self.cv_lang ] or self.cv_lang
+end
+
+/*
+    _Colorize
+*/
+
+function PANEL:_Colorize( )
+    self.clr_cbo_box_h              = Color( 255, 255, 255, 2 )
+    self.clr_cbo_item_n             = Color( 25, 25, 25, 255 )
+    self.clr_cbo_item_h             = Color( 255, 255, 255, 2 )
+    self.clr_cgo_txt_n              = Color( 255, 255, 255, 255 )
+end
+
+/*
 *   initialize
 */
 
@@ -73,38 +102,39 @@ function PANEL:Init( )
     *   sizing
     */
 
-    local sc_w, sc_h            = ui:scalesimple( 0.85, 0.85, 0.90 ), ui:scalesimple( 0.85, 0.85, 0.90 )
-    local pnl_w, pnl_h          = 500, 200
-    local ui_w, ui_h            = sc_w * pnl_w, sc_h * pnl_h
-    local min_sz                = 0.85
+    local sc_w, sc_h                = ui:scalesimple( 0.85, 0.85, 0.90 ), ui:scalesimple( 0.85, 0.85, 0.90 )
+    local pnl_w, pnl_h              = 500, 200
+    local ui_w, ui_h                = sc_w * pnl_w, sc_h * pnl_h
+    local min_sz                    = 0.85
 
     /*
     *   localized colorization
     */
 
-    local clr_cur               = Color( 200, 200, 200, self.Alpha )
-    local clr_text              = Color( 255, 255, 255, self.Alpha )
-    local clr_hl                = Color( 25, 25, 25, self.Alpha )
+    local clr_cur                   = Color( 200, 200, 200, self.Alpha )
+    local clr_text                  = Color( 255, 255, 255, self.Alpha )
+    local clr_hl                    = Color( 25, 25, 25, self.Alpha )
 
     /*
     *   parent pnl
     */
 
-    self:SetPaintShadow         ( true                          )
-    self:SetSize                ( ui_w, ui_h                    )
-    self:SetMinWidth            ( ui_w * min_sz                 )
-    self:SetMinHeight           ( ui_h * min_sz                 )
-    self:MakePopup              (                               )
-    self:SetTitle               ( ''                            )
-    self:ShowCloseButton        ( false                         )
-    self:DockPadding            ( 2, 34, 2, 3                   )
+    self                            = ui.get( self                          )
+    :setup                          (                                       )
+    :shadow                         ( true                                  )
+    :sz                             ( ui_w, ui_h                            )
+    :minwide                        ( ui_w * min_sz                         )
+    :mintall                        ( ui_h * min_sz                         )
+    :popup                          (                                       )
+    :notitle                        (                                       )
+    :showclose                      ( false                                 )
 
     /*
     *   localized declarations
     */
 
-    self.bIsPopulated           = false
-    self.bNoFocus               = false
+    self.bIsPopulated               = false
+    self.bNoFocus                   = false
 
     /*
     *   display parent :: static || animated
@@ -121,16 +151,16 @@ function PANEL:Init( )
     *   titlebar
     */
 
-    self.lblTitle               = ui.new( 'lbl', self           )
-    :notext                     (                               )
-    :font                       ( pref( 'lang_title' )          )
-    :clr                        ( Color( 255, 255, 255, 255 )   )
+    self.lblTitle                   = ui.new( 'lbl', self               )
+    :notext                         (                                   )
+    :font                           ( pref( 'lang_title' )              )
+    :clr                            ( Color( 255, 255, 255, 255 )       )
 
-                                :draw( function( s, w, h )
-                                    if not self.title or self.title == '' then return end
-                                    draw.SimpleText( utf8.char( 9930 ), pref( 'lang_icon' ), 0, 8, Color( 240, 72, 133, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-                                    draw.SimpleText( self.title, pref( 'lang_title' ), 25, h / 2, Color( 237, 237, 237, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-                                end )
+                                    :draw( function( s, w, h )
+                                        if not self.title or self.title == '' then return end
+                                        draw.SimpleText( utf8.char( 9930 ), pref( 'lang_icon' ), 0, 8, Color( 240, 72, 133, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.title, pref( 'lang_title' ), 25, h / 2, Color( 237, 237, 237, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                    end )
 
     /*
     *   close button
@@ -140,70 +170,73 @@ function PANEL:Init( )
     *   inherit position/size properties
     */
 
-    self.btnClose               = ui.new( 'btn', self               )
-    :bsetup                     (                                   )
-    :notext                     (                                   )
-    :tooltip                    ( lang( 'tooltip_close' )           )
-    :ocr                        ( self                              )
+    self.btnClose                   = ui.new( 'btn', self                   )
+    :bsetup                         (                                       )
+    :notext                         (                                       )
+    :tooltip                        ( lang( 'tooltip_close' )               )
+    :ocr                            ( self                                  )
 
-                                :draw( function( s, w, h )
-                                    local clr_txt = s.hover and Color( 200, 55, 55, 255 ) or Color( 237, 237, 237, 255 )
-                                    draw.SimpleText( helper.get:utf8( 'close' ), pref( 'lang_close' ), w / 2, h / 2 + 4, clr_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-                                end )
+                                    :draw( function( s, w, h )
+                                        local clr_txt = s.hover and Color( 200, 55, 55, 255 ) or Color( 237, 237, 237, 255 )
+                                        draw.SimpleText( helper.get:utf8( 'close' ), pref( 'lang_close' ), w / 2, h / 2 + 4, clr_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                    end )
 
     /*
     *   subparent pnl
     */
 
-    self.p_subparent            = ui.new( 'pnl', self               )
-    :nodraw                     (                                   )
-    :static                     ( FILL                              )
-    :margin                     ( 0, 10, 0, 0                       )
+    self.p_subparent                = ui.new( 'pnl', self                   )
+    :nodraw                         (                                       )
+    :fill                           ( 'm', 0, 10, 0                         )
 
     /*
     *   body
     */
 
-    self.p_body                 = ui.new( 'pnl', self.p_subparent   )
-    :nodraw                     (                                   )
-    :static                     ( FILL                              )
-    :margin                     ( 10, 5, 10, 5                      )
+    self.p_body                     = ui.new( 'pnl', self.p_subparent       )
+    :nodraw                         (                                       )
+    :fill                           ( 'm', 10, 5, 10, 5                     )
 
     /*
     *   dtxt_desc
     */
 
-    self.dtxt_desc              = ui.new( 'entry', self.p_body      )
-    :static		                ( TOP 					            )
-    :padding		            ( 3, 3, 3, 3 			            )
-    :tall                       ( 60                                )
-    :drawbg                     ( false                             )
-    :mline	                    ( true 				                )
-    :canedit                    ( true                              )
-    :scur	                    ( Color( 255, 255, 255, 255 ), 'beam' )
-    :txt	                    ( lang( 'lang_sel_desc' ), Color( 255, 255, 255, 255 ), pref( 'lang_desc' ) )
-    :drawentry                  ( clr_text, clr_cur, clr_hl         )
+    self.dtxt_desc                  = ui.new( 'entry', self.p_body          )
+    :top                            ( 'm', 3                                )
+    :tall                           ( self.sz_desc                          )
+    :drawbg                         ( false                                 )
+    :mline	                        ( true 				                    )
+    :canedit                        ( true                                  )
+    :scur	                        ( Color( 255, 255, 255, 255 ), 'beam'   )
+    :txt	                        ( lang( 'lang_sel_desc' ), Color( 255, 255, 255, 255 ), pref( 'lang_desc' ) )
+    :drawentry                      ( clr_text, clr_cur, clr_hl             )
+    :canedit                        (                                       )
 
     /*
     *   dcbox :: languages
     */
 
-    self.dcb_combine            = ui.new( 'cbo', self.p_body        )
-    :static		                ( TOP 					            )
-    :margin		                ( 0, 3, 0, 3 			            )
-    :tall                       ( 24                                )
-    :value                      ( cvar:GetStr( 'rlib_language' )    )
-    :font                       ( pref( 'lang_item' )               )
+    self.dcb_combine                = ui.new( 'rlib.ui.cbo', self.p_body    )
+    :top                            ( 'm', 0, 3, 0, 3                       )
+    :tall                           ( self.sz_cbo_h                         )
+    :value                          ( self.cv_lang_hu                       )
+    :font                           ( pref( 'lang_item' )                   )
+    :param                          ( 'SetOptionHeight', 32                 )
 
-                                :draw( function( s, w, h )
-                                    design.rbox( 4, 0, 0, w, h, Color( 67, 67, 67, 255 ) )
+                                    :draw( function( s, w, h )
+                                        design.rbox( 4, 0, 0, w, h, Color( 67, 67, 67, 255 ) )
 
-                                    local clr_box = Color( 20, 20, 20, 255 )
-                                    design.rbox( 4, 1, 1, w - 2, h - 2, clr_box )
+                                        local clr_box = Color( 20, 20, 20, 255 )
+                                        design.rbox( 4, 1, 1, w - 2, h - 2, clr_box )
 
-                                    s:SetTextColor( Color( 255, 255, 255, 255 ) )
-                                    s:SetTextInset( 10, 0 )
-                                end )
+                                        if s:IsHovered( ) then
+                                            design.box( 0, 0, w, h, self.clr_cbo_box_h )
+                                        end
+
+                                        s:SetFont       ( pref( 'lang_cbo_sel' ) )
+                                        s:SetTextColor  ( self.clr_cgo_txt_n )
+                                        s:SetTextInset  ( 10, 0 )
+                                    end )
 
     /*
     *   dcbox :: populate values
@@ -222,7 +255,8 @@ function PANEL:Init( )
     end
 
     for i in helper.get.data( sel_langs ) do
-        self.dcb_combine:AddChoice( i, i )
+        local lang = cfg.langlst[ i ] or i
+        self.dcb_combine:AddChoice( lang, i )
     end
 
     /*
@@ -244,10 +278,13 @@ function PANEL:Init( )
         if s:IsMenuOpen( ) then return s:CloseMenu( ) end
         s:OpenMenu( )
 
-        for pnl in helper.get.data( s.Menu:GetCanvas( ):GetChildren( ) ) do
-            function pnl:Paint( w, h )
-                local col1 = Color( 25, 25, 25, 255 )
-                design.box( 0, 0, w, h, col1 )
+        for _, v in pairs( s.Menu:GetChildren( )[ 1 ]:GetChildren( ) ) do
+            v.Paint = function( a, b, c )
+                design.box( 0, 0, b, c, self.clr_cbo_item_n )
+
+                if not a.m_bNoHover and a.Hovered then
+                    design.box( 0, 0, b, c, self.clr_cbo_item_h )
+                end
             end
         end
     end
@@ -274,14 +311,12 @@ function PANEL:Init( )
         local sorted = { }
         for k, v in pairs( s.Choices ) do table.insert( sorted, { id = k, data = v } ) end
         for k, v in SortedPairsByMemberValue( sorted, 'data' ) do
-            local p = s.Menu:AddOption( v.data, function( ) s:ChooseOption( v.data, v.id ) end )
-            p:SetFont( s:GetFont( ) )
-            p:SetTextColor( Color( 255, 255, 255, 255 ) )
-            p:SetTextInset( 10, 1 )
+            local p             = s.Menu:AddOption( v.data, function( ) s:ChooseOption( v.data, v.id ) end )
+            p:SetFont           ( pref( 'lang_cbo_opt' ) )
+            p:SetTextColor      ( self.clr_cgo_txt_n )
         end
 
         local x, y = s:LocalToScreen( 0, s:GetTall( ) )
-
         s.Menu:SetMinimumWidth( s:GetWide( ) )
         s.Menu:Open( x, y, false, s )
     end

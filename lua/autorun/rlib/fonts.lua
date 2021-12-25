@@ -84,6 +84,8 @@ function font.new( mod, id, name, sz, wt, bShadow, bExt, bSym )
     id          = pref( id, pf )
 
     _f( id, { font = name, size = sz, weight = wt, bShadow or false, antialias = true, extended = bExt or false, symbol = bSyn or false } )
+
+    base:log( RLIB_LOG_FONT, '+ font » %s', id )
 end
 
 /*
@@ -136,7 +138,7 @@ local function fonts_register( pl )
     */
 
         _f( pref( 'ucl_font_def' ),                     { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
-        _f( pref( 'ucl_tippy' ),                        { size = math.Round( 17 * fs ), weight = 200, antialias = true, shadow = false, font = 'Roboto Light' } )
+        _f( pref( 'ucl_tippy' ),                        { size = math.Round( 19 * fs ), weight = 200, antialias = true, shadow = false, font = 'Roboto Light' } )
 
     /*
         fonts > design
@@ -211,11 +213,13 @@ local function fonts_register( pl )
         fonts > lang
     */
 
-        _f( pref( 'lang_close' ),                       { size = 24, weight = 800, antialias = true, font = 'Roboto' } )
+        _f( pref( 'lang_close' ),                       { size = math.Round( 34 * fs ), weight = 800, antialias = true, font = 'Roboto' } )
         _f( pref( 'lang_icon' ),                        { size = 24, weight = 100, antialias = true, font = 'Roboto Light' } )
         _f( pref( 'lang_title' ),                       { size = 16, weight = 600, antialias = true, font = 'Roboto Light' } )
-        _f( pref( 'lang_desc' ),                        { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
+        _f( pref( 'lang_desc' ),                        { size = math.Round( 17 * fs ), weight = 400, antialias = true, font = 'Roboto Light' } )
         _f( pref( 'lang_item' ),                        { size = 16, weight = 400, antialias = true, font = 'Roboto Light' } )
+        _f( pref( 'lang_cbo_sel' ),                     { size = math.Round( 20 * fs ), weight = 100, antialias = true, font = 'Segoe UI Light' } )
+        _f( pref( 'lang_cbo_opt' ),                     { size = math.Round( 17 * fs ), weight = 100, antialias = true, font = 'Segoe UI Light' } )
 
     /*
         fonts > mviewer

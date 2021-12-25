@@ -61,6 +61,47 @@ end
     cfg.lang                = 'en'
 
 /*
+    language > list
+
+    translates languages into full name
+*/
+
+    cfg.langlst =
+    {
+        [ 'ab' ]            = 'Abkhazian',
+        [ 'af' ]            = 'Afrikaans',
+        [ 'ar' ]            = 'Arabic',
+        [ 'ar' ]            = 'Arabic',
+        [ 'bg' ]            = 'Bulgarian',
+        [ 'zh' ]            = 'Chinese',
+        [ 'da' ]            = 'Danish',
+        [ 'nl' ]            = 'Dutch',
+        [ 'en' ]            = 'English',
+        [ 'fi' ]            = 'Finnish',
+        [ 'fr' ]            = 'French',
+        [ 'ka' ]            = 'Georgian',
+        [ 'de' ]            = 'German',
+        [ 'el' ]            = 'Greek',
+        [ 'hi' ]            = 'Hindi',
+        [ 'hu' ]            = 'Hungarian',
+        [ 'in' ]            = 'Indonesian',
+        [ 'it' ]            = 'Italian',
+        [ 'ja' ]            = 'Japanese',
+        [ 'ko' ]            = 'Korean',
+        [ 'ku' ]            = 'Kurdish',
+        [ 'lt' ]            = 'Lithuanian',
+        [ 'no' ]            = 'Norwegian',
+        [ 'pl' ]            = 'Polish',
+        [ 'ru' ]            = 'Russian',
+        [ 'es' ]            = 'Spanish',
+        [ 'sv' ]            = 'Swedish',
+        [ 'th' ]            = 'Thai',
+        [ 'tr' ]            = 'Turkish',
+        [ 'vi' ]            = 'Vietnamese',
+        [ 'ji' ]            = 'Yiddish',
+    }
+
+/*
 *   oort
 *
 *   service that allows the developer to provide assistance more easily by gaining access

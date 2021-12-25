@@ -1601,7 +1601,10 @@ rhook.new.rlib( 'rcore_modules_register', base.Register )
 *   start loading all required modules
 */
 
-function base:modules_initialize( )
+function base:modules_initialize( pl )
+    if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
+        rlib:log( RLIB_LOG_SYSTEM, 'Reloading modules, please wait ...' )
+    end
 
     rhook.run.rlib( 'rcore_modules_load_pre' )
 
@@ -1625,3 +1628,4 @@ function base:modules_initialize( )
 end
 rhook.new.rlib( 'rcore_loader_post', 'rcore_modules_initialize', base.modules_initialize )
 rhook.new.gmod( 'OnReloaded', 'rcore_modules_onreload', base.modules_initialize )
+rcc.new.rlib( 'rlib_modules_reload', base.modules_initialize )

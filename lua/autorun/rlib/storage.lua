@@ -860,6 +860,32 @@ function storage.ent.mdl( mod, id )
 end
 
 /*
+    storage > ent > locate
+
+    gets the registered env name of an ent based on the classname
+
+    local ent = storage.ent.locate( mod, 'rlib_ent_classname' )
+    returns table
+
+    @param	: tbl mod
+    @param	: str, int id
+    @return : tbl
+*/
+
+function storage.ent.locate( mod, id )
+    local bFound = false
+    for k, v in pairs( mod.ents ) do
+        if v.ent == id then
+            v.id = k
+            bFound = v
+            break
+        end
+    end
+
+    return bFound
+end
+
+/*
 *   storage > glon > get
 *
 *   returns data from MODULE.datafolder table based on id provided

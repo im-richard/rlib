@@ -537,7 +537,7 @@ function base.oort:SendLog( data, bForced )
             resp        = ln( 'response_none' )
         end
 
-        if not json_body.success then
+        if not json_body or not json_body.success then
             resp        = ln( 'response_err' )
         else
             bSuccess    = true

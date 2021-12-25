@@ -80,6 +80,21 @@ local function checkDependency( pl, p )
 end
 
 /*
+*   check gamemode
+*
+*   @param  : ply pl
+*/
+
+local function checkGamemode( pl, p )
+    if not pl.getDarkRPVar and not DarkRP then
+        p                   = isstring( p ) and helper.ok.str( p ) or istable( p ) and ( p.ulx or p.id ) or 'unknown command'
+        base.msg:route      ( pl, p, 'Are you running', smsg.clrs.t1, 'darkrp', smsg.clrs.msg, '?' )
+        return false
+    end
+    return true
+end
+
+/*
 *   ulx > options > jobs
 */
 
@@ -111,6 +126,7 @@ rhook.new.rlib( 'rlib_initialize_post', 'rlib_ulx_jobs_populate', populate_jobs 
 
 function ulx.rlib_rp_job_get( call_pl, targ_pl, job )
     if not checkDependency( call_pl, id_job_get ) then return end
+    if not checkGamemode( call_pl, id_job_get ) then return end
 
     if not RPExtraTeams then
         base.msg:route( call_pl, id_job_get.name, 'RP jobs table missing -- are you running darkrp?' )
@@ -140,6 +156,7 @@ rlib_rp_job_get:help                    ( id_job_get.desc )
 
 function ulx.rlib_rp_job_set( call_pl, targ_pl, job )
     if not checkDependency( call_pl, id_job_set ) then return end
+    if not checkGamemode( call_pl, id_job_set ) then return end
 
     if not RPExtraTeams then
         base.msg:route( call_pl, id_job_set.name, 'RP jobs table missing -- are you running darkrp?' )
@@ -194,16 +211,17 @@ rlib_rp_job_set:help                    ( id_job_set.desc )
 */
 
 function ulx.rlib_rp_job_set_cmd( call_pl, targ_pl, job )
-    if not checkDependency( call_pl, id_job_set ) then return end
+    if not checkDependency( call_pl, id_job_set_cmd ) then return end
+    if not checkGamemode( call_pl, id_job_set_cmd ) then return end
 
     if not RPExtraTeams then
-        base.msg:route( call_pl, id_job_set.name, 'RP jobs table missing -- are you running darkrp?' )
+        base.msg:route( call_pl, id_job_set_cmd.name, 'RP jobs table missing -- are you running darkrp?' )
         return
     end
 
     local job_c, job_res = helper.who:rpjob_custom( job )
     if not job_c or job_c == 0 then
-        base.msg:route( call_pl, id_job_set.name, 'Specified job with command does not exist' )
+        base.msg:route( call_pl, id_job_set_cmd.name, 'Specified job with command does not exist' )
         return
     end
 
@@ -224,8 +242,8 @@ function ulx.rlib_rp_job_set_cmd( call_pl, targ_pl, job )
     GAMEMODE:PlayerSetModel     ( targ_pl       )
     GAMEMODE:PlayerLoadout      ( targ_pl       )
 
-    base.msg:route( call_pl, id_job_set.name, 'Forced player', smsg.clrs.t1, targ_pl:palias( ), smsg.clrs.msg, 'to job', smsg.clrs.t1, n_job.name )
-    base.msg:route( targ_pl, id_job_set.name, 'You have been forced to job', smsg.clrs.t1, n_job.name )
+    base.msg:route( call_pl, id_job_set_cmd.name, 'Forced player', smsg.clrs.t1, targ_pl:palias( ), smsg.clrs.msg, 'to job', smsg.clrs.t1, n_job.name )
+    base.msg:route( targ_pl, id_job_set_cmd.name, 'You have been forced to job', smsg.clrs.t1, n_job.name )
 end
 local rlib_rp_job_set_cmd               = ulx.command( id_job_set_cmd.category, id_job_set_cmd.ulx_id, ulx.rlib_rp_job_set_cmd, id_job_set_cmd.pubcmds )
 rlib_rp_job_set_cmd:addParam            { type = ULib.cmds.PlayerArg }
@@ -245,6 +263,7 @@ rlib_rp_job_set_cmd:help                ( id_job_set_cmd.desc )
 
 function ulx.rlib_rp_money_add( call_pl, targ_pl, amt )
     if not checkDependency( call_pl, id_money_add ) then return end
+    if not checkGamemode( call_pl, id_money_add ) then return end
 
     local total             = targ_pl:getDarkRPVar( 'money' ) + math.floor( amt )
     total                   = hook.Call( 'playerWalletChanged', GAMEMODE, targ_pl, amt, targ_pl:getDarkRPVar( 'money' ) ) or total
@@ -277,6 +296,12 @@ rlib_rp_money_add:help                  ( id_money_add.desc )
 
 function ulx.rlib_rp_money_set( call_pl, targ_pl, amt )
     if not checkDependency( call_pl, id_money_set ) then return end
+    if not checkGamemode( call_pl, id_money_set ) then return end
+
+    if not targ_pl.getDarkRPVar then
+        base.msg:route( targ_pl, id_money_set.name, 'Are you running', smsg.clrs.t1, 'darkrp', smsg.clrs.msg, '?' )
+        return
+    end
 
     local total             = math.floor( amt )
     total                   = hook.Call( 'playerWalletChanged', GAMEMODE, targ_pl, amt, targ_pl:getDarkRPVar( 'money' ) ) or total
