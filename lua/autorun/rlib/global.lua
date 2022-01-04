@@ -76,6 +76,7 @@ end
 */
 
 function rclr.bHex( val )
+    if not isstring( val ) then return false end
     return ( val:match '^#?%x%x%x$' or val:match '^#?%x%x%x%x%x%x$' ) ~= nil
 end
 
