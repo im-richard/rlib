@@ -150,11 +150,11 @@ end
 */
 
 function PANEL:_Colorize( )
-    self.clr_bg                     = Hex( 'FFFFFF' )
-    self.clr_togg_y                 = Hex( '39772A' )
-    self.clr_togg_n                 = Hex( 'FA0A5A' )
-    self.clr_togg_y_h               = Hex( 'FFFFFF' )
-    self.clr_togg_n_h               = Hex( 'FFFFFF' )
+    self.clr_bg                     = rclr.Hex( 'FFFFFF' )
+    self.clr_togg_y                 = rclr.Hex( '39772A' )
+    self.clr_togg_n                 = rclr.Hex( 'FA0A5A' )
+    self.clr_togg_y_h               = rclr.Hex( 'FFFFFF' )
+    self.clr_togg_n_h               = rclr.Hex( 'FFFFFF' )
 end
 
 /*

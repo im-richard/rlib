@@ -171,7 +171,7 @@ end
 
     @note   : deprecate Hex global func
 
-    @ex     : Hex( '#FFF' )
+    @ex     : rclr.Hex( '#FFF' )
               return > Color( 255, 255, 255, 255 )
 
     @param  : str hex
@@ -190,7 +190,10 @@ function rclr.Hex( hex, a )
     local r, g, b, a = rclr.Hex2RGB( hex, a )
     return Color( r, g, b, a )
 end
-Hex = rclr.Hex
+
+if not isfunction( Hex ) then
+    Hex = rclr.Hex
+end
 
 /*
     globals > Hex > internal
@@ -200,7 +203,7 @@ Hex = rclr.Hex
 
     hex to color
 
-    @ex     : Hex( '#FFF' )
+    @ex     : rclr.HexObj( '#FFF' )
               return > Color( 255, 255, 255, 255 )
 
     @param  : str hex
@@ -220,18 +223,18 @@ function rclr.HexObj( hex, a )
 end
 
 /*
-*   globals > table > getmax
-*
-*   gets the max value of a table
-*
-*   @ex     : tbl = { 1, 4, 5, 6 }
-*             table.GetMax( tbl )
-*
-*   @ret    : 6 (val), 4 (pos)
-*
-*   @param  : tbl tbl
-*   @return : int, int
-*             val, pos
+    globals > table > getmax
+
+    gets the max value of a table
+
+    @ex     : tbl = { 1, 4, 5, 6 }
+              table.GetMax( tbl )
+
+    @ret    : 6 (val), 4 (pos)
+
+    @param  : tbl tbl
+    @return : int, int
+              val, pos
 */
 
 function table.GetMax( tbl )
@@ -267,7 +270,7 @@ if CLIENT then
 end
 
 /*
-*   globals > ents.Create ( alias )
+    globals > ents.Create ( alias )
 */
 
 ents.new = ents.Create

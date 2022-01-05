@@ -151,7 +151,7 @@ end
 
 function PANEL:SetClrEnabled( clr )
     if helper:clr_ishex( clr ) then
-        clr = Hex( clr )
+        clr = rclr.Hex( clr )
     end
 
     self.clr_enabled = clr
@@ -172,10 +172,10 @@ end
 */
 
 function PANEL:_Colorize( )
-    self.clr_bg                     = Hex( 'FFFFFF' )
-    self.clr_togg_y                 = Hex( 'FA0A5A' )
-    self.clr_togg_y_h               = Hex( '000000', 200 )
-    self.clr_togg_n_h               = Hex( '000000', 200 )
+    self.clr_bg                     = rclr.Hex( 'FFFFFF' )
+    self.clr_togg_y                 = rclr.Hex( 'FA0A5A' )
+    self.clr_togg_y_h               = rclr.Hex( '000000', 200 )
+    self.clr_togg_n_h               = rclr.Hex( '000000', 200 )
 end
 
 /*

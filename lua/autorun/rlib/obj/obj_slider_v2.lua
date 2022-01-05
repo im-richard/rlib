@@ -222,10 +222,10 @@ end
 */
 
 function PANEL:_Colorize( )
-    self.clr_knob_o         = Hex( 'FFFFFF' )
-    self.clr_knob_i         = Hex( 'FFFFFF' )
-    self.clr_bar            = Hex( 'FFFFFF' )
-    self.clr_text_h         = Hex( 'FFFFFF' )
+    self.clr_knob_o         = rclr.Hex( 'FFFFFF' )
+    self.clr_knob_i         = rclr.Hex( 'FFFFFF' )
+    self.clr_bar            = rclr.Hex( 'FFFFFF' )
+    self.clr_text_h         = rclr.Hex( 'FFFFFF' )
 end
 
 /*

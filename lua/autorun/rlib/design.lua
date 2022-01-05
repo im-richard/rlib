@@ -1644,9 +1644,9 @@ function design:notify( msg, cat, startpos )
         declare > colors
     */
 
-    local clr_box_ol                = Hex( '000000', 255 )
-    local clr_box_n                 = base._def.lc_rgb[ cat ] or Hex( '1E1E1E' )
-    local clr_txt                   = Hex( 'FFFFFF' )
+    local clr_box_ol                = rclr.Hex( '000000', 255 )
+    local clr_box_n                 = base._def.lc_rgb[ cat ] or rclr.Hex( '1E1E1E' )
+    local clr_txt                   = rclr.Hex( 'FFFFFF' )
 
     /*
         declare > sizes
@@ -2383,7 +2383,7 @@ function design:push( msgtbl, title, ico, clr_title, clr_box )
             if IsColor( v ) then
                 body:InsertColorChange( v.r, v.g, v.b, v.a  )
             elseif helper:clr_ishex( v ) then
-                local clr = Hex( v )
+                local clr = rclr.Hex( v )
                 body:InsertColorChange( clr.r, clr.g, clr.b, clr.a  )
             elseif isstring( v ) and v ~= '\n' and not helper:clr_ishex( v ) then
                 local txt = v .. ' '
@@ -2526,10 +2526,10 @@ function design:sos( msgtbl, title, ico, dur )
         colors
     */
 
-    local clr_box_ol                = Hex( '191919' )
-    local clr_box_in                = Hex( '1D1D1D' )
-    local clr_box_h                 = Hex( '000000', 100 )
-    local clr_txt_title             = Hex( 'E8B78E' )
+    local clr_box_ol                = rclr.Hex( '191919' )
+    local clr_box_in                = rclr.Hex( '1D1D1D' )
+    local clr_box_h                 = rclr.Hex( '000000', 100 )
+    local clr_txt_title             = rclr.Hex( 'E8B78E' )
 
     /*
         obj > btn
@@ -2873,11 +2873,11 @@ function design:restart( msg )
         declare > colors
     */
 
-    local clr_box_ol        = Hex( '282828' )
-    local clr_box_n         = Hex( '232323' )
-    local clr_header        = Hex( 'E06B6B' )
-    local clr_img           = Hex( 'FFFFFF', 1 )
-    local clr_txt_cntdown   = Hex( 'FFFFFF' )
+    local clr_box_ol        = rclr.Hex( '282828' )
+    local clr_box_n         = rclr.Hex( '232323' )
+    local clr_header        = rclr.Hex( 'E06B6B' )
+    local clr_img           = rclr.Hex( 'FFFFFF', 1 )
+    local clr_txt_cntdown   = rclr.Hex( 'FFFFFF' )
 
     /*
         parent
@@ -2989,11 +2989,11 @@ function design:debug( msg )
         declare > colors
     */
 
-    local clr_box_ol        = Hex( '282828' )
-    local clr_box_n         = Hex( '232323' )
-    local clr_header        = Hex( 'E06B6B' )
-    local clr_img           = Hex( 'FFFFFF', 1 )
-    local clr_txt_cntdown   = Hex( 'FFFFFF' )
+    local clr_box_ol        = rclr.Hex( '282828' )
+    local clr_box_n         = rclr.Hex( '232323' )
+    local clr_header        = rclr.Hex( 'E06B6B' )
+    local clr_img           = rclr.Hex( 'FFFFFF', 1 )
+    local clr_txt_cntdown   = rclr.Hex( 'FFFFFF' )
 
     /*
         parent
