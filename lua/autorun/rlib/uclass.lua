@@ -5628,7 +5628,11 @@ local uclass = { }
                                         pos_x           = math.Clamp( pos_x, ( sz_w / 2 ) - 10, ScrW( ) - ( sz_w / 2 ) )
                                         pos_y           = math.Clamp( pos_y, 45, ScrH( ) - 0 )
 
-                                        s:SetPos( pos_x + ( 15 / 2 ) - ( wid / 2 ), pos_y - 45 )
+                                        if pos_y <= 50 then
+                                            s:SetPos( pos_x + ( 15 / 2 ) - ( wid / 2 ), 50 + 15 )
+                                        else
+                                            s:SetPos( pos_x + ( 15 / 2 ) - ( wid / 2 ), pos_y - 45 )
+                                        end
                                     end )
 
                                     :draw( function( s, w, h )
