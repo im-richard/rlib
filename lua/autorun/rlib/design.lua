@@ -2710,11 +2710,12 @@ function design:inform( mtype, msg, title, dur )
         mtype, msg = 2, 'an error occured'
     end
 
+    local font_id                   = pref( 'design_dialog_sli_msg' )
     title                           = isstring( title ) and title or ln( 'notify_title_def' )
     dur                             = isnumber( dur ) and dur or 10
 
-    local message                   = helper.str:crop( msg, ui:cscale( true, 220, 250, 260, 250, 260, 260, 270 ), pref( 'design_dialog_sli_msg' ) )
-    local text_w, text_h            = helper.str:len( message, pref( 'design_dialog_sli_msg' ) )
+    local message                   = helper.str:crop( msg, ui:cscale( true, 220, 250, 260, 250, 260, 260, 270 ), font_id )
+    local text_w, text_h            = helper.str:len( message, font_id )
     local m_ctime                   = CurTime( )
 
     local pos_w, pos_h              = text_w + 120, 50 + text_h + 15
@@ -2805,7 +2806,7 @@ function design:inform( mtype, msg, title, dur )
     :align                          ( 5                                     )
 
                                     :draw( function( s, w, h )
-                                        draw.DrawText( message, pref( 'design_dialog_sli_msg' ), s:GetWide() / 2, 10, Color( 255, 255, 255, 255 ) , TEXT_ALIGN_CENTER )
+                                        draw.DrawText( message, font_id, s:GetWide( ) / 2, 10, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER )
                                     end )
 
     /*

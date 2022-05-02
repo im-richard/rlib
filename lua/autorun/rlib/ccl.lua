@@ -524,15 +524,24 @@ end
 hook.Add( 'InitPostEntity', pid( '__lib_initpostentity' ), __lib_initpostentity )
 
 /*
+    library > post loader
+*/
+
+local function __lib_loader_post( )
+    hook.Run( 'rlib.fonts.register' )
+end
+hook.Add( 'rlib.loader.post', pid( '__lib_loader_post' ), __lib_loader_post )
+
+/*
 *	rlib :: think :: resolution
 *
 *	monitor resolution changes
 *
-*	@todo   : integrate into existing scripts
+*	@todo   : deprecate
 */
 
 local i_rlib_think = 0
-local function think_pl_res( )
+local function th_pl_res( )
     if i_rlib_think > CurTime( ) then return end
     if not helper.ok.ply( LocalPlayer( ) ) then return end
     local pl = LocalPlayer( )
@@ -545,7 +554,7 @@ local function think_pl_res( )
 
     i_rlib_think = CurTime( ) + 0.5
 end
-hook.Add( 'Think', pid( 'think.pl.res' ), think_pl_res )
+hook.Add( 'Think', pid( 'think.pl.res' ), th_pl_res )
 
 /*
 *   cvars :: onchangecb

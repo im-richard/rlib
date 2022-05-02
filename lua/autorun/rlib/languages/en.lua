@@ -69,6 +69,7 @@ base.language =
         lib_udm_stopped                     = '[udm] » stopped',
         lib_udm_inactive                    = '[udm] » inactive',
         lib_udm_err_noinit                  = '[udm] » halted » player must connect to the server after first startup',
+        lib_udm_run                         = '[udm] » executing manual run',
         lib_udm_nextchk                     = '[udm] » already running » next check [ %s ]',
         lib_udm_timer_ran                   = '[udm] » update timer ran',
         lib_udm_mismatch                    = '[udm] » version mismatch » latest: v[ %s ] » installed: v[ %s ]',

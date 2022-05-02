@@ -277,5 +277,5 @@ local function fonts_register( pl )
         end
 
 end
-concommand.Add( 'rlib.fonts.reload', fonts_register )
 hook.Add( 'rlib.fonts.register', '_lib_fonts_register', fonts_register )
+concommand.Add( 'rlib.fonts.reload', fonts_register )

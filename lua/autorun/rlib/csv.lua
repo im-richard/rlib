@@ -668,7 +668,7 @@ function base.udm:scriptdb( mnfst )
                 c_ver           = c_ver and tonumber( c_ver ) or 100
 
                 if c_ver < l_ver then
-                    log( 3, ln( 'script_outdated', ts( id ), v.version, ts( ver ) ) )
+                    log( RLIB_LOG_WARN, ln( 'script_outdated', ts( id ), v.version, ts( ver ) ) )
                 else
                     log( RLIB_LOG_DEBUG, ln( 'script_updated', ts( id ), ts( ver ) ) )
                 end
@@ -722,7 +722,7 @@ function base.udm:Check( bReq )
 
     oort( _e, function( b, l, h, c )
         if c ~= 200 then
-            log( 2, ln( 'lib_udm_chk_errcode', get_branch, c ) )
+            log( RLIB_LOG_DEBUG, ln( 'lib_udm_chk_errcode', get_branch, c ) )
             return
         end
 

@@ -6,9 +6,9 @@
 	"description":      "motd & escape screen",
 	"homepage":         "https://gmodstore.com/scripts/view/3948",
 	"docs":             "https://morpheus.rlib.io",
-	"version":          "v2.1.0.0",
-	"libreq":           "v3.2.1.0",
-	"updated":          "Apr 23, 2017",
+	"version":          "v2.2.0.0",
+	"libreq":           "v3.6.0.0",
+	"updated":          "Jan 28, 2022",
 	"workshop":         "903291505",
-        "rw":               "0%"
+        "rw":               "10%"
 }

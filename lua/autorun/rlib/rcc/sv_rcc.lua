@@ -811,7 +811,8 @@ local function rcc_udm( pl, cmd, args )
 
     if status and status == 'run' then
         local task_udm = coroutine.create( function( )
-            base.udm:Check( )
+            log( RLIB_LOG_INFO, ln( 'lib_udm_run' ) )
+            base.udm:Check( true )
         end )
         coroutine.resume( task_udm )
         return
@@ -821,33 +822,33 @@ local function rcc_udm( pl, cmd, args )
         local param_status = helper.util:toggle( status )
         if param_status then
             if timex.exists( timer_id ) then
-                local next_chk = timex.remains( timer_id )
-                next_chk = timex.secs.sh_simple( next_chk, false, true )
-                log( 4, ln( 'lib_udm_nextchk', next_chk ) )
+                local next_chk  = timex.remains( timer_id )
+                next_chk        = timex.secs.sh_simple( next_chk, false, true )
+                log( RLIB_LOG_OK, ln( 'lib_udm_nextchk', next_chk ) )
                 return
             end
 
             if dur and not helper:bIsNum( dur ) then
-                log( 2, ln( 'lib_udm_bad_dur' ) )
+                log( RLIB_LOG_ERR, ln( 'lib_udm_bad_dur' ) )
                 return
             end
 
-            log( 4, ln( 'lib_udm_started', dur ) )
+            log( RLIB_LOG_OK, ln( 'lib_udm_started', dur ) )
 
             base.udm:Run( dur )
         else
             timex.expire( timer_id )
-            log( 4, ln( 'lib_udm_stopped', dur ) )
+            log( RLIB_LOG_OK, ln( 'lib_udm_stopped', dur ) )
         end
     else
         if timex.exists( timer_id ) then
             local next_chk = timex.remains( timer_id )
             next_chk = timex.secs.sh_simple( next_chk, false, true )
-            log( 4, ln( 'lib_udm_active', next_chk ) )
+            log( RLIB_LOG_OK, ln( 'lib_udm_active', next_chk ) )
 
             return
         else
-            log( 1, ln( 'lib_udm_inactive' ) )
+            log( RLIB_LOG_INFO, ln( 'lib_udm_inactive' ) )
         end
     end
 
