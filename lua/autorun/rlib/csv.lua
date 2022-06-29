@@ -231,6 +231,9 @@ end
 
     notification supports icons; slides in from middle right.
     previously known as 'notifcator'
+
+    OLD:        pl:notifcator( '', 'Invalid Access', 7, msg )
+    NEW:        pl:push( msg, 'Critical Error', '' )
 */
 
 function base:push( ... )
@@ -239,6 +242,7 @@ function base:push( ... )
     net.WriteTable  ( args                  )
     net.Broadcast   ( self                  )
 end
+base.notifcator = base.push
 
 /*
     base > sos
