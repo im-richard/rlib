@@ -144,6 +144,17 @@ local function fonts_register( pl )
         fonts > design
     */
 
+        _new( false, 'design_dialog_sli_title',         'Roboto Light', 23, 100, true )
+        _new( false, 'design_dialog_sli_msg',           'Roboto', 17, 300, true )
+        _new( false, 'design_dialog_sli_x',             'Segoe UI Light', 42, 800, false )
+        _new( false, 'design_text_default',             'Roboto Light', 16, 100, false )
+        _new( false, 'design_rsay_text',                'Roboto Light', 30, 100, true )
+        _new( false, 'design_rsay_text_sub',            'Roboto Light', 20, 100, true )
+        _new( false, 'design_draw_textscroll',          'Roboto Light', 14, 100, true )
+        _new( false, 'design_bubble_msg',               'Montserrat Medium', 18, 200, true )
+        _new( false, 'design_bubble_msg_2',             'Montserrat Medium', 18, 200, true )
+        _new( false, 'design_bubble_ico',               'Roboto Condensed', 48, 400, true )
+
         _f( pref( 'design_dialog_sli_title' ),          { size = 23, weight = 100, antialias = true, shadow = true, font = 'Roboto Light' } )
         _f( pref( 'design_dialog_sli_msg' ),            { size = 17, weight = 300, antialias = true, shadow = true, font = 'Roboto' } )
         _f( pref( 'design_dialog_sli_x' ),              { size = 42, weight = 800, antialias = true, shadow = false, font = 'Segoe UI Light' } )

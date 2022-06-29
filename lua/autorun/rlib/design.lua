@@ -2710,7 +2710,7 @@ function design:inform( mtype, msg, title, dur )
         mtype, msg = 2, 'an error occured'
     end
 
-    local font_id                   = pref( 'design_dialog_sli_msg' )
+    local font_id                   = pref( 'design_dialog_sli_msg' ) or 'Default'
     title                           = isstring( title ) and title or ln( 'notify_title_def' )
     dur                             = isnumber( dur ) and dur or 10
 
