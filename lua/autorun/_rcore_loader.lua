@@ -1,24 +1,29 @@
 /*
-*   @package        : rcore
-*   @module         : base
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (C) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*   @file           : _rcore_loader.lua
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   data tables
+    standard tables and localization
 */
 
 rcore                       = rcore or { }
@@ -27,26 +32,26 @@ rcore.sys                   = rcore.sys or { }
 rcore.manifest              = rcore.manifest or { }
 
 /*
-*   rcore :: autoload :: run
-*
-*   execute loader for rcore
-*   initializing rcore starts the following process:
-*       : setup standard tables
-*       : check rlib status > run rlib loader > exec rlib.autoload:Run( base )
-*       : inc rcore files
-*       : load rcore materials
-*       : run hook 'rcore.loader.post' > rcore sh_init.lua
-*
-*   after this process has finished, rcore will load all modules installed and begin to process them.
-*
-*   @assoc  : _rcore_loader.lua
-*   @usage  : rcore.autoload:Run( )
+    rcore > autoload > run
+
+    execute loader for rcore
+    initializing rcore starts the following process:
+        : setup standard tables
+        : check rlib status > run rlib loader > exec rlib.autoload:Run( base )
+        : inc rcore files
+        : load rcore materials
+        : run hook 'rcore.loader.post' > rcore sh_init.lua
+
+    after this process has finished, rcore will load all modules installed and begin to process them.
+
+    @assoc  : _rcore_loader.lua
+    @usage  : rcore.autoload:Run( )
 */
 
 function rcore.autoload:Run( )
 
     /*
-    *   core information
+        core information
     */
 
     local base              = rcore
@@ -57,16 +62,16 @@ function rcore.autoload:Run( )
     mf.modpath              = 'modules'
 
     /*
-    *   workshops
-    *
-    *   a list of steam workshop collection ids that are associated to this script. On server boot, these
-    *   workshops will be mounted to the server both server and client-side.
-    *
-    *   if you wish to disable steam workshop mounting, DO NOT DO IT FROM THIS TABLE.
-    *   go to the provided config file in /sh/ and simply set the Workshop property to FALSE.
-    *
-    *   in most cases, this table will be empty unless content needs loaded here in special circumstances.
-    *   check each modules' manifest file for any custom content being loaded.
+        workshops
+
+        a list of steam workshop collection ids that are associated to this script. On server boot, these
+        workshops will be mounted to the server both server and client-side.
+
+        if you wish to disable steam workshop mounting, DO NOT DO IT FROM THIS TABLE.
+        go to the provided config file in /sh/ and simply set the Workshop property to FALSE.
+
+        in most cases, this table will be empty unless content needs loaded here in special circumstances.
+        check each modules' manifest file for any custom content being loaded.
     */
 
     mf.workshops =
@@ -75,10 +80,10 @@ function rcore.autoload:Run( )
     }
 
     /*
-    *   fastdl
-    *
-    *   list of folders which will include materials, resources, sounds that will be included using
-    *   resource.AddFile
+        fastdl
+
+        list of folders which will include materials, resources, sounds that will be included using
+        resource.AddFile
     */
 
     mf.fastdl =
@@ -89,15 +94,15 @@ function rcore.autoload:Run( )
     }
 
     /*
-    *    fonts
-    *
-    *    a list of the custom fonts used for this script. these will be used within the Resources section
-    *    in order to ensure the proper fonts are added to the server.
-    *
-    *    in most cases, this table will be empty unless content needs loaded here in special circumstances.
-    *    check each modules' manifest file for any custom content being loaded.
-    *
-    *    @ex    : font.ttf
+         fonts
+
+         a list of the custom fonts used for this script. these will be used within the Resources section
+         in order to ensure the proper fonts are added to the server.
+
+         in most cases, this table will be empty unless content needs loaded here in special circumstances.
+         check each modules' manifest file for any custom content being loaded.
+
+         @ex    : font.ttf
     */
 
     mf.fonts =
@@ -224,22 +229,22 @@ function rcore.autoload:Run( )
     }
 
     /*
-    *   materials
-    *
-    *   this is a table of materials that are to be loaded with the script related to ui.
-    *   anything that can be modified via a config file will not show up here and uses
-    *   a different method. These are simply materials that have no reason to be changed.
-    *
-    *   in most cases, this table will be empty unless content needs loaded here in special circumstances.
-    *   check each modules' manifest file for any custom content being loaded.
-    *
-    *   @ex     : { 'mat_name', 'path/to/material.png' }
+        materials
+
+        this is a table of materials that are to be loaded with the script related to ui.
+        anything that can be modified via a config file will not show up here and uses
+        a different method. These are simply materials that have no reason to be changed.
+
+        in most cases, this table will be empty unless content needs loaded here in special circumstances.
+        check each modules' manifest file for any custom content being loaded.
+
+        @ex     : { 'mat_name', 'path/to/material.png' }
     */
 
     mf.materials = { }
 
     /*
-    *   checks for rlib and initialize if not. The script will fail if rlib is not available.
+        checks for rlib and initialize if not. The script will fail if rlib is not available.
     */
 
     base.sys.loadtime   = 0
@@ -264,7 +269,7 @@ function rcore.autoload:Run( )
     end
 
     /*
-    *   core tables
+        core tables
     */
 
     base.modules        = { }
@@ -273,22 +278,22 @@ function rcore.autoload:Run( )
     base.database       = base.database or { }
 
     /*
-    *   localized paths
+        localized paths
     */
 
     local dir_home      = mf.folder
     local sf            = string.format
 
     /*
-    *   scope ref
-    *       : 1        server :: sv
-    *       : 2        shared :: sh
-    *       : 3        client :: cl
-    *
-    *   values
-    *       : file     file to inc
-    *       : scope    scope to add file to
-    *       : seg      dir of file [ excl filename ]  [ def dir_home ]
+        scope ref
+            : 1        server > sv
+            : 2        shared > sh
+            : 3        client > cl
+
+        values
+            : file     file to inc
+            : scope    scope to add file to
+            : seg      dir of file [ excl filename ]  [ def dir_home ]
     */
 
     local prio_loader =
@@ -337,22 +342,22 @@ function rcore.autoload:Run( )
     end
 
     /*
-    *   recursive autoloader
-    *
-    *   do not modify the following code. it will go through each folder recursively and add any
-    *   files required for this system to function properly.
-    *
-    *   the scope of a file will be determined by the prefix that the file starts with.
-    *
-    *   scope prefixes
-    *       : sv_ = server
-    *       : sh_ = shared
-    *       : cl_ = client
-    *
-    *   having a file named sv_helloworld.lua will set the scope to be accessible via server only.
-    *
-    *   ENSURE that you do NOT set sensitive data as shared. if your file includes passwords or
-    *   anything that is sensitive in data (such as MySQL auth info); use sv_ (server) ONLY.
+        recursive autoloader
+
+        do not modify the following code. it will go through each folder recursively and add any
+        files required for this system to function properly.
+
+        the scope of a file will be determined by the prefix that the file starts with.
+
+        scope prefixes
+            : sv_ = server
+            : sh_ = shared
+            : cl_ = client
+
+        having a file named sv_helloworld.lua will set the scope to be accessible via server only.
+
+        ENSURE that you do NOT set sensitive data as shared. if your file includes passwords or
+        anything that is sensitive in data (such as MySQL auth info); use sv_ (server) ONLY.
     */
 
     if SERVER then
@@ -365,7 +370,7 @@ function rcore.autoload:Run( )
         end
 
         /*
-        *   recursive autoloader :: serverside client
+            recursive autoloader > serverside client
         */
 
         local function inc_sv( dir_recur, id, term )
@@ -454,7 +459,7 @@ function rcore.autoload:Run( )
     end
 
     /*
-    *   hook :: rcore post loader
+        hook > rcore post loader
     */
 
     rhook.run.rlib( 'rcore_loader_post' )
@@ -462,7 +467,7 @@ function rcore.autoload:Run( )
 end
 
 /*
-*   rcore :: autoload
+    rcore > autoload
 */
 
 rcore.autoload:Run( )

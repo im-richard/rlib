@@ -1,24 +1,29 @@
 /*
-*   @package        : rlib
-*   @module         : rcore
-*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
-*   @copyright      : (c) 2018 - 2020
-*   @since          : 1.0.0
-*   @website        : https://rlib.io
-*   @docs           : https://docs.rlib.io
-*   @file           : sh_init.lua
-*
-*   MIT License
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    @library        : rlib
+    @docs           : https://docs.rlib.io
+
+    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
+    LISTED ABOVE.
+
+    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
+    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
+    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
+
+    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
+    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
+    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
+
+    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
+    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
+    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
+    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
+    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
+    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
+    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
 */
 
 /*
-*   standard tables and localization
+    standard tables and localization
 */
 
 local rlib                  = rlib
@@ -32,31 +37,9 @@ local access                = rlib.a
 local storage               = rlib.s
 
 /*
-*   Localized lua funcs
+    Localized lua funcs
 */
 
-local pairs                 = pairs
-local ipairs                = ipairs
-local SortedPairs           = SortedPairs
-local setmetatable          = setmetatable
-local GetConVar             = GetConVar
-local tonumber              = tonumber
-local tostring              = tostring
-local IsValid               = IsValid
-local istable               = istable
-local isfunction            = isfunction
-local isentity              = isentity
-local isnumber              = isnumber
-local isstring              = isstring
-local type                  = type
-local file                  = file
-local debug                 = debug
-local util                  = util
-local table                 = table
-local os                    = os
-local player                = player
-local math                  = math
-local string                = string
 local sf                    = string.format
 
 /*
@@ -171,14 +154,14 @@ function base:autoloader_configs( loc, mod_id )
             elseif File:match( 'cl_' ) then
                 AddCSLuaFile( cfg_file )
             end
-            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] for module [ %s ]', cfg_file, mod_id )
+            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] %s', mod_id, File )
         elseif CLIENT then
             if File:match( 'sh_' ) then
                 include( cfg_file )
             elseif File:match( 'cl_' ) then
                 include( cfg_file )
             end
-            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] for module [ %s ]', cfg_file, mod_id )
+            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] %s', mod_id, File )
         end
     end
 
@@ -238,13 +221,13 @@ function base:modules_attachfile( loc, b_isext )
         */
 
         local function inc_sv( path_root, id, term )
-            local scope = { [ 1 ] = 'SV', [ 2 ] = 'SH', [ 3 ] = 'CL' }
+            local scope = { [ 1 ] = 'sv', [ 2 ] = 'sh', [ 3 ] = 'cl' }
 
             for _, File in SortedPairs( file.Find( path_root .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                 if id == 1 or id == 2 then include( path_root .. '/' .. File ) end
                 if id == 2 or id == 3 then AddCSLuaFile( path_root .. '/' .. File ) end
 
-                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] [ %s ] for module [ %s ]', scope[ id ], File, loc )
+                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
             end
 
             local file_sub, dir_sub = file.Find( path_root .. '/' .. '*', 'LUA' )
@@ -253,7 +236,7 @@ function base:modules_attachfile( loc, b_isext )
                     if id == 1 or id == 2 then include( path_root .. '/' .. m .. '/' .. FileSub ) end
                     if id == 2 or id == 3 then AddCSLuaFile( path_root .. '/' .. m .. '/' .. FileSub ) end
 
-                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] [ %s ] for module [ %s ]', scope[ id ], FileSub, loc )
+                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
                 end
 
                 if id == 2 then
@@ -263,7 +246,7 @@ function base:modules_attachfile( loc, b_isext )
                             AddCSLuaFile    ( path_inc )
                             include         ( path_inc )
 
-                            rlib:log( RLIB_LOG_SYSTEM, '+ lang [ %s ] for module [ %s ]', SubFile, loc )
+                            rlib:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
                         end
                     end
                 end
@@ -301,19 +284,19 @@ function base:modules_attachfile( loc, b_isext )
         */
 
         local function inc_cl( path_root, id, term )
-            local scope = { [ 2 ] = 'SH', [ 3 ] = 'CL' }
+            local scope = { [ 2 ] = 'sh', [ 3 ] = 'cl' }
 
             for _, File in SortedPairs( file.Find( path_root .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                 include( path_root .. '/' .. File )
 
-                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] [ %s ] for module [ %s ]', scope[ id ], File, loc )
+                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
             end
             local file_sub, dir_sub = file.Find( path_root .. '/' .. '*', 'LUA' )
             for l, m in pairs( dir_sub ) do
                 for _, FileSub in SortedPairs( file.Find( path_root .. '/' .. m .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                     include( path_root  .. '/' .. m .. '/' .. FileSub )
 
-                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] [ %s ] for module [ %s ]', scope[ id ], FileSub, loc )
+                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
                 end
                 if id == 2 then
                     if ( m == 'lang' or m == 'languages' or m == 'translations' ) then
@@ -321,7 +304,7 @@ function base:modules_attachfile( loc, b_isext )
                             local path_inc = path_root .. '/' .. m .. '/' .. SubFile
                             include( path_inc )
 
-                            rlib:log( RLIB_LOG_SYSTEM, '+ lang [ %s ] for module [ %s ]', SubFile, loc )
+                            rlib:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
                         end
                     end
                 end
@@ -859,13 +842,13 @@ local function module_register_content( source )
         if not v.id or not v.enabled then continue end
 
         /*
-        *   workshop resources
-        *
-        *   determined through the module manifest file.
-        *
-        *   defined in module manifest
-        *       :   MODULE.ws_enabled   ( bool )
-        *       :   MODULE.ws_lst       ( tbl )
+            workshop resources
+
+            determined through the module manifest file.
+
+            defined in module manifest
+            :   MODULE.ws_enabled   ( bool )
+            :   MODULE.ws_lst       ( tbl )
         */
 
         local ws_val = v.ws_lst or v.workshops or v.workshop
@@ -902,11 +885,15 @@ local function module_register_content( source )
         end
 
         /*
-        *   fastdl resources
-        *   determined through the module manifest file.
+            fastdl resources
         */
 
-        if v.fastdl then
+        if v.fastdl or v.fastdl_enabled then
+
+            /*
+                sounds
+            */
+
             local r_path = mf.modpath
             local d_path = r_path .. '/' .. v.id .. '/' .. 'resource'
             if file.IsDir( d_path, 'LUA' ) then
@@ -917,36 +904,38 @@ local function module_register_content( source )
                     local module_folder     = v.fastdl_folder or v.id
                     local folder            = m .. '/' .. module_folder
                     storage.data.recurv( v.id, folder, 'GAME' )
+
+                    rlib:log( RLIB_LOG_FASTDL, '+ %s » [ %s ]', v.id, folder )
                 end
             end
-        end
 
-        /*
-        *   ( fonts ) > regular
-        */
+            /*
+                ( fonts ) > regular
+            */
 
-        if istable( v.fonts ) then
-            local fonts = v.fonts
-            if #fonts > 0 then
-                for _, f in pairs( fonts ) do
-                    local src = string.format( 'resource/fonts/%s.ttf', f )
-                    resource.AddSingleFile( src )
-                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+            if istable( v.fonts ) then
+                local fonts = v.fonts
+                if #fonts > 0 then
+                    for _, f in pairs( fonts ) do
+                        local src = string.format( 'resource/fonts/%s.ttf', f )
+                        resource.AddSingleFile( src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+                    end
                 end
             end
-        end
 
-        /*
-        *   ( fonts ) > push internals
-        */
+            /*
+                ( fonts ) > push internals
+            */
 
-        if v.fonts_push then
-            local fonts = file.Find( 'resource/fonts/*', 'GAME' )
-            if #fonts > 0 then
-                for _, f in pairs( fonts ) do
-                    local src = string.format( 'resource/fonts/%s.ttf', f )
-                    resource.AddSingleFile( src )
-                    rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+            if v.fonts_push then
+                local fonts = file.Find( 'resource/fonts/*', 'GAME' )
+                if #fonts > 0 then
+                    for _, f in pairs( fonts ) do
+                        local src = string.format( 'resource/fonts/%s.ttf', f )
+                        resource.AddSingleFile( src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+                    end
                 end
             end
         end
@@ -1056,53 +1045,60 @@ rhook.new.rlib( 'rcore_modules_load_post', 'rcore_modules_snd_register', module_
 local function lib_mount_content( )
 
     /*
-    *   fonts
-    *
-    *   these fonts only load resource/fonts/rlib/
+        fastdl
+
+        determines if the script should handle content related to the script via Steam Workshop or FastDL.
     */
 
-    if SERVER and istable( mf.fonts ) then
-        local fonts = mf.fonts
-        if #fonts > 0 then
-            for _, f in pairs( fonts ) do
-                local src = string.format( 'resource/fonts/%s.ttf', f )
-                resource.AddSingleFile( src )
-                rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
-            end
-        end
-    end
+    if SERVER then
 
-    /*
-    *   fastdl
-    *
-    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
-    */
+        if base.settings.fastdl_enabled then
 
-    if SERVER and base.settings.fastdl then
+            /*
+                fonts
 
-        local path_base = mf.folder or ''
+                these fonts only load resource/fonts/rlib/
+            */
 
-        for v in rlib.h.get.data( mf.fastdl ) do
-            local r_path = v .. '/' .. path_base
-            if v == 'resource' then
-                r_path = v .. '/fonts'
+            if istable( mf.fonts ) then
+                local fonts = mf.fonts
+                if #fonts > 0 then
+                    for _, f in pairs( fonts ) do
+                        local src = string.format( 'resource/fonts/%s.ttf', f )
+                        resource.AddSingleFile( src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
+                    end
+                end
             end
 
-            local r_files, r_dirs = file.Find( r_path .. '/*', 'GAME' )
+            /*
+                resources
+            */
 
-            for File in rlib.h.get.data( r_files, true ) do
-                local r_dir_inc = r_path .. '/' .. File
-                resource.AddFile( r_dir_inc )
-                rlib:log( RLIB_LOG_FASTDL, '+ %s', r_dir_inc )
-            end
+            local path_base = mf.folder or ''
 
-            for d in rlib.h.get.data( r_dirs ) do
-                local r_subpath = r_path .. '/' .. d
-                local r_subfiles, r_subdirs = file.Find( r_subpath .. '/*', 'GAME' )
-                for _, subfile in SortedPairs( r_subfiles ) do
-                    local r_path_subinc = r_subpath .. '/' .. subfile
-                    resource.AddFile( r_path_subinc )
-                    rlib:log( RLIB_LOG_FASTDL, '+ %s', r_path_subinc )
+            for v in rlib.h.get.data( mf.fastdl ) do
+                local r_path = v .. '/' .. path_base
+                if v == 'resource' then
+                    r_path = v .. '/fonts'
+                end
+
+                local r_files, r_dirs = file.Find( r_path .. '/*', 'GAME' )
+
+                for File in rlib.h.get.data( r_files, true ) do
+                    local r_dir_inc = r_path .. '/' .. File
+                    resource.AddFile( r_dir_inc )
+                    rlib:log( RLIB_LOG_FASTDL, '+ %s', r_dir_inc )
+                end
+
+                for d in rlib.h.get.data( r_dirs ) do
+                    local r_subpath = r_path .. '/' .. d
+                    local r_subfiles, r_subdirs = file.Find( r_subpath .. '/*', 'GAME' )
+                    for _, subfile in SortedPairs( r_subfiles ) do
+                        local r_path_subinc = r_subpath .. '/' .. subfile
+                        resource.AddFile( r_path_subinc )
+                        rlib:log( RLIB_LOG_FASTDL, '+ %s', r_path_subinc )
+                    end
                 end
             end
         end
@@ -1115,10 +1111,10 @@ local function lib_mount_content( )
     *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
     *
     *       : settings.useworkshop MUST be true
-    *       : manifest.workshops [ table ] must contain valid steam collection ids
+    *       : manifest.bWorkshops [ table ] must contain valid steam collection ids
     */
 
-    if mf.workshops then
+    if cfg.ws_enabled and mf.workshops then
         for v in rlib.h.get.data( mf.workshops ) do
             if SERVER then
                 resource.AddWorkshop( v )
@@ -1142,6 +1138,8 @@ local function lib_mount_content( )
             rlib.w[ v ].id      = v
             rlib.w[ v ].src     = mf.name or 'unknown'
         end
+    else
+        rlib:log( RLIB_LOG_WARN, mf.name .. ' workshop mounting disabled'  )
     end
 
 end

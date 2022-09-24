@@ -1,6 +1,14 @@
 {
     "unreleased": [],
     "releases": {
+      "3.6.1.0": [
+            "[ ^ ] revised the way workshops + fastdl are handled",
+            "[ ^ ] few variable names changed to match conformity",
+            "[ ^ ] deprecated old code",
+            "[ ^ ] console output cleanup",
+            "[ % ] fixed udm communication",
+            "[ % ] fixed double load with fonts"
+      ],
       "3.6.0.0": [
             "[ + ] scaling functionality for future addon updates",
             "[ + ] added SAP",

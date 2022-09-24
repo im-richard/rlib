@@ -180,7 +180,7 @@ function storage.dir.create( name, path )
     path = path or 'DATA'
     if not file.Exists( name, path ) then
         file.CreateDir( name )
-        rlib:log( RLIB_LOG_SYSTEM, '+ dir » [ %s ]', name )
+        rlib:log( RLIB_LOG_DEBUG, '+ dir » [ %s ]', name )
     end
 end
 
@@ -437,7 +437,7 @@ function storage.data.manifest( path )
 
     if not storage.exists( src ) then
         file.CreateDir( mf.paths[ path ] or path )
-        rlib:log( 6, '+ dir [ %s ]', path )
+        rlib:log( RLIB_LOG_DEBUG, '+ dir [ %s ]', path )
     end
 end
 

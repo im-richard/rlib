@@ -59,9 +59,9 @@ function rlib.autoload:Run( parent )
     mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1656530833
-    mf.version                      = { 3, 6, 0, 0 }
-    mf.showcopyright                = true
+    mf.released                     = 1663998734
+    mf.version                      = { 3, 6, 1, 0 }
+    mf.showcopyright                = false
 
     /*
         files
@@ -548,7 +548,7 @@ loaded and are now ready to install additional modules.
         local path = string.format( '%s/%s', path_lang, v )
         include( path )
         AddCSLuaFile( path )
-        base:log( 6, '+ lang [ %s ]', path )
+        base:log( RLIB_LOG_DEBUG, '+ lang [ %s ]', path )
     end
 
     /*
@@ -643,14 +643,19 @@ end
 */
 
 function rlib.autoload:Files( src )
+
+    local base                      = rlib
+    local cfg                       = base.settings
+    local mf                        = base.manifest or { }
+
     if not istable( src ) then
-        MsgC( Color( 255, 0, 0 ), '[' .. rlib.manifest.name .. '] [L] Error: invalid path ( autoload:Files( ) )\n' )
+        MsgC( Color( 255, 0, 0 ), '[' .. mf.name .. '] [L] Error: invalid path ( autoload:Files( ) )\n' )
         return
     end
 
     for _, v in ipairs( src ) do
         if not v.file then continue end
-        if not v.seg then v.seg = rlib.manifest.folder end
+        if not v.seg then v.seg = mf.folder end
 
         local path_prio = string.format( '%s/%s.lua', v.seg, v.file )
 
@@ -662,14 +667,14 @@ function rlib.autoload:Files( src )
         if v.scope == 1 then
             if not file.Exists( path_prio, 'LUA' ) then continue end
             if SERVER then include( path_prio ) end
-            if rlib.settings.debug.enabled then
+            if cfg.debug.enabled then
                 MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SV] ' .. path_prio .. '\n' )
             end
         elseif v.scope == 2 then
             if not file.Exists( path_prio, 'LUA' ) then continue end
             include( path_prio )
             if SERVER then AddCSLuaFile( path_prio ) end
-            if rlib.settings.debug.enabled then
+            if cfg.debug.enabled then
                 MsgC( Color( 255, 255, 0 ), '[' .. mf.name .. '] [L-SH] ' .. path_prio .. '\n' )
             end
         elseif v.scope == 3 then
@@ -679,7 +684,7 @@ function rlib.autoload:Files( src )
             else
                 include( path_prio )
             end
-            if rlib.settings.debug.enabled then
+            if cfg.debug.enabled then
                 MsgC( Color( 255, 255, 0), '[' .. mf.name .. '] [L-CL] ' .. path_prio .. '\n' )
             end
         end

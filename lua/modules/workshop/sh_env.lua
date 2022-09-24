@@ -39,8 +39,8 @@
     MODULE.desc			    = 'workshop content downloader'
     MODULE.owner		    = false
     MODULE.version          = { 2, 0, 0, 0 }
-    MODULE.libreq           = { 3, 2, 0, 0 }
-    MODULE.released		    = 1607503498
+    MODULE.libreq           = { 3, 6, 0, 0 }
+    MODULE.released		    = 1663998734
 
 /*
     fonts
@@ -59,9 +59,9 @@
     when players connect.
 */
 
-    MODULE.fastdl 	            = true
+    MODULE.fastdl 	            = false
     MODULE.precache             = false
-    MODULE.ws_enabled 	        = true
+    MODULE.ws_enabled 	        = false
     MODULE.ws_lst               = { }
 
 /*
