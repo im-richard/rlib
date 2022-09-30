@@ -991,7 +991,9 @@ end
 */
 
 function base.checksum:get( bVerified )
-    return ( bVerified and storage.get.json( 'checksum.json' ) ) or ( storage.exists( storage.mft:getpath( 'data_checksum' ) ) and util.JSONToTable( file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' ) ) ) or { }
+    return ( bVerified and storage.get.json( '.app/checksum.json' ) )
+    or ( storage.exists( storage.mft:getpath( 'data_checksum' ) ) and util.JSONToTable( file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' ) ) )
+    or { }
 end
 
 /*
@@ -1466,14 +1468,14 @@ local function __lib_initpostentity( )
     */
 
     base.cfg                = { }
-    base.cfg.steamapi       = storage.get.ext( 'steamapi.cfg' )
+    base.cfg.steamapi       = storage.get.ext( '.app/steamapi.cfg' )
 
     /*
         throw error if steamapi config missing
     */
 
     if not base.cfg.steamapi then
-        base:log( RLIB_LOG_WARN, '[ %s ] steamapi.cfg file missing', mf.name )
+        base:log( RLIB_LOG_WARN, '[ %s ] .app/steamapi.cfg file missing', mf.name )
     end
 
     /*
@@ -1503,6 +1505,7 @@ local function lib_initialize_checksum( )
     end
 
     if i > 0 then
+        con( nil, 3 )
         con( nil, 0 )
         con( nil, 1 )
         con( nil, Color( 255, 255, 0 ), ln( 'lib_integrity_title', mf.name:upper( ) ) .. ' \n' )
@@ -1512,7 +1515,7 @@ local function lib_initialize_checksum( )
         con( nil, Color( 255, 0, 0 ), ln( 'lib_integrity_cnt', i ) )
         con( nil, 1 )
         con( nil, 0 )
-        con( nil, 1 )
+        con( nil, 3 )
 
         return
     end

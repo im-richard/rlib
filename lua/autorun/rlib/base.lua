@@ -318,6 +318,7 @@ function base:log( cat, msg, ... )
     */
 
     if not self:g_Debug( ) then
+        if cat == RLIB_LOG_PERM then return end
         if cat == RLIB_LOG_DEBUG then return end
         if cat == RLIB_LOG_CACHE then return end
         if cat == RLIB_LOG_FONT then return end

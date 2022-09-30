@@ -703,7 +703,13 @@ local function rcc_changelog( pl, cmd, args )
     *   changelog src
     */
 
-    local src           = storage.get.json( 'changelog.json' )
+    local src           = storage.get.json( '.app/changelog.json' )
+
+    if not src then
+        log( RLIB_LOG_ERR, ln( 'rcc_chglog_err' ) )
+        return
+    end
+
     local tbl           = src[ 'releases' ]
 
     con( pl, 2 )
