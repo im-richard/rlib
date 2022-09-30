@@ -274,12 +274,20 @@ local function rcc_debug_clean( pl, cmd, args, str )
     log( 4, ln( 'logs_clean_scheduled', timer_clean, pf, '-c' ) )
 
     timex.create( 'rlib_debug_doclean', timer_clean, 1, function( )
-        local files, _ = file.Find( path_logs .. '/*', 'DATA' )
+        local files, folders = file.Find( path_logs .. '/*', 'DATA' )
 
         local i_del = 0
-        for v in helper.get.data( files ) do
-            local file_path = sf( '%s/%s', path_logs, v )
-            file.Delete( file_path )
+        for k, v in helper.get.table( folders ) do
+            if v == '#boot' then continue end
+
+            local log_path_dir = path_logs .. '/' .. v
+            local sub_files, sub_folders = file.Find( log_path_dir .. '/*', 'DATA' )
+
+            for f in helper.get.data( sub_files ) do
+                local log_path_file = log_path_dir .. '/' .. f
+                file.Delete( log_path_file )
+                file.Delete( log_path_dir )
+            end
 
             i_del = i_del + 1
         end
