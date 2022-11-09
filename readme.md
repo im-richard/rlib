@@ -21,9 +21,9 @@ You must install this library on your gmod server before any modules can be inst
 # Verify Signatures
 By verifying the signatures provided with each release of rlib, you can prove the authenticity and integrity of the downloaded file. This guarantees that the file you downloaded was originally created by the rlib development tean and that the contents hasn't been tampered with.
 
-Each release includes a *.sig file for both the zip and the tarball.
+Each release includes a *.**sig** file for both the zip and the tarball.
 
 The *.sig file contains a PGP signature created with the official release keys. Signing files with any other key will give a different signature. If you attempt to verify the files with the provided .sig file and it does not verify; it's recommended that you NOT use that release. Download the official release from this git repo.
 
-On Windows, you can useGpg4win.
-On macOS, you may use GPG Tools or gnupg via HomeBrew.
+On **Windows**, you can use [Gpg4win](https://www.gpg4win.org/).
+On **macOS**, you may use [GPG Tools](https://gpgtools.org/) or gnupg via HomeBrew.
