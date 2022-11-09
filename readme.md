@@ -17,3 +17,13 @@ You must install this library on your gmod server before any modules can be inst
 
 # Documentation
 **[Read our documentation](https://docs.rlib.io/)** for instructions on how to install rlib and your compatible **[gmodstore](https://gmodstore.com/)** scripts.
+
+# Verify Signatures
+By verifying the signatures provided with each release of rlib, you can prove the authenticity and integrity of the downloaded file. This guarantees that the file you downloaded was originally created by the rlib development tean and that the contents hasn't been tampered with.
+
+Each release includes a *.sig file for both the zip and the tarball.
+
+The *.sig file contains a PGP signature created with the official release keys. Signing files with any other key will give a different signature. Following these verification instructions will ensure the downloaded files really came from the actual developer.
+
+On Windows, you can useGpg4win.
+On macOS, you may use GPG Tools or gnupg via HomeBrew.
