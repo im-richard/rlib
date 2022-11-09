@@ -23,7 +23,7 @@ By verifying the signatures provided with each release of rlib, you can prove th
 
 Each release includes a *.sig file for both the zip and the tarball.
 
-The *.sig file contains a PGP signature created with the official release keys. Signing files with any other key will give a different signature. Following these verification instructions will ensure the downloaded files really came from the actual developer.
+The *.sig file contains a PGP signature created with the official release keys. Signing files with any other key will give a different signature. If you attempt to verify the files with the provided .sig file and it does not verify; it's recommended that you NOT use that release. Download the official release from this git repo.
 
 On Windows, you can useGpg4win.
 On macOS, you may use GPG Tools or gnupg via HomeBrew.
