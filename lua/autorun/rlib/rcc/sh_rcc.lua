@@ -791,7 +791,7 @@ local function rcc_changelog( pl, cmd, args )
         con( pl, 1 )
         con( pl, 0 )
         con( pl, 1 )
-        con( pl, 'Select a particular version to display by typing ', clr_y, 'rlib.changelog ' .. rlib.get:ver2str_mf( ) )
+        con( pl, 'Select a version by typing ', clr_y, 'rlib.changelog ' .. rlib.get:ver2str_mf( ) )
         con( pl, 1 )
         con( pl, 0 )
         con( pl, 1 )
@@ -810,7 +810,7 @@ local function rcc_changelog( pl, cmd, args )
         con( pl, 0 )
 
         con( pl, 1 )
-        con( pl, 'Search for changelogs by typing ', clr_y, 'rlib.changelog -s version number' )
+        con( pl, 'Search by typing ', clr_y, 'rlib.changelog -s version number' )
         con( pl, '                            Ex: ', clr_r, 'rlib.changelog -s 1.0' )
         con( pl, 1 )
 
@@ -1941,7 +1941,7 @@ local function rcc_admins( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -1950,7 +1950,7 @@ local function rcc_admins( pl, cmd, args )
     end
 
     /*
-    *   functionality
+        functionality
     */
 
     local struct        = access:getusers( ) or { }
@@ -1997,21 +1997,21 @@ end
 rcc.register( 'rlib_admins', rcc_admins )
 
 /*
-*   rcc > uptime
-*
-*   displays the current uptime of the server
+    rcc > uptime
+
+    displays the current uptime of the server
 */
 
 local function rcc_uptime( pl, cmd, args )
 
     /*
-    *   define command
+        define command
     */
 
     local ccmd = base.calls:get( 'commands', 'rlib_uptime' )
 
     /*
-    *   scope
+        scope
     */
 
     if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
@@ -2020,7 +2020,7 @@ local function rcc_uptime( pl, cmd, args )
     end
 
     /*
-    *   perms
+        perms
     */
 
     if not access:bIsRoot( pl ) then
@@ -2037,7 +2037,7 @@ local function rcc_uptime( pl, cmd, args )
     con( pl, 0 )
 
     /*
-    *   functionality
+        functionality
     */
 
     local uptime = timex.secs.sh_cols( SysTime( ) - sys.uptime )
@@ -2049,9 +2049,9 @@ end
 rcc.register( 'rlib_uptime', rcc_uptime )
 
 /*
-*   rcc > connections
-*
-*   returns total number of connections to server since last restart
+    rcc > connections
+
+    returns total number of connections to server since last restart
 */
 
 local function rcc_connections( pl, cmd, args )
