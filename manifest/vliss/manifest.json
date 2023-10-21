@@ -1,0 +1,14 @@
+{
+	"name":             "Vliss Scoreboard",
+	"author":           "richard",
+	"script":           "1661",
+	"type":             "addon",
+	"description":      "scoreboard",
+	"homepage":         "https://gmodstore.com/scripts/view/1661",
+	"docs":             "https://vliss.rlib.io",
+	"version":          "v1.6.1.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Feb 17, 2021",
+	"workshop":         "2306283801",
+        "rw":               "40%"
+}

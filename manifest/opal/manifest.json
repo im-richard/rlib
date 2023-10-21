@@ -1,0 +1,14 @@
+{
+	"name":             "Opal",
+	"author":           "richard",
+	"script":           "2559",
+	"type":             "addon",
+	"description":      "escape screen",
+	"homepage":         "https://gmodstore.com/scripts/view/2559",
+	"docs":             "https://apollo.rlib.io",
+	"version":          "v1.0.1.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Jun 12, 2016",
+	"workshop":         "701085141",
+        "rw":               "0%"
+}

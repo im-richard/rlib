@@ -1,0 +1,14 @@
+{
+	"name":             "Agon",
+	"author":           "richard",
+	"script":           "1582",
+	"type":             "addon",
+	"description":      "pvp leaderboard",
+	"homepage":         "https://gmodstore.com/scripts/view/1582",
+	"docs":             "https://agon.rlib.io",
+	"version":          "v1.5.0.0",
+	"libreq":           "v4.0.0.0",
+	"updated":          "Mar 28, 2023",
+	"workshop":         "2902953180",
+        "rw":               "100%"
+}

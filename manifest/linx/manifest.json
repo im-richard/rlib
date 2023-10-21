@@ -1,0 +1,14 @@
+{
+	"name":             "Linx",
+	"author":           "richard",
+	"script":           "1612",
+	"type":             "addon",
+	"description":      "motd & escape screen",
+	"homepage":         "https://gmodstore.com/scripts/view/1612",
+	"docs":             "https://linx.rlib.io",
+	"version":          "v2.4.0.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 21, 2021",
+	"workshop":         "2315070701",
+        "rw":               "100%"
+}

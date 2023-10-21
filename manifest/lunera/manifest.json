@@ -1,0 +1,14 @@
+{
+	"name":             "Lunera",
+	"author":           "richard",
+	"script":           "1621",
+	"type":             "addon",
+	"description":      "motd",
+	"homepage":         "https://gmodstore.com/scripts/view/1621",
+	"docs":             "https://lunera.rlib.io",
+	"version":          "v3.7.0.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Mar 21, 2021",
+	"workshop":         "2313881160",
+        "rw":               "100%"
+}

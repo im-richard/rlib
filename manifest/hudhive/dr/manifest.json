@@ -1,0 +1,14 @@
+{
+	"name":             "HudHive [Deathrun]",
+	"author":           "richard",
+	"script":           "2958",
+	"type":             "addon",
+	"description":      "deathrun hud",
+	"homepage":         "https://gmodstore.com/scripts/view/2958",
+	"docs":             "https://hudhive.rlib.io",
+	"version":          "v1.0.0.0",
+	"libreq":           "v3.2.1.0",
+	"updated":          "Sep 05, 2016",
+	"workshop":         "758512144",
+        "rw":               "0%"
+}
