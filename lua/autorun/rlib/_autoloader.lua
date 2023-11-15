@@ -26,7 +26,7 @@
     libraries
 */
 
-rlib                        = rlib          or { }
+rlib                        = rlib or { }
 rlib.autoload               = rlib.autoload or { }
 rlib.manifest               = rlib.manifest or { }
 
@@ -56,11 +56,11 @@ function rlib.autoload:Run( parent )
     mf.prefix                       = 'rlib.'
     mf.folder                       = 'autorun/rlib'
     mf.site                         = 'https://rlib.io/'
-    mf.repo                         = 'https://git.rlib.io/'
+    mf.repo                         = 'https://github.com/im-richard/rlib/'
     mf.docs                         = 'https://docs.rlib.io/'
     mf.about                        = [[rlib is a glua library written for garrys mod which contains a variety of commonly used functions that are required for certain scripts to run properly. Package includes both rlib + rcore which act as the overall foundation which other scripts will rest within as a series of modules. ]]
-    mf.released                     = 1680060412
-    mf.version                      = { 4, 0, 0, 0 }
+    mf.released                     = 1663998734
+    mf.version                      = { 3, 6, 1, 0 }
     mf.showcopyright                = false
 
     /*
@@ -72,10 +72,33 @@ function rlib.autoload:Run( parent )
         core =
         {
             { file = 'cfg',                     scope = 2 },
+            { file = 'define',                  scope = 2 },
+            { file = 'get',                     scope = 2 },
+            { file = 'base',                    scope = 2 },
+            { file = 'register',                scope = 2 },
+            { file = 'permissions',             scope = 2 },
+            { file = 'cvar/sh_cvar',            scope = 2 },
+            { file = 'cvar/cl_cvar',            scope = 3 },
+            { file = 'materials',               scope = 3 },
+            { file = 'storage',                 scope = 2 },
+            { file = 'modules',                 scope = 2 },
+            { file = 'resources',               scope = 2 },
+            { file = 'calls/sv_calls',          scope = 1 },
+            { file = 'calls/sh_calls',          scope = 2 },
             { file = 'csv',                     scope = 1 },
             { file = 'csh',                     scope = 2 },
             { file = 'ccl',                     scope = 3 },
+            { file = 'tools',                   scope = 3 },
+            { file = 'commands',                scope = 1 },
+            { file = 'rcc/sv_rcc_raw',          scope = 1 },
+            { file = 'rcc/sv_rcc',              scope = 1 },
+            { file = 'rcc/sh_rcc',              scope = 2 },
+            { file = 'rcc/cl_rcc',              scope = 3 },
+            { file = 'pmeta',                   scope = 2 },
+            { file = 'emeta',                   scope = 2 },
             { file = 'uclass',                  scope = 3 },
+            { file = 'global',                  scope = 2 },
+            { file = 'fonts',                   scope = 3 },
             { file = 'design',                  scope = 3 },
         },
         post =
@@ -101,6 +124,7 @@ function rlib.autoload:Run( parent )
         post =
         {
             'glon',
+            'spew',
         },
     }
 
@@ -171,7 +195,6 @@ function rlib.autoload:Run( parent )
         [ 'dir_uconn' ]             = 'rlib/uconn',
         [ 'dir_sys' ]               = 'rlib/sys',
         [ 'dir_obf' ]               = 'rlib/obf',
-        [ 'data_crash' ]            = 'rlib/crash.dat',
         [ 'data_checksum' ]         = 'rlib/checksum.txt',
         [ 'data_history' ]          = 'rlib/history.txt',
         [ 'data_manifest' ]         = 'rlib/manifest.txt',
@@ -187,6 +210,13 @@ function rlib.autoload:Run( parent )
 
         if you happen to find this table, you may add your steam64 however keep in mind that you will
         see prints in-game which may get annoying real quick
+
+        to remove these annoying msgs; open the developer console with keybind SHIFT + . (period)
+        and in the chat-box like console, type 'exit' (without quotes). this will ensure that you
+        will not see these msgs until your next connection to the server.
+
+        @assoc  : access:bIsDev( )
+                : access:bIsRoot( )
     */
 
     mf.developers =
@@ -209,8 +239,7 @@ function rlib.autoload:Run( parent )
         numerous aspects of this script rely on these tables.
     */
 
-    base.settings   = base.settings or { }
-    base.g          = base.settings
+    base.settings = base.settings or { }
 
     /*
         table index
@@ -285,7 +314,7 @@ function rlib.autoload:Run( parent )
         */
 
         base.t = base.t or { }
-        local to_tools = { 'alogs', 'asay', 'dc', 'diag', 'konsole', 'pco', 'rdo', 'lang', 'rlib', 'mdlv', 'rcfg', 'report', 'welcome' }
+        local to_tools = { 'alogs', 'asay', 'diag', 'pco', 'rdo', 'lang', 'rlib', 'mdlv', 'welcome' }
         for k, v in ipairs( to_tools ) do
             base.t[ v ] = { }
         end
@@ -457,10 +486,12 @@ loaded and are now ready to install additional modules.
         parent manifest > load resources
     */
 
-    base.r.mdl = { }
-    base.r.pnl = { }
-    base.r.ptc = { }
-    base.r.snd = { }
+    for _, v in ipairs( parent.manifest.resources ) do
+        local path = string.format( '%s/%s/%s.lua', path_lib, 'resources', v )
+        if not file.Exists( path, 'LUA' ) then continue end
+        if SERVER then AddCSLuaFile( path ) end
+        include( path )
+    end
 
     /*
         packages > load > pre

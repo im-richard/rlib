@@ -143,31 +143,17 @@ function sequence( from, to )
 end
 
 /*
-    min
-
-    returns a one-sided min variant of clamp
-    minimum val a num can be
-
-    @param  : int min
-    @param  : int num
+*   min
+*
+*   returns a one-sided min variant of clamp
+*   minimum val a num can be
+*
+*   @param  : int min
+*   @param  : int num
 */
 
 function min( min, num )
     return math.max( min, num )
-end
-
-/*
-    max
-
-    returns a one-sided max variant of clamp
-    max val a num can be
-
-    @param  : int max
-    @param  : int num
-*/
-
-function max( max, num )
-    return math.min( max, num )
 end
 
 /*
@@ -188,19 +174,6 @@ end
 function round( num, dec )
     local n = 10 ^ ( dec or 1 )
 	return math.floor( num / n + 0.5 ) * n
-end
-
-/*
-    iszero
-*/
-
-function isneg( i )
-    if isnumber( i ) then
-        if i < 0 then
-            return true
-        end
-    end
-    return false
 end
 
 /*

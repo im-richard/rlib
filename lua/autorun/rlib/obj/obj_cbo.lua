@@ -39,109 +39,97 @@ local cfg                   = base.settings
 local mf                    = base.manifest
 
 /*
-    prefix ids
+    PANEL
 */
 
-local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( base and base.manifest.prefix ) or false
-    return base.get:pref( str, state )
-end
+local PANEL = { }
 
-/*
-    X
-*/
-
-local X = { }
-
-AccessorFunc( X, 'm_bDoSort', 'SortItems', FORCE_BOOL )
+AccessorFunc( PANEL, 'm_bDoSort', 'SortItems', FORCE_BOOL )
 
 /*
     Init
 */
 
-function X:Init( )
+function PANEL:Init( )
+	self.DropButton = vgui.Create( 'DPanel', self )
+	self.DropButton.Paint = function( panel, w, h ) derma.SkinHook( 'Paint', 'ComboDownArrow', panel, w, h ) end
+	self.DropButton:SetMouseInputEnabled( false )
+	self.DropButton.ComboBox = self
 
-    self 							= ui.get( self                          )
-    :setup 							(                                       )
+	self:SetTall( 22 )
+	self:Clear( )
 
-    self.DropButton 				= vgui.Create( 'DPanel', self )
-    self.DropButton.Paint 			= function( panel, w, h ) derma.SkinHook( 'Paint', 'ComboDownArrow', panel, w, h ) end
-    self.DropButton:SetMouseInputEnabled( false )
-    self.DropButton.ComboBox 		= self
-
-    self:Clear( )
-
-    self:SetContentAlignment    	( 4 )
-    self:SetTextInset           	( 8, 0 )
-    self:SetIsMenu              	( true )
-    self:SetSortItems           	( true )
+	self:SetContentAlignment    ( 4 )
+	self:SetTextInset           ( 8, 0 )
+	self:SetIsMenu              ( true )
+	self:SetSortItems           ( true )
 end
 
 /*
     clear
 */
 
-function X:Clear( )
-    self:SetText            ( '' )
-    self.Choices            = { }
-    self.Data               = { }
-    self.ChoiceIcons        = { }
-    self.Spacers            = { }
-    self.selected           = nil
+function PANEL:Clear( )
+	self:SetText        ( '' )
+	self.Choices        = { }
+	self.Data           = { }
+	self.ChoiceIcons    = { }
+	self.Spacers        = { }
+	self.selected       = nil
 
-    if ( self.Menu ) then
-        self.Menu:Remove( )
-        self.Menu = nil
-    end
+	if ( self.Menu ) then
+		self.Menu:Remove( )
+		self.Menu = nil
+	end
 end
 
 /*
     option text > get
 */
 
-function X:GetOptionText( id )
-    return self.Choices[ id ]
+function PANEL:GetOptionText( id )
+	return self.Choices[ id ]
 end
 
 /*
     option data > get
 */
 
-function X:GetOptionData( id )
-    return self.Data[ id ]
+function PANEL:GetOptionData( id )
+	return self.Data[ id ]
 end
 
 /*
     option text > get by data
 */
 
-function X:GetOptionTextByData( data )
-    for id, dat in pairs( self.Data ) do
-        if ( dat == data ) then
-            return self:GetOptionText( id )
-        end
-    end
+function PANEL:GetOptionTextByData( data )
+	for id, dat in pairs( self.Data ) do
+		if ( dat == data ) then
+			return self:GetOptionText( id )
+		end
+	end
 
-    -- Try interpreting it as a number
-    for id, dat in pairs( self.Data ) do
-        if ( dat == tonumber( data ) ) then
-            return self:GetOptionText( id )
-        end
-    end
+	-- Try interpreting it as a number
+	for id, dat in pairs( self.Data ) do
+		if ( dat == tonumber( data ) ) then
+			return self:GetOptionText( id )
+		end
+	end
 
-    -- In case we fail
-    return data
+	-- In case we fail
+	return data
 end
 
 /*
     perform layout
 */
 
-function X:PerformLayout( )
-    self.DropButton:SetSize( 20, 20 )
-    self.DropButton:AlignRight( 4 )
-    self.DropButton:CenterVertical( )
-    DButton.PerformLayout = function ( s, w, h )
+function PANEL:PerformLayout( )
+	self.DropButton:SetSize( 20, 20 )
+	self.DropButton:AlignRight( 4 )
+	self.DropButton:CenterVertical( )
+	DButton.PerformLayout = function ( s, w, h )
 
     end
 end
@@ -150,305 +138,164 @@ end
     option > choose
 */
 
-function X:ChooseOption( value, index )
-    if ( self.Menu ) then
-        self.Menu:Remove( )
-        self.Menu = nil
-    end
+function PANEL:ChooseOption( value, index )
+	if ( self.Menu ) then
+		self.Menu:Remove( )
+		self.Menu = nil
+	end
 
-    self:SetText( value )
+	self:SetText( value )
 
-    -- This should really be the here, but it is too late now and convar changes are handled differently by different child elements
-    --self:ConVarChanged( self.Data[ index ] )
+	-- This should really be the here, but it is too late now and convar changes are handled differently by different child elements
+	--self:ConVarChanged( self.Data[ index ] )
 
-    self.selected = index
-    self:OnSelect( index, value, self.Data[ index ] )
+	self.selected = index
+	self:OnSelect( index, value, self.Data[ index ] )
 end
 
 /*
     option > choose id
 */
 
-function X:ChooseOptionID( index )
-    local value = self:GetOptionText( index )
-    self:ChooseOption( value, index )
+function PANEL:ChooseOptionID( index )
+	local value = self:GetOptionText( index )
+	self:ChooseOption( value, index )
 end
 
 /*
     option > get selected by id
 */
 
-function X:GetSelectedID( )
-    return self.selected
+function PANEL:GetSelectedID( )
+	return self.selected
 end
 
 /*
     option > get selected
 */
 
-function X:GetSelected( )
-    if ( !self.selected ) then return end
-    return self:GetOptionText( self.selected ), self:GetOptionData( self.selected )
+function PANEL:GetSelected( )
+	if ( !self.selected ) then return end
+	return self:GetOptionText( self.selected ), self:GetOptionData( self.selected )
 end
 
 /*
     on select
 */
 
-function X:OnSelect( index, value, data )
-    local def               = self:GetDefault( )
-                            if not def then return end
-
-    data                    = data ~= nil and data or def
-    local cv                = GetConVar( self.cvar )
-
-    cv:SetString            ( data )
+function PANEL:OnSelect( index, value, data )
+	-- For override
 end
 
 /*
     on menu opened
 */
 
-function X:OnMenuOpened( menu )
-    -- For override
+function PANEL:OnMenuOpened( menu )
+	-- For override
 end
 
 /*
     add spacer
 */
 
-function X:AddSpacer( )
-    self.Spacers[ #self.Choices ] = true
-end
-
-/*
-    convar > set
-
-    @param  :   str             id
-*/
-
-function X:SetConvar( id )
-    if not id then return end
-    self.cvar = id
-end
-
-/*
-    convar > get
-
-    @return :   bool
-*/
-
-function X:GetConvar( )
-    return self.cvar
-end
-
-/*
-    default > set
-
-    @param      :   str         id
-*/
-
-function X:SetDefault( id )
-    if not id then return end
-    self.def = id
-end
-
-/*
-    default > get
-
-    @return     :   str
-*/
-
-function X:GetDefault( )
-    return self.def
+function PANEL:AddSpacer( )
+	self.Spacers[ #self.Choices ] = true
 end
 
 /*
     choice > add
 */
 
-function X:AddChoice( value, data, select, icon )
-    local i = table.insert( self.Choices, value )
+function PANEL:AddChoice( value, data, select, icon )
+	local i = table.insert( self.Choices, value )
 
-    if ( data ) then
-        self.Data[ i ] = data
-    end
+	if ( data ) then
+		self.Data[ i ] = data
+	end
 
-    if ( icon ) then
-        self.ChoiceIcons[ i ] = icon
-    end
+	if ( icon ) then
+		self.ChoiceIcons[ i ] = icon
+	end
 
-    if ( select ) then
-        self:ChooseOption( value, i )
-    end
+	if ( select ) then
+		self:ChooseOption( value, i )
+	end
 
-    return i
+	return i
 end
 
 /*
     menu > is opened
 */
 
-function X:IsMenuOpen( )
-    return IsValid( self.Menu ) && self.Menu:IsVisible( )
-end
-
-/*
-    add item
-
-    @param      :   tbl         v
-    @param      :   int         k
-*/
-
-function X:AddItem( v, k )
-
-    local i_max 					= table.Count( v )
-    local t                         = k == 1 and 0 or 0
-    local b                         = k == i_max and 0 or 0
-    local sz_dot                    = 5
-    local clr_dot                   = self:GetCatColors( k )
-    clr_dot                         = rclr.Hex( clr_dot )
-
-    local cbo_cat                   = ui.obj( 'cbo'                         )
-    :cbosetup                       (                                       )
-    :top                            ( 0, 0, 0, 0                            )
-    :tall                           ( 40 * rfs.h( )                         )
-
-                                    :draw( function( s, w, h )
-                                        if ( k % 2 == 0 ) then
-                                            design.box( 0, t, w - 0, h - b, self.clr_line_1 )
-                                        else
-                                            design.box( 0, t, w - 0, h - b, self.clr_line_2 )
-                                        end
-
-                                        if s.hover then
-                                            local pulse     = math.abs( math.sin( CurTime( ) * 5 ) * 255 )
-                                            pulse           = math.Clamp( pulse, 50, 200 )
-
-                                            design.box( 0, 0, w - 0, h - b, ColorAlpha( self.clr_line_h, pulse ) )
-                                        end
-
-                                        design.circle( 17, ( h / 2 ) + ( sz_dot / 2 ) - ( sz_dot / 2 ), sz_dot, 25, clr_dot )
-
-                                        draw.SimpleText( v.data, pid( 'ucl_ddl_item' ), 35, h / 2, self.clr_txt, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-                                    end )
-
-                                    :pl( function( s )
-                                        s.DropButton:SetSize( 0, 0 )
-                                    end )
-
-                                    :oc( function( s )
-                                        self:ChooseOption( v.data, v.id )
-                                        ui:destroy( self.Menu )
-                                    end )
-
-    /*
-        add item
-    */
-
-    self.Menu:AddPanel              ( cbo_cat )
-    cbo_cat:AddChoice               ( id, name )
-
+function PANEL:IsMenuOpen( )
+	return IsValid( self.Menu ) && self.Menu:IsVisible( )
 end
 
 /*
     menu > open
 */
 
-function X:OpenMenu( pControlOpener )
+function PANEL:OpenMenu( pControlOpener )
 
-    if ( pControlOpener && pControlOpener == self.TextEntry ) then return end
+	if ( pControlOpener && pControlOpener == self.TextEntry ) then
+		return
+	end
 
-    -- Don't do anything if there aren't any options..
-    if ( #self.Choices == 0 ) then return end
+	-- Don't do anything if there aren't any options..
+	if ( #self.Choices == 0 ) then return end
 
-    -- If the menu still exists and hasn't been deleted
-    -- then just close it and don't open a new one.
-    if ( IsValid( self.Menu ) ) then
-        self.Menu:Remove( )
-        self.Menu = nil
-    end
+	-- If the menu still exists and hasn't been deleted
+	-- then just close it and don't open a new one.
+	if ( IsValid( self.Menu ) ) then
+		self.Menu:Remove( )
+		self.Menu = nil
+	end
 
-    -- If we have a modal parent at some level, we gotta parent to that or our menu items are not gonna be selectable
-    local parent = self
-    while ( IsValid( parent ) && !parent:IsModal( ) ) do
-        parent = parent:GetParent( )
-    end
+	-- If we have a modal parent at some level, we gotta parent to that or our menu items are not gonna be selectable
+	local parent = self
+	while ( IsValid( parent ) && !parent:IsModal( ) ) do
+		parent = parent:GetParent( )
+	end
+	if ( !IsValid( parent ) ) then parent = self end
 
-    if ( !IsValid( parent ) ) then parent = self end
+	self.Menu = DermaMenu( false, parent )
 
-    self.Menu = DermaMenu( false, parent )
+	if ( self:GetSortItems( ) ) then
+		local sorted = { }
+		for k, v in pairs( self.Choices ) do
+			local val = tostring( v ) --tonumber( v ) || v -- This would make nicer number sorting, but SortedPairsByMemberValue doesn't seem to like number-string mixing
+			if ( string.len( val ) > 1 && !tonumber( val ) && val:StartWith( '#' ) ) then val = language.GetPhrase( val:sub( 2 ) ) end
+			table.insert( sorted, { id = k, data = v, label = val } )
+		end
+		for k, v in SortedPairsByMemberValue( sorted, 'label' ) do
+			local option = self.Menu:AddOption( v.data, function( ) self:ChooseOption( v.data, v.id ) end )
+			if ( self.ChoiceIcons[ v.id ] ) then
+				option:SetIcon( self.ChoiceIcons[ v.id ] )
+			end
+			if ( self.Spacers[ v.id ] ) then
+				self.Menu:AddSpacer( )
+			end
+		end
+	else
+		for k, v in pairs( self.Choices ) do
+			local option = self.Menu:AddOption( v, function( ) self:ChooseOption( v, k ) end )
+			if ( self.ChoiceIcons[ k ] ) then
+				option:SetIcon( self.ChoiceIcons[ k ] )
+			end
+			if ( self.Spacers[ k ] ) then
+				self.Menu:AddSpacer( )
+			end
+		end
+	end
 
-    local asdasd = self:GetSortItems( )
+	local x, y = self:LocalToScreen( 0, self:GetTall( ) )
 
-    if ( self:GetSortItems( ) ) then
+	self.Menu:SetMinimumWidth( self:GetWide( ) )
+	self.Menu:Open( x, y, false, self )
 
-        local sorted = { }
-        for k, v in pairs( self.Choices ) do
-            local val = tostring( v ) --tonumber( v ) || v -- This would make nicer number sorting, but SortedPairsByMemberValue doesn't seem to like number-string mixing
-            if ( string.len( val ) > 1 && !tonumber( val ) && val:StartWith( '#' ) ) then val = language.GetPhrase( val:sub( 2 ) ) end
-
-            table.insert( sorted, { id = k, data = v, label = val } )
-        end
-
-        local i_lst = 1
-        for k, v in helper.get.sorted_k( sorted, 4, 'label' ) do
-            self:AddItem( v, i_lst )
-            i_lst = i_lst + 1
-        end
-
-    else
-
-        for k, v in pairs( self.Choices ) do
-            local option = self.Menu:AddOption( v, function( )
-                self:ChooseOption( v, k )
-            end )
-
-            if ( self.ChoiceIcons[ k ] ) then
-                option:SetIcon( self.ChoiceIcons[ k ] )
-            end
-
-            if ( self.Spacers[ k ] ) then
-                self.Menu:AddSpacer( )
-            end
-        end
-
-    end
-
-    local x, y                      = self:LocalToScreen( 0, self:GetTall( ) )
-    self.Menu:SetMinimumWidth       ( self:GetWide( ) )
-    self.Menu:Open                  ( x, y, false, self )
-
-    self.Menu                       = ui.get( self.Menu )
-    :keeptop                        ( )
-
-    self:OnMenuOpened               ( self.Menu )
-
-end
-
-/*
-    categories > colors
-
-    @param      :   int         i
-    @return     :   str
-*/
-
-function X:GetCatColors( i )
-
-    local clrs =
-    {
-        'c04178', '2a5985', 'fe0000', '7cab4d',
-        'edcb34', '12a39e', '79d2be', 'a1a0a5',
-        'cb473b', 'af313d', '674b74', '7e6ca8',
-        'b16646', 'b1d1ea', 'd99d22', 'e16a63',
-        'ff7e3c', 'b0d2d4', '377a93', '4e807f',
-        'fdb8bd', 'e88297', 'c31922', 'b91135',
-        'f0245e', '9e32af', '0099f3', '88c047',
-        'ff5606', '0081c3', 'c84063', '981d22',
-        'f7a81b', 'f47521', 'f2e6b1', 'cc0085',
-    }
-
-    return clrs[ i ] or table.Random( clrs )
+	self:OnMenuOpened( self.Menu )
 
 end
 
@@ -456,98 +303,107 @@ end
     menu > close
 */
 
-function X:CloseMenu( )
-    if ( IsValid( self.Menu ) ) then
-        self.Menu:Remove( )
-    end
+function PANEL:CloseMenu( )
+	if ( IsValid( self.Menu ) ) then
+		self.Menu:Remove( )
+	end
 end
 
 /*
     cvar > changed
 */
 
-function X:CheckConVarChanges( )
-    if ( !self.m_strConVar ) then return end
+function PANEL:CheckConVarChanges( )
+	if ( !self.m_strConVar ) then return end
 
-    local strValue = GetConVarString( self.m_strConVar )
-    if ( self.m_strConVarValue == strValue ) then return end
+	local strValue = GetConVarString( self.m_strConVar )
+	if ( self.m_strConVarValue == strValue ) then return end
 
-    self.m_strConVarValue = strValue
+	self.m_strConVarValue = strValue
 
-    self:SetValue( self:GetOptionTextByData( self.m_strConVarValue ) )
+	self:SetValue( self:GetOptionTextByData( self.m_strConVarValue ) )
 end
 
 /*
     think
 */
 
-function X:Think( )
-    self:CheckConVarChanges( )
+function PANEL:Think( )
+	self:CheckConVarChanges( )
 end
 
 /*
     value > set
 */
 
-function X:SetValue( str )
-    self:SetText( str )
+function PANEL:SetValue( strValue )
+	self:SetText( strValue )
 end
 
 /*
     do click
 */
 
-function X:DoClick( )
-    if ( self:IsMenuOpen( ) ) then
-        return self:CloseMenu( )
-    end
+function PANEL:DoClick( )
+	if ( self:IsMenuOpen( ) ) then
+		return self:CloseMenu( )
+	end
 
-    self:OpenMenu( )
+	self:OpenMenu( )
 end
 
 /*
     option height > set
-
-    @note       : deprecate
 */
 
-function X:SetOptionHeight( i )
+function PANEL:SetOptionHeight( i )
     self.btn_height = i
 end
 
 /*
     option height > get
-
-    @note       : deprecate
 */
 
-function X:GetOptionHeight( )
+function PANEL:GetOptionHeight( )
     return self.btn_height or 22
 end
 
 /*
-    colorize
+    example
 */
 
-function X:_Colorize( )
+function PANEL:GenerateExample( ClassName, PropertySheet, Width, Height )
+	local ctrl              = vgui.Create( ClassName )
+	ctrl:AddChoice          ( 'Some Choice' )
+	ctrl:AddChoice          ( 'Another Choice', 'myData' )
+	ctrl:AddChoice          ( 'Default Choice', 'myData2', true )
+	ctrl:AddChoice          ( 'Icon Choice', 'myData3', false, 'icon16/star.png' )
+	ctrl:SetWide            ( 150 )
+
+	PropertySheet:AddSheet( ClassName, ctrl, nil, true, true )
+end
+
+/*
+    Declarations
+*/
+
+function PANEL:Declarations( )
+
+    self.bInitialized       = false
 
     /*
         declare > colors
     */
 
-    self.clr_txt                    = rclr.Hex( 'FFFFFF' )
-    self.clr_main_n         		= rclr.Hex( 'FFFFFF', 5 )
-    self.clr_main_h         		= rclr.Hex( 'FFFFFF', 9 )
-    self.clr_togg_n         		= rclr.Hex( 'd66790' )
-    self.clr_togg_e         		= rclr.Hex( '6788d6' )
-    self.clr_togg_h         		= rclr.Hex( 'FFFFFF', 30 )
-    self.clr_line_1                 = rclr.Hex( '161616', 255 )
-    self.clr_line_2                 = rclr.Hex( '121212', 255 )
-    self.clr_line_h                 = rclr.Hex( '282828' )
+    self.clr_main_n         = Color( 255, 255, 255, 5 )
+    self.clr_main_h         = Color( 255, 255, 255, 9 )
+    self.clr_togg_n         = Color( 214, 103, 144 )
+    self.clr_togg_e         = Color( 103, 136, 214 )
+    self.clr_togg_h         = Color( 255, 255, 255, 30 )
 end
 
 /*
     register
 */
 
-derma.DefineControl( 'rlib.ui.cbo', 'rlib combo box', X, 'DButton' )
+derma.DefineControl( 'rlib.ui.cbo', 'rlib combo box', PANEL, 'DButton' )

@@ -1,21 +1,13 @@
 {
     "unreleased": [],
     "releases": {
-      "4.0.0.0": [
-            "[ ^ ] major rewrite of several aspects of the library",
-            "[ ^ ] uclass system optimized with new call ui.obj",
-            "[ ^ ] fonts now reload when monitor resolution changed",
-            "[ ^ ] all notification popups now have screen scaling",
-            "[ ^ ] sha1 module updated to sha2",
-            "[ - ] base and workshop modules removed. workshop now integrated with rlib",
-            "[ - ] 16 files removed from library",
-            "[ - ] ulx override files no longer needed",
-            "[ - ] removal of unused and deprecated items"
-      ],
       "3.6.1.0": [
             "[ ^ ] revised the way workshops + fastdl are handled",
             "[ ^ ] few variable names changed to match conformity",
-            "[ ^ ] verbose for console prints"
+            "[ ^ ] deprecated old code",
+            "[ ^ ] console output cleanup",
+            "[ % ] fixed udm communication",
+            "[ % ] fixed double load with fonts"
       ],
       "3.6.0.0": [
             "[ + ] scaling functionality for future addon updates",

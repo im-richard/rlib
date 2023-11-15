@@ -1,77 +1,71 @@
 /*
-    @library        : rlib
-    @docs           : https://docs.rlib.io
-
-    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
-    LISTED ABOVE.
-
-    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
-    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
-    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
-
-    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
-    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
-    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
-
-    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
-    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
-    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
-    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
-    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
-    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
-    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
+*   @package        : rlib
+*   @module         : hook
+*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
+*   @copyright      : (C) 2020 - 2020
+*   @since          : 3.0.0
+*   @website        : https://rlib.io
+*   @docs           : https://docs.rlib.io
+* 
+*   MIT License
+*
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /*
-    @package        : srlion's hook library
-    @author         : Richard [http://steamcommunity.com/profiles/76561198261855442]
-    @copyright      : (C) 2019 - 2020
-    @website        : https://github.com/Srlion/Hook-Library/tree/master
-
-    MIT License
-
-    Copyright (c) 2020 Srlion
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+*   @package        : srlion's hook library
+*   @author         : Richard [http://steamcommunity.com/profiles/76561198261855442]
+*   @copyright      : (C) 2019 - 2020
+*   @website        : https://github.com/Srlion/Hook-Library/tree/master
+*
+*   MIT License
+*
+*   Copyright (c) 2020 Srlion
+*
+*   Permission is hereby granted, free of charge, to any person obtaining a copy
+*   of this software and associated documentation files (the "Software"), to deal
+*   in the Software without restriction, including without limitation the rights
+*   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*   copies of the Software, and to permit persons to whom the Software is
+*   furnished to do so, subject to the following conditions:
+*
+*   The above copyright notice and this permission notice shall be included in all
+*   copies or substantial portions of the Software.
+*
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*   SOFTWARE.
 */
 
 /*
-    standard tables and localization
+*   standard tables and localization
 */
 
-rlib                        = rlib or { }
-local base                  = rlib
+rlib                    = rlib or { }
+local base              = rlib
 
-local gmod 	                = gmod
-local debug                 = debug
-local pairs                 = pairs
-local gmt 	                = getmetatable
-local smt 	                = setmetatable
+local gmod 	            = gmod
+local debug             = debug
+local pairs             = pairs
+local gmt 	            = getmetatable
+local smt 	            = setmetatable
 
 /*
-    register module
+*   register module
 */
 
 module( 'hook' )
 
 /*
-    declarations
+*   declarations
 */
 
 local storage = { }
@@ -90,7 +84,7 @@ do
     end
 
     /*
-        event :: add
+    *   event :: add
     */
 
     function Event:Add( name, fn, obj )
@@ -99,7 +93,7 @@ do
         if ( pos ) then
 
             /*
-                hook exists -> update
+            *   hook exists -> update
             */
 
             self[ pos + 1 ]     = fn
@@ -121,7 +115,7 @@ do
     end
 
     /*
-        event :: remove
+    *   event :: remove
     */
 
     function Event:Remove( name )
@@ -135,7 +129,7 @@ do
     end
 
     /*
-        event :: gethooks
+    *   event :: gethooks
     */
 
     function Event:GetHooks( )
@@ -171,13 +165,13 @@ do
     end
 
     /*
-        add
-
-        add a hook to listen to the specified event.
-
-        @param  : str event_name
-        @param  : str name
-        @param  : func fn
+    *   add
+    *
+    *   add a hook to listen to the specified event.
+    *
+    *   @param  : str event_name
+    *   @param  : str name
+    *   @param  : func fn
     */
 
     function Add( event_name, name, fn )
@@ -201,12 +195,12 @@ do
 end
 
 /*
-    Remove
-
-    removes the hook with the given indentifier.
-
-    @param  : str event_name
-    @param  : str name
+*   Remove
+*
+*   removes the hook with the given indentifier.
+*
+*   @param  : str event_name
+*   @param  : str name
 */
 
 function Remove( event_name, name )
@@ -217,9 +211,9 @@ function Remove( event_name, name )
 end
 
 /*
-    GetTable
-
-    returns list of all available hooks
+*   GetTable
+*
+*   returns list of all available hooks
 */
 
 function GetTable( )
@@ -233,13 +227,13 @@ function GetTable( )
 end
 
 /*
-    call
-
-    calls hooks associated with the hook name.
-
-    @param  : str event_name
-    @param  : tbl gm
-    @param  : varg ...
+*   call
+*
+*   calls hooks associated with the hook name.
+*
+*   @param  : str event_name
+*   @param  : tbl gm
+*   @param  : varg ...
 */
 
 function Call( event_name, gm, ... )
@@ -303,7 +297,7 @@ function Call( event_name, gm, ... )
     end
 
     /*
-        check :: gamemode
+    *   check :: gamemode
     */
 
     if not gm then return end
@@ -315,12 +309,12 @@ function Call( event_name, gm, ... )
 end
 
 /*
-    run
-
-    calls hooks associated with the hook name.
-
-    @param  : str name
-    @param  : varg ...
+*   run
+*
+*   calls hooks associated with the hook name.
+*
+*   @param  : str name
+*   @param  : varg ...
 */
 
 function Run( name, ... )

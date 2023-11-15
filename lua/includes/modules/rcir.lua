@@ -1,69 +1,63 @@
 /*
-    @library        : rlib
-    @docs           : https://docs.rlib.io
-
-    IF YOU HAVE NOT DIRECTLY RECEIVED THESE FILES FROM THE DEVELOPER, PLEASE CONTACT THE DEVELOPER
-    LISTED ABOVE.
-
-    THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE COMMONS PUBLIC LICENSE
-    ('CCPL' OR 'LICENSE'). THE WORK IS PROTECTED BY COPYRIGHT AND/OR OTHER APPLICABLE LAW. ANY USE OF
-    THE WORK OTHER THAN AS AUTHORIZED UNDER THIS LICENSE OR COPYRIGHT LAW IS PROHIBITED.
-
-    BY EXERCISING ANY RIGHTS TO THE WORK PROVIDED HERE, YOU ACCEPT AND AGREE TO BE BOUND BY THE TERMS
-    OF THIS LICENSE. TO THE EXTENT THIS LICENSE MAY BE CONSIDERED TO BE A CONTRACT, THE LICENSOR GRANTS
-    YOU THE RIGHTS CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND CONDITIONS.
-
-    UNLESS OTHERWISE MUTUALLY AGREED TO BY THE PARTIES IN WRITING, LICENSOR OFFERS THE WORK AS-IS AND
-    ONLY TO THE EXTENT OF ANY RIGHTS HELD IN THE LICENSED WORK BY THE LICENSOR. THE LICENSOR MAKES NO
-    REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE WORK, EXPRESS, IMPLIED, STATUTORY OR
-    OTHERWISE, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF TITLE, MARKETABILITY, MERCHANTIBILITY,
-    FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY,
-    OR THE PRESENCE OF ABSENCE OF ERRORS, WHETHER OR NOT DISCOVERABLE. SOME JURISDICTIONS DO NOT ALLOW THE
-    EXCLUSION OF IMPLIED WARRANTIES, SO SUCH EXCLUSION MAY NOT APPLY TO YOU.
+*   @package        : rlib
+*   @module         : rcir
+*   @author         : Richard [http://steamcommunity.com/profiles/76561198135875727]
+*   @copyright      : (C) 2020 - 2020
+*   @since          : 3.0.0
+*   @website        : https://rlib.io
+*   @docs           : https://docs.rlib.io
+*
+*   MIT License
+*
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+*   LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+*   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+*   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /*
-    @author         : SneakySquid [hhttps://github.com/SneakySquid/Circles]
-    @copyright      : (C) 2020
-
-    MIT License
-
-    Copyright (c) 2019 Sneaky-Squid
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+*   @author         : SneakySquid [hhttps://github.com/SneakySquid/Circles]
+*   @copyright      : (C) 2020
+*
+*   MIT License
+*
+*   Copyright (c) 2019 Sneaky-Squid
+*
+*   Permission is hereby granted, free of charge, to any person obtaining a copy
+*   of this software and associated documentation files (the "Software"), to deal
+*   in the Software without restriction, including without limitation the rights
+*   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*   copies of the Software, and to permit persons to whom the Software is
+*   furnished to do so, subject to the following conditions:
+*
+*   The above copyright notice and this permission notice shall be included in all
+*   copies or substantial portions of the Software.
+*
+*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*   SOFTWARE.
 */
 
 /*
- 	check > client only
+*	check > client only
 */
 
 if not CLIENT then return end
 
 /*
- 	declarations
+*	declarations
 */
 
 rcir                        = { }
 rcir.__index 				= rcir
 
 /*
- 	assign enums
+*	assign enums
 */
 
 do
@@ -82,12 +76,12 @@ local function TypeCheck( cond, arg, name, expected, got )
 end
 
 /*
- 	New
-
-    @param  : enum enum
-    @param  : int r
-    @param  : int x
-    @param  : int y
+*	New
+*
+*   @param  : enum enum
+*   @param  : int r
+*   @param  : int x
+*   @param  : int y
 */
 
 local function New( enum, r, x, y, ... )
@@ -115,7 +109,7 @@ local function New( enum, r, x, y, ... )
 end
 
 /*
- 	RotateVertices
+*	RotateVertices
 */
 
 local function RotateVertices( vert, ox, oy, rotation, rotate_uv )
@@ -148,7 +142,7 @@ local function RotateVertices( vert, ox, oy, rotation, rotate_uv )
 end
 
 /*
- 	CalculateVertices
+*	CalculateVertices
 */
 
 local function CalculateVertices(x, y, radius, rotation, start_angle, end_angle, dist, rotate_uv )
@@ -200,7 +194,7 @@ local function CalculateVertices(x, y, radius, rotation, start_angle, end_angle,
 end
 
 /*
- 	stencil > mask
+*	stencil > mask
 */
 
 local function stencil_mask( a, b, c )
@@ -210,7 +204,7 @@ local function stencil_mask( a, b, c )
 end
 
 /*
- 	stencil > open
+*	stencil > open
 */
 
 local function stencil_open( )
@@ -220,7 +214,7 @@ local function stencil_open( )
 end
 
 /*
- 	stencil > close
+*	stencil > close
 */
 
 local function stencil_close( bLesser )
@@ -232,7 +226,7 @@ local function stencil_close( bLesser )
 end
 
 /*
- 	circle > __tostring
+*	circle > __tostring
 */
 
 function rcir:__tostring( )
@@ -240,7 +234,7 @@ function rcir:__tostring( )
 end
 
 /*
- 	circle > Copy
+*	circle > Copy
 */
 
 function rcir:Copy( )
@@ -248,7 +242,7 @@ function rcir:Copy( )
 end
 
 /*
- 	circle > Calculate
+*	circle > Calculate
 */
 
 function rcir:Calculate( )
@@ -282,7 +276,7 @@ function rcir:Calculate( )
 end
 
 /*
- 	circle > __call
+*	circle > __call
 */
 
 function rcir:__call( )
@@ -307,7 +301,7 @@ function rcir:__call( )
                     if clip then surface.DisableClipping( true ) end
 
     /*
-     	circle > outline
+    *	circle > outline
     */
 
     if self:GetType( ) == CIRCLE_LINE then
@@ -323,7 +317,7 @@ function rcir:__call( )
         render.SetStencilEnable( false )
 
     /*
-     	circle > blurred
+    *	circle > blurred
     */
 
     elseif self:GetType( ) == CIRCLE_BLUR then
@@ -349,7 +343,7 @@ function rcir:__call( )
         render.SetStencilEnable( false )
 
     /*
-     	circle > filled
+    *	circle > filled
     */
 
     else
@@ -360,10 +354,10 @@ function rcir:__call( )
 end
 
 /*
- 	circle > Translate
-
-    @param  : int x
-    @param  : int y
+*	circle > Translate
+*
+*   @param  : int x
+*   @param  : int y
 */
 
 function rcir:Translate( x, y )
@@ -391,9 +385,9 @@ function rcir:Translate( x, y )
 end
 
 /*
- 	circle > Scale
-
-    @param  : int amt
+*	circle > Scale
+*
+*   @param  : int amt
 */
 
 function rcir:Scale( amt )
@@ -417,9 +411,9 @@ function rcir:Scale( amt )
 end
 
 /*
- 	circle > Rotate
-
-    @param  : int amt
+*	circle > Rotate
+*
+*   @param  : int amt
 */
 
 function rcir:Rotate( amt )
@@ -448,7 +442,7 @@ end
 do
 
     /*
-     	AccessorFunc
+    *	AccessorFunc
     */
 
     local function AccessorFunc( name, def, dirty, cb )
@@ -480,7 +474,7 @@ do
     end
 
     /*
-     	OffsetVerticesX
+    *	OffsetVerticesX
     */
 
     local function OffsetVerticesX( cir, old, new )
@@ -496,7 +490,7 @@ do
     end
 
     /*
-     	OffsetVerticesY
+    *	OffsetVerticesY
     */
 
     local function OffsetVerticesY( cir, old, new )
@@ -512,7 +506,7 @@ do
     end
 
     /*
-     	UpdateRotation
+    *	UpdateRotation
     */
 
     local function UpdateRotation( cir, old, new )
@@ -535,7 +529,7 @@ do
     end
 
     /*
-     	UpdateStartAngle
+    *	UpdateStartAngle
     */
 
     local function UpdateStartAngle( cir, old, new )
@@ -545,7 +539,7 @@ do
     end
 
     /*
-     	UpdateEndAngle
+    *	UpdateEndAngle
     */
 
     local function UpdateEndAngle( cir, old, new )
@@ -555,10 +549,10 @@ do
     end
 
     /*
-     	AccessorFunc
-
-        set internally.
-        only use them if you know what you're doing.
+    *	AccessorFunc
+    *
+    *   set internally.
+    *   only use them if you know what you're doing.
     */
 
     AccessorFunc( 'Dirty',              true    )
@@ -585,7 +579,7 @@ do
     AccessorFunc( 'OutlineWidth',       10, 'm_Dirty' )					        -- The circle's outline width if Type is set to CIRCLE_LINE.
 
     /*
-     	circle > SetPos
+    *	circle > SetPos
     */
 
     function rcir:SetPos( x, y )
@@ -594,7 +588,7 @@ do
     end
 
     /*
-     	circle > SetAngles
+    *	circle > SetAngles
     */
 
     function rcir:SetAngles( s, e )
@@ -603,7 +597,7 @@ do
     end
 
     /*
-     	circle > GetPos
+    *	circle > GetPos
     */
 
     function rcir:GetPos( )
@@ -611,7 +605,7 @@ do
     end
 
     /*
-     	circle > GetAngles
+    *	circle > GetAngles
     */
 
     function rcir:GetAngles( )

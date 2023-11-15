@@ -142,7 +142,7 @@ function PANEL:Init( )
     self.btnClose                   = ui.new( 'btn', self                   )
     :bsetup                         (                                       )
     :notext                         (                                       )
-    :tooltip                        ( lang( 'tip_close_window' )            )
+    :tooltip                        ( lang( 'tooltip_close' )               )
     :ocr                            ( self                                  )
 
                                     :draw( function( s, w, h )
@@ -155,7 +155,8 @@ function PANEL:Init( )
     */
 
     self.header                     = ui.new( 'pnl', self                   )
-    :top                            ( 'm', 0                                )
+    :static                         ( TOP                                   )
+    :margin                         ( 0                                     )
     :tall                           ( 80                                    )
 
                                     :draw( function( s, w, h )
@@ -172,7 +173,8 @@ function PANEL:Init( )
     */
 
     self.p_subparent                = ui.new( 'pnl', self                   )
-    :fill                           ( 'm', 5, 0, 5, 5                       )
+    :static                         ( FILL                                  )
+    :margin                         ( 5, 0, 5, 5                            )
     :padding                        ( 0                                     )
 
                                     :draw( function( s, w, h )
@@ -184,7 +186,8 @@ function PANEL:Init( )
     */
 
     self.p_content                  = ui.new( 'pnl', self.p_subparent       )
-    :fill                           ( 'm', 3, 3, 3, 3                       )
+    :static                         ( FILL                                  )
+    :margin                         ( 3                                     )
     :padding                        ( 3                                     )
 
                                     :draw( function( s, w, h )
@@ -197,8 +200,9 @@ function PANEL:Init( )
     */
 
     self.dt_entry                   = ui.new( 'entry', self.p_content       )
-    :fill                           ( 'm', 15                               )
-    :mline                          ( true                                  )
+    :static                         ( FILL                                  )
+    :margin                         ( 15, 15, 15, 15                        )
+    :multiline                      ( true                                  )
     :drawbg                         ( false                                 )
     :enabled                        ( true                                  )
     :canedit                        ( false                                 )
@@ -209,7 +213,8 @@ function PANEL:Init( )
     */
 
     self.p_ftr                      = ui.new( 'pnl', self.p_subparent       )
-    :bottom                         ( 'm', 3                                )
+    :static                         ( BOTTOM                                )
+    :margin                         ( 3                                     )
     :padding                        ( 20, 10, 5, 15                         )
     :tall                           ( 60                                    )
 
@@ -223,7 +228,8 @@ function PANEL:Init( )
 
     local b_close                   = ui.new( 'btn', self.p_ftr             )
     :bsetup                         (                                       )
-    :left                           ( 'm', 0, 0, 0, 0                       )
+    :static                         ( LEFT                                  )
+    :margin                         ( 0, 0, 0, 0                            )
     :tall                           ( 26                                    )
     :tooltip                        ( 'close'                               )
     :textadv                        ( Color( 255, 255, 255, 255 ), pref( 'welcome_btn' ), 'Thanks' )

@@ -33,40 +33,32 @@ local design                = base.d
 local ui                    = base.i
 
 /*
-    PANEL
+*   PANEL
 */
 
 local PANEL = { }
 
 /*
-    AccessorFunc
+*   AccessorFunc
 */
 
 AccessorFunc( PANEL, 'Padding',     'Padding' )
 AccessorFunc( PANEL, 'pnlCanvas',   'Canvas' )
 
 /*
-    FirstRun
-*/
-
-function PANEL:FirstRun( )
-    self.bInitialized = true
-end
-
-/*
-    Init
+*   Init
 */
 
 function PANEL:Init( )
 
     /*
-        declarations
+    *   declarations
     */
 
     self:Declarations( )
 
     /*
-        canvas
+    *   canvas
     */
 
     self.pnlCanvas                  = ui.new( 'pnl', self                   )
@@ -83,7 +75,7 @@ function PANEL:Init( )
                                     end )
 
     /*
-        vbar
+    *   vbar
     */
 
     self.VBar                       = ui.new( 'rlib.elm.sb.v2', self        )
@@ -91,7 +83,7 @@ function PANEL:Init( )
     :param                          ( 'SetbElastic', true                   )
 
     /*
-        parent
+    *   parent
     */
 
     self                            = ui.get( self                          )
@@ -102,7 +94,7 @@ function PANEL:Init( )
     :param                          ( 'SetScrollDelay', 0                   )
 
     /*
-        VBar
+    *   VBar
     */
 
     self.VBar                       = ui.get( self.VBar                     )
@@ -115,7 +107,7 @@ function PANEL:Init( )
                                     end )
 
     /*
-        VBar > scrollbar
+    *   VBar > scrollbar
     */
 
     self.VBar.slider                = ui.get( self.VBar.slider              )
@@ -140,10 +132,10 @@ function PANEL:Init( )
 end
 
 /*
-    GetAlpha
-
-    @param  : bool b
-    @param  : pnl pnl
+*   GetAlpha
+*
+*   @param  : bool b
+*   @param  : pnl pnl
 */
 
 function PANEL:GetAlpha( b, pnl )
@@ -151,9 +143,9 @@ function PANEL:GetAlpha( b, pnl )
 end
 
 /*
-    AddItem
-
-    @param  : pnl pnl
+*   AddItem
+*
+*   @param  : pnl pnl
 */
 
 function PANEL:AddItem( pnl )
@@ -161,9 +153,9 @@ function PANEL:AddItem( pnl )
 end
 
 /*
-    OnChildAdded
-
-    @param  : pnl ch
+*   OnChildAdded
+*
+*   @param  : pnl ch
 */
 
 function PANEL:OnChildAdded( ch )
@@ -171,7 +163,7 @@ function PANEL:OnChildAdded( ch )
 end
 
 /*
-    SizeToContents
+*   SizeToContents
 */
 
 function PANEL:SizeToContents( )
@@ -179,9 +171,9 @@ function PANEL:SizeToContents( )
 end
 
 /*
-    GetVBar
-
-    @return : pnl
+*   GetVBar
+*
+*   @return : pnl
 */
 
 function PANEL:GetVBar( )
@@ -189,9 +181,9 @@ function PANEL:GetVBar( )
 end
 
 /*
-    GetCanvas
-
-    @return : pnl
+*   GetCanvas
+*
+*   @return : pnl
 */
 
 function PANEL:GetCanvas( )
@@ -199,9 +191,9 @@ function PANEL:GetCanvas( )
 end
 
 /*
-    InnerWidth
-
-    @return : int
+*   InnerWidth
+*
+*   @return : int
 */
 
 function PANEL:InnerWidth( )
@@ -209,26 +201,26 @@ function PANEL:InnerWidth( )
 end
 
 /*
-    Think
+*   Think
 */
 
 function PANEL:Think( )
 
     /*
-        check think time
+    *   check think time
     */
 
     self.lth                = isnumber( self.lth ) and self.lth or CurTime( )
 
     /*
-        declare > times
+    *   declare > times
     */
 
     local i                 = CurTime( ) - self.lth
     self.lth                = CurTime( )
 
     /*
-        delta < 0
+    *   delta < 0
     */
 
 
@@ -242,7 +234,7 @@ function PANEL:Think( )
         if self.scrdlta > 0 then self.scrdlta = 0 end
 
     /*
-        delta > 0
+    *   delta > 0
     */
 
     elseif self.scrdlta > 0 then
@@ -256,14 +248,14 @@ function PANEL:Think( )
     end
 
     /*
-        return wait < 1
+    *   return wait < 1
     */
 
     if self.scrdelay < 1 then
         self.scrdelay       = self.scrdelay + ( 10 * i )
 
     /*
-        return wait > 1
+    *   return wait > 1
     */
 
     elseif self.scrdelay >= 1 then
@@ -283,7 +275,7 @@ function PANEL:Think( )
         end
 
     /*
-        return else
+    *   return else
     */
 
     else
@@ -292,7 +284,7 @@ function PANEL:Think( )
     end
 
     /*
-        vbar > width
+    *   vbar > width
     */
 
     if ui:ok( self.VBar ) then
@@ -300,7 +292,7 @@ function PANEL:Think( )
     end
 
     /*
-        kconsole > alpha
+    *   kconsole > alpha
     */
 
     if self:GetbForceAlpha( ) then
@@ -310,9 +302,9 @@ function PANEL:Think( )
 end
 
 /*
-    OnVScroll
-
-    @param  : int diff
+*   OnVScroll
+*
+*   @param  : int diff
 */
 
 function PANEL:OnVScroll( diff )
@@ -320,10 +312,10 @@ function PANEL:OnVScroll( diff )
 end
 
 /*
-    OnMouseWheeled
-
-    @param  : int dlta
-    @param  : int amt
+*   OnMouseWheeled
+*
+*   @param  : int dlta
+*   @param  : int amt
 */
 
 function PANEL:OnMouseWheeled( dlta, amt )
@@ -339,9 +331,9 @@ function PANEL:OnMouseWheeled( dlta, amt )
 end
 
 /*
-    ScrollToChild
-
-    @param  : pnl pnl
+*   ScrollToChild
+*
+*   @param  : pnl pnl
 */
 
 function PANEL:ScrollToChild( pnl )
@@ -356,18 +348,18 @@ function PANEL:ScrollToChild( pnl )
 end
 
 /*
-    PerformLayout
+*   PerformLayout
 */
 
 function PANEL:PerformLayout( )
 
     /*
-        initialize only
+    *   initialize only
     */
 
     if not self.bInitialized then
-        self.VBar:SetbElastic       ( self:GetbElastic( ) )
-        self.VBar:SetAlwaysVisible  ( self:GetAlwaysVisible( ) )
+        self.VBar:SetbElastic       ( self:GetbElastic( ) and true or false )
+        self.VBar:SetAlwaysVisible  ( self:GetAlwaysVisible( ) and true or false )
 
         local dock          = self:GetDockLeft( ) and LEFT or RIGHT
                             self.VBar:Dock          ( dock )
@@ -375,13 +367,13 @@ function PANEL:PerformLayout( )
     end
 
     /*
-        define > cache width
+    *   define > cache width
     */
 
     self._cache_w           = self._cache_w or self.VBar:GetWide( )
 
     /*
-        dimensions
+    *   dimensions
     */
 
     local w                 = self:GetWide( ) - self:GetSBMLeft( )
@@ -392,7 +384,7 @@ function PANEL:PerformLayout( )
     pos_y                   = self.VBar:GetOffset( )
 
     /*
-        autosize
+    *   autosize
     */
 
     if not self.VBar.Enabled and not self:GetAlwaysVisible( ) then
@@ -402,7 +394,7 @@ function PANEL:PerformLayout( )
     end
 
     /*
-        offset
+    *   offset
     */
 
     if self.VBar.Enabled or not self:GetHasOffset( ) then
@@ -414,7 +406,7 @@ function PANEL:PerformLayout( )
     end
 
     /*
-        update canvas
+    *   update canvas
     */
 
     self:RebuildCanvas      ( pos_x, pos_y, w )
@@ -422,12 +414,12 @@ function PANEL:PerformLayout( )
 end
 
 /*
-    SetAlwaysVisible
-
-    sets if scrollbar will always be visible, even if
-    not enough content to scroll
-
-    @param  : bool b
+*   SetAlwaysVisible
+*
+*   sets if scrollbar will always be visible, even if
+*   not enough content to scroll
+*
+*   @param  : bool b
 */
 
 function PANEL:SetAlwaysVisible( b )
@@ -435,9 +427,9 @@ function PANEL:SetAlwaysVisible( b )
 end
 
 /*
-    GetAlwaysVisible
-
-    @return : bool
+*   GetAlwaysVisible
+*
+*   @return : bool
 */
 
 function PANEL:GetAlwaysVisible( )
@@ -445,7 +437,7 @@ function PANEL:GetAlwaysVisible( )
 end
 
 /*
-    SetOffset
+*   SetOffset
 */
 
 function PANEL:SetHasOffset( b )
@@ -453,7 +445,7 @@ function PANEL:SetHasOffset( b )
 end
 
 /*
-    GetOffset
+*   GetOffset
 */
 
 function PANEL:GetHasOffset( )
@@ -461,12 +453,12 @@ function PANEL:GetHasOffset( )
 end
 
 /*
-    SetDockLeft
-
-    only two positions; LEFT or RIGHT
-    RIGHT used by default
-
-    @param  : bool b
+*   SetDockLeft
+*
+*   only two positions; LEFT or RIGHT
+*   RIGHT used by default
+*
+*   @param  : bool b
 */
 
 function PANEL:SetDockLeft( b )
@@ -474,9 +466,9 @@ function PANEL:SetDockLeft( b )
 end
 
 /*
-    GetDockLeft
-
-    @return : bool
+*   GetDockLeft
+*
+*   @return : bool
 */
 
 function PANEL:GetDockLeft( )
@@ -484,11 +476,11 @@ function PANEL:GetDockLeft( )
 end
 
 /*
-    SetSBMLeft
-
-    set scroll-bar left padding
-
-    @param  : int i
+*   SetSBMLeft
+*
+*   set scroll-bar left padding
+*
+*   @param  : int i
 */
 
 function PANEL:SetSBMLeft( i )
@@ -496,11 +488,11 @@ function PANEL:SetSBMLeft( i )
 end
 
 /*
-    GetSBMLeft
-
-    return scroll-bar left padding
-
-    @return : int
+*   GetSBMLeft
+*
+*   return scroll-bar left padding
+*
+*   @return : int
 */
 
 function PANEL:GetSBMLeft( )
@@ -508,14 +500,14 @@ function PANEL:GetSBMLeft( )
 end
 
 /*
-    SetVMargin
-
-    sets margin for vbar
-
-    @param  : int il
-    @param  : int it
-    @param  : int ir
-    @param  : int ib
+*   SetVMargin
+*
+*   sets margin for vbar
+*
+*   @param  : int il
+*   @param  : int it
+*   @param  : int ir
+*   @param  : int ib
 */
 
 function PANEL:SetVMargin( il, it, ir, ib )
@@ -532,11 +524,11 @@ function PANEL:SetVMargin( il, it, ir, ib )
 end
 
 /*
-    SetbKonsole
-
-    set if being utilized for rlib konsole
-
-    @param  : bool b
+*   SetbKonsole
+*
+*   set if being utilized for rlib konsole
+*
+*   @param  : bool b
 */
 
 function PANEL:SetbKonsole( b )
@@ -544,11 +536,11 @@ function PANEL:SetbKonsole( b )
 end
 
 /*
-    GetbKonsole
-
-    get if being utilized for rlib konsole
-
-    @return : bool
+*   GetbKonsole
+*
+*   get if being utilized for rlib konsole
+*
+*   @return : bool
 */
 
 function PANEL:GetbKonsole( )
@@ -556,11 +548,11 @@ function PANEL:GetbKonsole( )
 end
 
 /*
-    SetbElastic
-
-    determines if scrollbar will use elastic scrolling
-
-    @param  : bool b
+*   SetbElastic
+*
+*   determines if scrollbar will use elastic scrolling
+*
+*   @param  : bool b
 */
 
 function PANEL:SetbElastic( b )
@@ -568,11 +560,11 @@ function PANEL:SetbElastic( b )
 end
 
 /*
-    GetbElastic
-
-    returns if scrollbar will use elastic scrolling
-
-    @return : bool
+*   GetbElastic
+*
+*   returns if scrollbar will use elastic scrolling
+*
+*   @return : bool
 */
 
 function PANEL:GetbElastic( )
@@ -580,11 +572,11 @@ function PANEL:GetbElastic( )
 end
 
 /*
-    SetElasticAmt
-
-    determines if scrollbar will use elastic scrolling
-
-    @param  : int i
+*   SetElasticAmt
+*
+*   determines if scrollbar will use elastic scrolling
+*
+*   @param  : int i
 */
 
 function PANEL:SetElasticAmt( i )
@@ -592,12 +584,12 @@ function PANEL:SetElasticAmt( i )
 end
 
 /*
-    GetElasticAmt
-
-    returns if scrollbar will use elastic scrolling
-
-    @return : int
-            : min ( 900 )
+*   GetElasticAmt
+*
+*   returns if scrollbar will use elastic scrolling
+*
+*   @return : int
+*           : min ( 900 )
 */
 
 function PANEL:GetElasticAmt( )
@@ -607,9 +599,9 @@ function PANEL:GetElasticAmt( )
 end
 
 /*
-    SetScrollDelta
-
-    @param  : int i
+*   SetScrollDelta
+*
+*   @param  : int i
 */
 
 function PANEL:SetScrollDelta( i )
@@ -617,12 +609,12 @@ function PANEL:SetScrollDelta( i )
 end
 
 /*
-    GetScrollDelta
-
-    returns if scrollbar will use elastic scrolling
-
-    @return : int
-            : min ( 900 )
+*   GetScrollDelta
+*
+*   returns if scrollbar will use elastic scrolling
+*
+*   @return : int
+*           : min ( 900 )
 */
 
 function PANEL:GetScrollDelta( )
@@ -630,9 +622,9 @@ function PANEL:GetScrollDelta( )
 end
 
 /*
-    SetScrollDelay
-
-    @param  : int i
+*   SetScrollDelay
+*
+*   @param  : int i
 */
 
 function PANEL:SetScrollDelay( i )
@@ -640,9 +632,9 @@ function PANEL:SetScrollDelay( i )
 end
 
 /*
-    GetScrollDelay
-
-    @return : int
+*   GetScrollDelay
+*
+*   @return : int
 */
 
 function PANEL:GetScrollDelay( )
@@ -650,9 +642,9 @@ function PANEL:GetScrollDelay( )
 end
 
 /*
-    SetWidth
-
-    @param  : int i
+*   SetWidth
+*
+*   @param  : int i
 */
 
 function PANEL:SetWidth( i )
@@ -660,9 +652,9 @@ function PANEL:SetWidth( i )
 end
 
 /*
-    GetWidth
-
-    @return : int
+*   GetWidth
+*
+*   @return : int
 */
 
 function PANEL:GetWidth( )
@@ -670,13 +662,13 @@ function PANEL:GetWidth( )
 end
 
 /*
-    SetbForceAlpha
-
-    forces alpha for particular panels
-    should only be utilized in cirsumtances like
-    rlib konsole
-
-    @param  : bool b
+*   SetbForceAlpha
+*
+*   forces alpha for particular panels
+*   should only be utilized in cirsumtances like
+*   rlib konsole
+*
+*   @param  : bool b
 */
 
 function PANEL:SetbForceAlpha( b )
@@ -684,9 +676,9 @@ function PANEL:SetbForceAlpha( b )
 end
 
 /*
-    GetbForceAlpha
-
-    @return : bool
+*   GetbForceAlpha
+*
+*   @return : bool
 */
 
 function PANEL:GetbForceAlpha( )
@@ -694,11 +686,11 @@ function PANEL:GetbForceAlpha( )
 end
 
 /*
-    SetTrackColor
-
-    defines the track color for scrollbar
-
-    @param  : clr clr
+*   SetTrackColor
+*
+*   defines the track color for scrollbar
+*
+*   @param  : clr clr
 */
 
 function PANEL:SetTrackColor( clr )
@@ -706,11 +698,11 @@ function PANEL:SetTrackColor( clr )
 end
 
 /*
-    GetTrackColor
-
-    returns current scrollbar track color
-
-    @return : clr
+*   GetTrackColor
+*
+*   returns current scrollbar track color
+*
+*   @return : clr
 */
 
 function PANEL:GetTrackColor( )
@@ -718,11 +710,11 @@ function PANEL:GetTrackColor( )
 end
 
 /*
-    SetGripColor
-
-    defines the slider ( grip ) color for scrollbar
-
-    @param  : clr clr
+*   SetGripColor
+*
+*   defines the slider ( grip ) color for scrollbar
+*
+*   @param  : clr clr
 */
 
 function PANEL:SetGripColor( clr )
@@ -730,11 +722,11 @@ function PANEL:SetGripColor( clr )
 end
 
 /*
-    GetGripColor
-
-    returns current scrollbar slider ( grip ) color
-
-    @return : clr
+*   GetGripColor
+*
+*   returns current scrollbar slider ( grip ) color
+*
+*   @return : clr
 */
 
 function PANEL:GetGripColor( )
@@ -742,9 +734,9 @@ function PANEL:GetGripColor( )
 end
 
 /*
-    Rehash
-
-    resets initialization
+*   Rehash
+*
+*   resets initialization
 */
 
 function PANEL:Rehash( )
@@ -752,9 +744,9 @@ function PANEL:Rehash( )
 end
 
 /*
-    Clear
-
-    @return : pnl
+*   Clear
+*
+*   @return : pnl
 */
 
 function PANEL:Clear( )
@@ -762,7 +754,7 @@ function PANEL:Clear( )
 end
 
 /*
-    Rebuild
+*   Rebuild
 */
 
 function PANEL:Rebuild( )
@@ -774,12 +766,12 @@ function PANEL:Rebuild( )
 end
 
 /*
-    RebuildCanvas
-
-    @param  : int x
-    @param  : int y
-    @param  : int w
-    @param  : int h
+*   RebuildCanvas
+*
+*   @param  : int x
+*   @param  : int y
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:RebuildCanvas( x, y, w, h )
@@ -791,31 +783,31 @@ function PANEL:RebuildCanvas( x, y, w, h )
     end
 
     /*
-        rebuild panels
+    *   rebuild panels
     */
 
     self:Rebuild( )
 end
 
 /*
-    Paint
-
-    @param  : int w
-    @param  : int h
+*   Paint
+*
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:Paint( w, h ) end
 
 /*
-    Declarations
-
-    all definitions associated to this panel
+*   Declarations
+*
+*   all definitions associated to this panel
 */
 
 function PANEL:Declarations( )
 
     /*
-        declare > general
+    *	declare > general
     */
 
     self.bInitialized               = false
@@ -827,7 +819,7 @@ function PANEL:Declarations( )
 end
 
 /*
-    register
+*   register
 */
 
 vgui.Register( 'rlib.ui.spnl.v2', PANEL, 'DPanel' )

@@ -23,22 +23,18 @@
 */
 
 /*
-    rlib
+    standard tables and localization
 */
 
-local base                  = rlib
-local helper                = base.h
-local access                = base.a
-local storage               = base.s
-
-/*
-    rcore
-*/
-
-local mf                    = rcore.manifest
+local rlib                  = rlib
+local base                  = rcore
+local mf                    = base.manifest
 local pf                    = mf.prefix
-local cfg                   = rcore.settings
-local sys                   = rcore.sys
+local cfg                   = base.settings
+local sys                   = base.sys
+local helper                = rlib.h
+local access                = rlib.a
+local storage               = rlib.s
 
 /*
     Localized lua funcs
@@ -47,28 +43,28 @@ local sys                   = rcore.sys
 local sf                    = string.format
 
 /*
-    Localized translation func
+*   Localized translation func
 */
 
 local function lang( ... )
-    return base:lang( ... )
+    return rlib:lang( ... )
 end
 
 /*
- 	prefix ids
+*	prefix ids
 */
 
 local function pid( str, suffix )
-    local state = ( isstring( suffix ) and suffix ) or ( rcore and pf ) or false
-    return base.get:pref( str, state )
+    local state = ( isstring( suffix ) and suffix ) or ( base and pf ) or false
+    return rlib.get:pref( str, state )
 end
 
 /*
-    module loader statistics
+*   module loader statistics
 */
 
 local function modules_cstats( )
-    base.l                      = { }
+    rlib.l                      = { }
     sys.loadtime                = os.clock( )
     sys.modules.total           = 0
     sys.modules.registered      = 0
@@ -77,15 +73,15 @@ local function modules_cstats( )
 end
 
 /*
-    bHasModule
-
-    check if the specified module is valid or not
-
-    @param  : tbl, str mod
-    @return : bool
+*   bHasModule
+*
+*   check if the specified module is valid or not
+*
+*   @param  : tbl, str mod
+*   @return : bool
 */
 
-function rcore:bHasModule( mod )
+function base:bHasModule( mod )
     if not mod then return false end
     if isstring( mod ) and self.modules[ mod ] and self.modules[ mod ].enabled then
         return true
@@ -96,29 +92,55 @@ function rcore:bHasModule( mod )
 end
 
 /*
-    bHasModule > throw error
+*   bHasModule > throw error
+*
+*   checks to see if a module is valid, if not, returns an error the player who utilized a feature
+*   associated to failed module.
+*
+*   @param  : tbl, str mod
+*   @param  : ply ply
+*   @return : bool
 */
 
-function rcore:bHasModule_throwError( mod, ply )
+function base:bHasModule_throwError( mod, ply )
     if not mod then return false end
     if self:bHasModule( mod ) then
         return true
     else
         local mod_name = isstring( mod ) and mod or 'Unspecified'
-        base:log( 2, 'you don\'t have access to this.' )
-        base.msg:route( ply, false, base.manifest.name, 'WARNING:', base.settings.cmsg.clrs.target, mod_name:upper( ), base.settings.cmsg.clrs.msg, 'module has encountered an issue. Contact a server admin' )
+        rlib:log( 2, 'you don\'t have access to this.' )
+        rlib.msg:route( ply, false, rlib.manifest.name, 'WARNING:', rlib.settings.cmsg.clrs.target, mod_name:upper( ), rlib.settings.cmsg.clrs.msg, 'module has encountered an issue. Contact a server admin' )
         return false
     end
 end
 
 /*
-    modules > autoloader > configs
+*   modules > autoloader > configs
+*
+*   once a valid manifest file has been located, this function will be called to load all of the other
+*   files assoc to the specified module.
+*
+*   @ex     : base:autoloader_configs( 'modules/identix', 'identix' )
+*
+*   @param  : str loc
+*   @param  : str mod_id
 */
 
-function rcore:autoloader_configs( loc, mod_id )
+function base:autoloader_configs( loc, mod_id )
 
     /*
-        modules > autoloader > configs > load_cfg
+    *   modules > autoloader > configs > load_cfg
+    *
+    *   loads the specified file provided when looking through existing
+    *   files and folders
+    *
+    *   recursive
+    *
+    *   @ex     : load_cfg( 'path/to/folder', file.cfg, 'identix' )
+    *
+    *   @param  : str path
+    *   @param  : str File
+    *   @param  : str mod_id
     */
 
     local function load_cfg( path, File, mod )
@@ -132,14 +154,14 @@ function rcore:autoloader_configs( loc, mod_id )
             elseif File:match( 'cl_' ) then
                 AddCSLuaFile( cfg_file )
             end
-            base:log( 1, '+ cfg [ %s ] %s', mod_id, File )
+            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] %s', mod_id, File )
         elseif CLIENT then
             if File:match( 'sh_' ) then
                 include( cfg_file )
             elseif File:match( 'cl_' ) then
                 include( cfg_file )
             end
-            base:log( 1, '+ cfg [ %s ] %s', mod_id, File )
+            rlib:log( RLIB_LOG_DEBUG, '+ cfg [ %s ] %s', mod_id, File )
         end
     end
 
@@ -153,56 +175,41 @@ function rcore:autoloader_configs( loc, mod_id )
 
     for k, v in ipairs( _ ) do
         if v ~= 'cfg' and v ~= 'config' then continue end
-        local path          = loc .. '/' .. v
-        local sub, dir      = file.Find( path .. '/' .. '*', 'LUA' )
-
-        /*
-            load_cfg( path, File, mod_id )
-
-            >   path                modules/xtask/cfg
-            >   File                sh_cfg_ticker.lua
-            >   mod_id              xtask
-        */
-
+        local path      = loc .. '/' .. v
+        local sub, _    = file.Find( path .. '/' .. '*', 'LUA' )
         for _, File in ipairs( sub ) do
             if not ( File:match( '.lua' ) ) then continue end
             load_cfg( path, File, mod_id )
-        end
-
-        for _, Fol in ipairs( dir ) do
-            local cfg_fol_path      = string.format( '%s/%s', path, Fol )
-            local SubDir, SubFile   = file.Find( cfg_fol_path .. '/' .. '*', 'LUA' )
-
-            /*
-                load_cfg( cfg_fol_path, FileSub, mod_id )
-
-                >   cfg_fol_path    modules/pirithous/cfg/layouts
-                >   FileSub         cl_cfg_azerty.lua
-                >   mod_id          pirithous
-            */
-
-            for _, FileSub in ipairs( SubDir ) do
-                if not ( FileSub:match( '.lua' ) ) then continue end
-                load_cfg( cfg_fol_path, FileSub, mod_id )
-            end
         end
     end
 end
 
 /*
-    modules > autoloader > assoc files
+*   modules > autoloader > assoc files
+*
+*   loads any files / folders assoc to the specified module. This should be done after the manifest
+*   and config files have already been registered with the system.
+*
+*   recursive subfolders supported
+*
+*   @assoc  : base:autoloader_modules( loc, module_id, b_isext )
+*   @ex     : base:modules_attachfile( 'lunera' )
+*
+*   @param  : str loc
+*   @param  : bool b_isext
+*   @return : void
 */
 
-function rcore:modules_attachfile( loc, b_isext )
+function base:modules_attachfile( loc, b_isext )
 
     /*
-        define rcore path
+    *   define base path
     */
 
     local path_base = b_isext and loc or mf.modpath
 
     /*
-        module autoloader > SERVER
+    *   module autoloader > SERVER
     */
 
     if SERVER then
@@ -210,7 +217,7 @@ function rcore:modules_attachfile( loc, b_isext )
         local files, dirs = file.Find( path_base .. '/*', 'LUA' )
 
         /*
-            module autoloader > serverside -> shared
+        *   module autoloader > serverside -> shared
         */
 
         local function inc_sv( path_root, id, term )
@@ -220,7 +227,7 @@ function rcore:modules_attachfile( loc, b_isext )
                 if id == 1 or id == 2 then include( path_root .. '/' .. File ) end
                 if id == 2 or id == 3 then AddCSLuaFile( path_root .. '/' .. File ) end
 
-                base:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
+                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
             end
 
             local file_sub, dir_sub = file.Find( path_root .. '/' .. '*', 'LUA' )
@@ -229,7 +236,7 @@ function rcore:modules_attachfile( loc, b_isext )
                     if id == 1 or id == 2 then include( path_root .. '/' .. m .. '/' .. FileSub ) end
                     if id == 2 or id == 3 then AddCSLuaFile( path_root .. '/' .. m .. '/' .. FileSub ) end
 
-                    base:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
+                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
                 end
 
                 if id == 2 then
@@ -239,7 +246,7 @@ function rcore:modules_attachfile( loc, b_isext )
                             AddCSLuaFile    ( path_inc )
                             include         ( path_inc )
 
-                            base:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
+                            rlib:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
                         end
                     end
                 end
@@ -247,7 +254,7 @@ function rcore:modules_attachfile( loc, b_isext )
         end
 
         /*
-            module autoloader > serverside -> load
+        *   module autoloader > serverside -> load
         */
 
         for _, dir in SortedPairs( dirs, true ) do
@@ -265,7 +272,7 @@ function rcore:modules_attachfile( loc, b_isext )
     end
 
     /*
-        module autoloader > CLIENT
+    *   module autoloader > CLIENT
     */
 
     if CLIENT then
@@ -273,7 +280,7 @@ function rcore:modules_attachfile( loc, b_isext )
         local files, dirs = file.Find( path_base .. '/*', 'LUA' )
 
         /*
-            module autoloader > clintside -> shared
+        *   module autoloader > clintside -> shared
         */
 
         local function inc_cl( path_root, id, term )
@@ -282,14 +289,14 @@ function rcore:modules_attachfile( loc, b_isext )
             for _, File in SortedPairs( file.Find( path_root .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                 include( path_root .. '/' .. File )
 
-                base:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
+                rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], File )
             end
             local file_sub, dir_sub = file.Find( path_root .. '/' .. '*', 'LUA' )
             for l, m in pairs( dir_sub ) do
                 for _, FileSub in SortedPairs( file.Find( path_root .. '/' .. m .. '/' .. term .. '_*.lua', 'LUA' ), true ) do
                     include( path_root  .. '/' .. m .. '/' .. FileSub )
 
-                    base:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
+                    rlib:log( RLIB_LOG_DEBUG, '+ file [ %s ] %s » %s', loc, scope[ id ], FileSub )
                 end
                 if id == 2 then
                     if ( m == 'lang' or m == 'languages' or m == 'translations' ) then
@@ -297,7 +304,7 @@ function rcore:modules_attachfile( loc, b_isext )
                             local path_inc = path_root .. '/' .. m .. '/' .. SubFile
                             include( path_inc )
 
-                            base:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
+                            rlib:log( RLIB_LOG_DEBUG, '+ lang [ %s ] %s', loc, SubFile )
                         end
                     end
                 end
@@ -305,7 +312,7 @@ function rcore:modules_attachfile( loc, b_isext )
         end
 
         /*
-            module autoloader > clintside -> load
+        *   module autoloader > clintside -> load
         */
 
         for _, dir in SortedPairs( dirs, true ) do
@@ -324,33 +331,45 @@ function rcore:modules_attachfile( loc, b_isext )
 end
 
 /*
-    modules > autoloader
+*   modules > autoloader
+*
+*   once a valid manifest file has been located, this function will be called to load all of the other
+*   files associated to the specified module.
+*
+*   @ex     : loc => modules/footprints/, mod_id => footprints
+*
+*   @param  : str loc
+*   @param  : str mod_id
+*   @param  : bool b_istext
+*   @return : void
 */
 
-function rcore:autoloader_modules( loc, mod_id, b_isext )
+function base:autoloader_modules( loc, mod_id, b_isext )
     local _, folder = helper.str:splitpath( loc )
     self:modules_attachfile( folder, b_isext )
-    base:log( RLIB_LOG_SYSTEM, '+ module » [ %s ]', mod_id )
+    rlib:log( RLIB_LOG_SYSTEM, '+ module » [ %s ]', mod_id )
 end
 
 /*
-    modules > autoloader > manifest
+*   modules > autoloader > manifest
+*
+*   loads of the modules manifest file and registers the data associated to the specified module.
 */
 
 local function autoloader_manifest_modules( )
 
     modules_cstats( )
-    rcore.sys.loadpriority = cfg.loadpriority or { }
+    base.sys.loadpriority = cfg.loadpriority or { }
 
     local folder    = mf.modpath
     local _, dirs   = file.Find( folder .. '*', 'LUA' )
 
     /*
-         prioritized loading for certain modules ( ie: rcore )
-        usually configured in `lua\rlib\sh_config.lua`
+     *   prioritized loading for certain modules ( ie: base )
+    *   usually configured in `lua\rlib\sh_config.lua`
     */
 
-    for k, v in pairs( rcore.sys.loadpriority ) do
+    for k, v in pairs( base.sys.loadpriority ) do
         local module_dir = sf( '%s/%s', folder, k )
         for _, sub in SortedPairs( file.Find( module_dir .. '/*.lua', 'LUA' ), true ) do
             if not sub:match( 'manifest' ) and not sub:match( 'env' ) and not sub:match( 'pkg' ) then continue end
@@ -362,17 +381,17 @@ local function autoloader_manifest_modules( )
             if SERVER then AddCSLuaFile( inc ) end
 
             include( inc )
-            rcore:Register( module_dir, sub )
+            base:Register( module_dir, sub )
         end
     end
 
     /*
-        load the remainder of the modules not included in the module prioritizer.
+    *   load the remainder of the modules not included in the module prioritizer.
     */
 
     local _, sub_dir = file.Find( folder .. '/' .. '*', 'LUA' )
     for l, m in pairs( sub_dir ) do
-        if rcore.sys.loadpriority[ m ] then continue end
+        if base.sys.loadpriority[ m ] then continue end
         local path_manifest = sf( '%s/%s', folder, m )
         for _, sub in SortedPairs( file.Find( path_manifest .. '/*.lua', 'LUA' ), true ) do
             if not sub:match( 'manifest' ) and not sub:match( 'env' ) and not sub:match( 'pkg' ) then continue end
@@ -383,25 +402,33 @@ local function autoloader_manifest_modules( )
             if SERVER then AddCSLuaFile( inc ) end
 
             include( inc )
-            rcore:Register( path_manifest, sub )
+            base:Register( path_manifest, sub )
         end
     end
 
     /*
-        garbage cleanup
+    *   garbage cleanup
     */
 
-    storage.garbage( 'autoloader_manifest_modules', { rcore.sys.loadpriority, sys.loadtime } )
+    storage.garbage( 'autoloader_manifest_modules', { base.sys.loadpriority, sys.loadtime } )
 
 end
 
 /*
-    modules > prefix
+*   modules > prefix
+*
+*   used for various things such as font names, etc.
+*
+*   @ex     : base:modules_prefix( mod )
+*
+*   @param  : tbl mod
+*   @param  : str suffix
+*   @return : str
 */
 
-function rcore:modules_prefix( mod, suffix )
+function base:modules_prefix( mod, suffix )
     if not istable( mod ) then
-        base:log( RLIB_LOG_DEBUG, 'warning: cannot create prefix with missing module in \n[ %s ]', debug.traceback( ) )
+        rlib:log( RLIB_LOG_DEBUG, 'warning: cannot create prefix with missing module in \n[ %s ]', debug.traceback( ) )
         return
     end
 
@@ -411,10 +438,17 @@ function rcore:modules_prefix( mod, suffix )
 end
 
 /*
-    modules > settings
+*   modules > settings
+*
+*   returns the module settings
+*
+*   @ex     : base:modules_settings( mod )
+*
+*   @param  : tbl, str mod
+*   @return : tbl
 */
 
-function rcore:modules_settings( mod )
+function base:modules_settings( mod )
     local bLoaded = false
     if mod then
         if isstring( mod ) then
@@ -432,16 +466,22 @@ function rcore:modules_settings( mod )
 
     if not bLoaded then
         local mod_output = isstring( mod ) and mod or 'unspecified'
-        base:log( RLIB_LOG_DEBUG, 'missing module settings [ %s ]\n%s', mod_output, debug.traceback( ) )
+        rlib:log( RLIB_LOG_DEBUG, 'missing module settings [ %s ]\n%s', mod_output, debug.traceback( ) )
         return false
     end
 end
 
 /*
-    load module
+*   load module
+*
+*   returns valid data on a particular module and the correct prefix
+*
+*   @param  : str mod
+*   @param  : bool bPrefix
+*   @return : tbl, str
 */
 
-function rcore:modules_load( mod, bPrefix )
+function base:modules_load( mod, bPrefix )
     local bLoaded = false
     if mod and self.modules[ mod ] and self.modules[ mod ].enabled then
         if bPrefix then
@@ -454,16 +494,27 @@ function rcore:modules_load( mod, bPrefix )
 
     if not bLoaded then
         mod = mod or 'unknown'
-        base:log( RLIB_LOG_DEBUG, 'missing module [ %s ]\n%s', mod, debug.traceback( ) )
+        rlib:log( RLIB_LOG_DEBUG, 'missing module [ %s ]\n%s', mod, debug.traceback( ) )
         return false
     end
 end
 
 /*
-    modules > in demo mode
+*   modules > in demo mode
+*
+*   checks to see if module is in demo mode
+*   this mode is typically used by the developer to setup specific settings and features a certain way
+*   so they can be presented to the public.
+*
+*   demo mode can be set in the modules manifest file
+*
+*   enabling this will cause a warning to display in console
+*
+*   @param  : tbl, str mod
+*   @return : bool
 */
 
-function rcore:bInDemoMode( mod )
+function base:bInDemoMode( mod )
     if not mod then return false end
     if isstring( mod ) and self.modules[ mod ] and ( self.modules[ mod ].demomode or self.modules[ mod ].demo ) then
         return true
@@ -474,12 +525,30 @@ function rcore:bInDemoMode( mod )
 end
 
 /*
-    modules > logging
+*   modules > logging
+*
+*   log module information to the data folder
+*       /rlib/modules/[module_name]/
+*
+*   to write a log to another directory not associated to
+*       /rlib/modules => rlib => konsole:log( path, cat, data )
+*
+*   files in the directory are created based on the current date. a new file will be made if a log is
+*   submitted on a day where no file with that date exists.
+*
+*   param bPostnow will instantly push msg to konsole
+*
+*   @ex     : base:log( 'xp', 1, 'information to log' )
+*
+*   @param  : tbl, str mod
+*   @param  : int cat
+*   @param  : str msg
+*   @param  : varg varg
 */
 
-function rcore:log( mod, cat, msg, ... )
+function base:log( mod, cat, msg, ... )
     if not mod then
-        rcore:log( 2, 'unable to log unspecified module' )
+        base:log( 2, 'unable to log unspecified module' )
         return false
     end
 
@@ -494,7 +563,7 @@ function rcore:log( mod, cat, msg, ... )
         if self.modules[ mod ] and self.modules[ mod ].enabled then
 
             /*
-                valid module > string
+            *   valid module > string
             */
 
             bLoaded         = true
@@ -502,7 +571,7 @@ function rcore:log( mod, cat, msg, ... )
         else
 
             /*
-                custom folder > string
+            *   custom folder > string
             */
 
             bLoaded         = true
@@ -517,14 +586,14 @@ function rcore:log( mod, cat, msg, ... )
 
     if not bLoaded then
         local mod_output = isstring( mod ) and mod or 'unspecified'
-        base:log( 2, 'missing module [ %s ] :: cannot write log\n%s', mod_output, debug.traceback( ) )
+        rlib:log( 2, 'missing module [ %s ] :: cannot write log\n%s', mod_output, debug.traceback( ) )
         return false
     end
 
     if not mod_data.logging then return end
     if not cat then cat = 1 end
 
-    local c_type        = isnumber( cat ) and '[' .. helper.str:ucfirst( base._def.debug_titles[ cat ] ) .. ']' or isstring( cat ) and '[' .. cat .. ']' or cat
+    local c_type        = isnumber( cat ) and '[' .. helper.str:ucfirst( rlib._def.debug_titles[ cat ] ) .. ']' or isstring( cat ) and '[' .. cat .. ']' or cat
     local m_pf          = os.date( '%m%d%Y' )
     local m_id          = sf( 'RL_%s.txt', m_pf )
 
@@ -532,7 +601,7 @@ function rcore:log( mod, cat, msg, ... )
     local resp          = sf( '%s %s %s', when, c_type, msg )
 
     local _stdir        = storage.mft:getpath( 'dir_modules' )
-    local i_boot        = base.sys.startups or 0
+    local i_boot        = rlib.sys.startups or 0
 
     if i_boot == 0 or i_boot == '0' then
         i_boot = '#boot'
@@ -544,32 +613,41 @@ function rcore:log( mod, cat, msg, ... )
 end
 
 /*
-    modules > storage
+*   modules > storage
+*
+*   will create any required folders needed by the module to store certain data
+*
+*   @param  : tbl source
 */
 
-function rcore:modules_storage( source )
+function base:modules_storage( source )
 
     if source and not istable( source ) then
-        base:log( 2, 'cannot manage storage for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot manage storage for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
-    source = source or rcore.modules
+    source = source or base.modules
 
     /*
-        modules > storage > create data dir
+    *   modules > storage > create data dir
+    *
+    *   creates the requested folders in the data directory
+    *
+    *   @param  : tbl data
+    *   @param  : str mod_id
     */
 
     local function cdatafolder( data, mod_id )
         if not istable( data ) then
-            base:log( 2, '[ %s ] bad data table provided for [ %s ]', 'modules_storage' )
+            rlib:log( 2, '[ %s ] bad data table provided for [ %s ]', 'modules_storage' )
             return
         end
 
         mod_id = mod_id or pf
 
         if not data[ 'parent' ] or not data[ 'sub' ] then
-            base:log( 2, '[ %s ] failed to specify new datafolder in manifest', mod_id )
+            rlib:log( 2, '[ %s ] failed to specify new datafolder in manifest', mod_id )
             return
         end
 
@@ -578,12 +656,12 @@ function rcore:modules_storage( source )
 
         if not file.Exists( fol_parent, 'DATA' ) then
             file.CreateDir( fol_parent )
-            base:log( RLIB_LOG_DEBUG, '[ %s ] created datafolder parent [ %s ]', mod_id, fol_parent )
+            rlib:log( RLIB_LOG_DEBUG, '[ %s ] created datafolder parent [ %s ]', mod_id, fol_parent )
         end
 
         if not file.Exists( fol_parent .. '/' .. fol_sub, 'DATA' ) then
             file.CreateDir( fol_parent .. '/' .. fol_sub )
-            base:log( RLIB_LOG_DEBUG, '[ %s ] created datafolder sub [ %s ]', mod_id, fol_sub )
+            rlib:log( RLIB_LOG_DEBUG, '[ %s ] created datafolder sub [ %s ]', mod_id, fol_sub )
         end
     end
 
@@ -596,22 +674,26 @@ function rcore:modules_storage( source )
     end
 
 end
-rhook.new.gmod( 'PostGamemodeLoaded', 'rcore_modules_storage', function( source ) rcore:modules_storage( source ) end )
+rhook.new.gmod( 'PostGamemodeLoaded', 'rcore_modules_storage', function( source ) base:modules_storage( source ) end )
 
 /*
-    modules > precache
+*   modules > precache
+*
+*   precache any valid models and sounds associated to entities
+*
+*   @param  : tbl source
 */
 
-function rcore:Precache( source )
+function base:Precache( source )
     if source and not istable( source ) then
-        base:log( 2, 'cannot find entities for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot find entities for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
-    source = source or rcore.modules
+    source = source or base.modules
 
     /*
-        precache various items such as sounds, models, particles
+    *   precache various items such as sounds, models, particles
     */
 
     for v in helper.get.data( source ) do
@@ -622,90 +704,94 @@ function rcore:Precache( source )
             if isfunction( m ) then continue end
 
             /*
-                models > string
+            *   models > string
             */
 
             if isstring( m.model ) or isstring( m.mdl ) then
                 local src_mdl = isstring( m.model ) and m.model or isstring( m.mdl ) and m.mdl
-                base.register:model( src_mdl, true )
+                rlib.register:model( src_mdl, true )
             end
 
             /*
-                models > table
+            *   models > table
             */
 
             if istable( m.model ) or istable( m.mdl ) then
                 local src_mdl = istable( m.model ) and m.model or istable( m.mdl ) and m.mdl
                 for s in helper.get.data( src_mdl ) do
-                    base.register:model( s, true )
+                    rlib.register:model( s, true )
                 end
             end
 
             /*
-                sounds > string
+            *   sounds > string
             */
 
             if isstring( m.sound ) or isstring( m.snd ) then
                 local src_snd = isstring( m.sound ) and m.sound or isstring( m.snd ) and m.snd
-                base.register:sound( src_snd )
+                rlib.register:sound( src_snd )
             end
 
             /*
-                sounds > table
+            *   sounds > table
             */
 
             if istable( m.sound ) or istable( m.snd ) then
                 local src_snd = istable( m.sound ) and m.sound or istable( m.snd ) and m.snd
                 for s in helper.get.data( src_snd ) do
-                    base.register:sound( s )
+                    rlib.register:sound( s )
                 end
             end
 
             /*
-                particles > string
+            *   particles > string
             */
 
             if isstring( m.particles ) or isstring( m.ptc ) then
                 local src_ptc = isstring( m.particles ) and m.particles or isstring( m.ptc ) and m.ptc
-                base.register:particle( src_ptc )
+                rlib.register:particle( src_ptc )
             end
 
             /*
-                particles > table
+            *   particles > table
             */
 
             if istable( m.particles ) or istable( m.ptc ) then
                 local src_ptc = istable( m.particles ) and m.particles or istable( m.ptc ) and m.ptc
                 for s in helper.get.data( src_ptc ) do
-                    base.register:particle( s )
+                    rlib.register:particle( s )
                 end
             end
 
             /*
-                particles > precache > table
+            *   particles > precache > table
             */
 
             if istable( m.particles_pc ) or istable( m.ptc_pc ) then
                 local src_ptc = istable( m.particles_pc ) and m.particles_pc or istable( m.ptc_pc ) and m.ptc_pc
                 for s in helper.get.data( src_ptc ) do
-                    base.register:particle( s )
+                    rlib.register:particle( s )
                 end
             end
 
         end
     end
 end
-rhook.new.gmod( 'PostGamemodeLoaded', 'rcore_modules_precache', function( source ) rcore:Precache( source ) end )
+rhook.new.gmod( 'PostGamemodeLoaded', 'rcore_modules_precache', function( source ) base:Precache( source ) end )
 
 /*
-    modules > dependency check
+*   modules > dependency check
+*
+*   check to see if a module has the proper dependencies
+*
+*   @param  : tbl source
 */
 
 local function module_dependencies( source )
-    source = source or rcore.modules
+    source = source or base.modules
 
     if not source or ( source and not istable( source ) ) then
-        base:log( 2, 'cannot check dependency for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot check dependency for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
@@ -716,14 +802,14 @@ local function module_dependencies( source )
             for m in helper.get.data( v.dependencies ) do
                 local name = isstring( m.name ) and m.name or 'unspecified dependency name'
                 if not m.check then
-                    base:log( 2, '[ %s ] failed dependency check missing func [ %s ]', v.id, name )
+                    rlib:log( 2, '[ %s ] failed dependency check missing func [ %s ]', v.id, name )
                     continue
                 end
                 local has_depen = m.check( )
                 if has_depen then
-                    base:log( RLIB_LOG_DEBUG, '[ %s ] found dependency [ %s ]', v.id, name )
+                    rlib:log( RLIB_LOG_DEBUG, '[ %s ] found dependency [ %s ]', v.id, name )
                 else
-                    base:log( 2, '[ %s ] failed or missing dependency [ %s ]', v.id, name )
+                    rlib:log( 2, '[ %s ] failed or missing dependency [ %s ]', v.id, name )
                 end
             end
         end
@@ -732,17 +818,24 @@ end
 rhook.new.gmod( 'PostGamemodeLoaded', 'rcore_modules_dependencies', module_dependencies )
 
 /*
-    module > register > content
+*   module > register > content
+*
+*   register each workshop assocaited to a module
+*   mounts fastdl content
+*
+*   @assoc  : modules.load.post
+*
+*   @param  : tbl source
 */
 
 local function module_register_content( source )
 
     if source and not istable( source ) then
-        base:log( 2, 'cannot register workshops for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot register workshops for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
-    source = source or rcore.modules
+    source = source or base.modules
 
     for v in helper.get.data( source ) do
 
@@ -750,6 +843,12 @@ local function module_register_content( source )
 
         /*
             workshop resources
+
+            determined through the module manifest file.
+
+            defined in module manifest
+            :   MODULE.ws_enabled   ( bool )
+            :   MODULE.ws_lst       ( tbl )
         */
 
         local ws_val = v.ws_lst or v.workshops or v.workshop
@@ -766,22 +865,22 @@ local function module_register_content( source )
             for m in helper.get.data( src ) do
                 if SERVER then
                     resource.AddWorkshop( m )
-                    base:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( v.id ), m )
+                    rlib:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( v.id ), m )
                 elseif CLIENT then
                     steamworks.FileInfo( m, function( res )
                         if res and res.id then
                             steamworks.DownloadUGC( tostring( res.id ), function( name, f )
                                 game.MountGMA( name or '' )
                                 local size = res.size / 1024
-                                base:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( v.id ), res.title, math.Round( size ) )
+                                rlib:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( v.id ), res.title, math.Round( size ) )
                             end )
                         end
                     end )
                 end
 
-                base.w[ m ]         = { }
-                base.w[ m ].id      = m
-                base.w[ m ].src     = v.id or 'unknown'
+                rlib.w[ m ]         = { }
+                rlib.w[ m ].id      = m
+                rlib.w[ m ].src     = v.id or 'unknown'
             end
         end
 
@@ -806,7 +905,7 @@ local function module_register_content( source )
                     local folder            = m .. '/' .. module_folder
                     storage.data.recurv( v.id, folder, 'GAME' )
 
-                    base:log( RLIB_LOG_FASTDL, '+ %s » [ %s ]', v.id, folder )
+                    rlib:log( RLIB_LOG_FASTDL, '+ %s » [ %s ]', v.id, folder )
                 end
             end
 
@@ -820,7 +919,7 @@ local function module_register_content( source )
                     for _, f in pairs( fonts ) do
                         local src = string.format( 'resource/fonts/%s.ttf', f )
                         resource.AddSingleFile( src )
-                        base:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
                     end
                 end
             end
@@ -835,7 +934,7 @@ local function module_register_content( source )
                     for _, f in pairs( fonts ) do
                         local src = string.format( 'resource/fonts/%s.ttf', f )
                         resource.AddSingleFile( src )
-                        base:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', v.id, src )
                     end
                 end
             end
@@ -847,34 +946,45 @@ end
 rhook.new.rlib( 'rcore_modules_load_post', 'rcore_modules_res_register', module_register_content )
 
 /*
-    module > register > particles
+*   module > register > particles
+*
+*   registers particles for each module
+*   particles should be defined in the module manifest file
+*       :   MODULE.particles
+*
+*   entries that include .pcf at the end will mount using game.AddParticles
+*   entries without the pcf extension will use PrecacheParticleSystem
+*
+*   @assoc  : modules.load.post
+*
+*   @param  : tbl source
 */
 
 local function module_register_ptc( source )
 
     if source and not istable( source ) then
-        base:log( 2, 'cannot register particles for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot register particles for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
-    source = source or rcore.modules
+    source = source or base.modules
 
     for v in helper.get.data( source ) do
 
         if not v.id or not v.enabled then continue end
 
         /*
-            workshop resources
-            determined through the module manifest file.
+        *   workshop resources
+        *   determined through the module manifest file.
         */
 
         if v.particles then
             if istable( v.particles ) then
                 for m in helper.get.data( v.particles ) do
-                    base.register:particle( m )
+                    rlib.register:particle( m )
                 end
             elseif isstring( v.particles ) then
-                base.register:particle( v.particles )
+                rlib.register:particle( v.particles )
             end
         end
     end
@@ -883,34 +993,42 @@ end
 rhook.new.rlib( 'rcore_modules_load_post', 'rcore_modules_ptc_register', module_register_ptc )
 
 /*
-    module > register > sounds
+*   module > register > sounds
+*
+*   registers sounds for each module
+*   particles should be defined in the module manifest file
+*       :   MODULE.sounds
+*
+*   @assoc  : modules.load.post
+*
+*   @param  : tbl source
 */
 
 local function module_register_snds( source )
 
     if source and not istable( source ) then
-        base:log( 2, 'cannot register particles for modules, bad table\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot register particles for modules, bad table\n%s', debug.traceback( ) )
         return
     end
 
-    source = source or rcore.modules
+    source = source or base.modules
 
     for v in helper.get.data( source ) do
 
         if not v.id or not v.enabled then continue end
 
         /*
-            workshop resources
-            determined through the module manifest file.
+        *   workshop resources
+        *   determined through the module manifest file.
         */
 
         if v.sounds then
             if istable( v.sounds ) then
                 for m in helper.get.data( v.sounds ) do
-                    base.register:particle( m )
+                    rlib.register:particle( m )
                 end
             elseif isstring( v.sounds ) then
-                base.register:particle( v.sounds )
+                rlib.register:particle( v.sounds )
             end
         end
     end
@@ -919,21 +1037,27 @@ end
 rhook.new.rlib( 'rcore_modules_load_post', 'rcore_modules_snd_register', module_register_snds )
 
 /*
-    library > mount content
+*   library > mount content
+*
+*   mounts library workshops and fastdl
 */
 
 local function lib_mount_content( )
 
     /*
         fastdl
+
+        determines if the script should handle content related to the script via Steam Workshop or FastDL.
     */
 
     if SERVER then
 
-        if rcore.settings.fastdl_enabled then
+        if base.settings.fastdl_enabled then
 
             /*
                 fonts
+
+                these fonts only load resource/fonts/rlib/
             */
 
             if istable( mf.fonts ) then
@@ -942,7 +1066,7 @@ local function lib_mount_content( )
                     for _, f in pairs( fonts ) do
                         local src = string.format( 'resource/fonts/%s.ttf', f )
                         resource.AddSingleFile( src )
-                        base:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
+                        rlib:log( RLIB_LOG_FONT, '+ %s » [ %s ]', 'font', src )
                     end
                 end
             end
@@ -953,7 +1077,7 @@ local function lib_mount_content( )
 
             local path_base = mf.folder or ''
 
-            for v in base.h.get.data( mf.fastdl ) do
+            for v in rlib.h.get.data( mf.fastdl ) do
                 local r_path = v .. '/' .. path_base
                 if v == 'resource' then
                     r_path = v .. '/fonts'
@@ -961,19 +1085,19 @@ local function lib_mount_content( )
 
                 local r_files, r_dirs = file.Find( r_path .. '/*', 'GAME' )
 
-                for File in base.h.get.data( r_files, true ) do
+                for File in rlib.h.get.data( r_files, true ) do
                     local r_dir_inc = r_path .. '/' .. File
                     resource.AddFile( r_dir_inc )
-                    base:log( RLIB_LOG_FASTDL, '+ %s', r_dir_inc )
+                    rlib:log( RLIB_LOG_FASTDL, '+ %s', r_dir_inc )
                 end
 
-                for d in base.h.get.data( r_dirs ) do
+                for d in rlib.h.get.data( r_dirs ) do
                     local r_subpath = r_path .. '/' .. d
                     local r_subfiles, r_subdirs = file.Find( r_subpath .. '/*', 'GAME' )
                     for _, subfile in SortedPairs( r_subfiles ) do
                         local r_path_subinc = r_subpath .. '/' .. subfile
                         resource.AddFile( r_path_subinc )
-                        base:log( RLIB_LOG_FASTDL, '+ %s', r_path_subinc )
+                        rlib:log( RLIB_LOG_FASTDL, '+ %s', r_path_subinc )
                     end
                 end
             end
@@ -982,14 +1106,19 @@ local function lib_mount_content( )
     end
 
     /*
-        workshop
+    *   workshop
+    *
+    *   determines if the script should handle content related to the script via Steam Workshop or FastDL.
+    *
+    *       : settings.useworkshop MUST be true
+    *       : manifest.bWorkshops [ table ] must contain valid steam collection ids
     */
 
     if cfg.ws_enabled and mf.workshops then
-        for v in base.h.get.data( mf.workshops ) do
+        for v in rlib.h.get.data( mf.workshops ) do
             if SERVER then
                 resource.AddWorkshop( v )
-                base:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( base.manifest.name ), v )
+                rlib:log( RLIB_LOG_WS, '+ %s » [ %s ]', tostring( rlib.manifest.name ), v )
             else
                 if CLIENT then
                     steamworks.FileInfo( v, function( res )
@@ -998,39 +1127,45 @@ local function lib_mount_content( )
                             steamworks.DownloadUGC( tostring( ws_id ), function( name, f )
                                 game.MountGMA( name or '' )
                                 local size = res.size / 1024
-                                base:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( base.manifest.name ), res.title, math.Round( size ) )
+                                rlib:log( RLIB_LOG_WS, '+ %s [ %s ] » %i KB', tostring( rlib.manifest.name ), res.title, math.Round( size ) )
                             end )
                         end
                     end )
                 end
             end
 
-            base.w[ v ]         = { }
-            base.w[ v ].id      = v
-            base.w[ v ].src     = mf.name or 'unknown'
+            rlib.w[ v ]         = { }
+            rlib.w[ v ].id      = v
+            rlib.w[ v ].src     = mf.name or 'unknown'
         end
     else
-        base:log( RLIB_LOG_WARN, mf.name .. ' workshop mounting disabled'  )
+        rlib:log( RLIB_LOG_WARN, mf.name .. ' workshop mounting disabled'  )
     end
 
 end
 rhook.new.rlib( 'rcore_onloaded', 'rcore_mount_lib', lib_mount_content )
 
 /*
-    modules > storage > register defaults
+*   modules > storage > register defaults
+*
+*   register default storage tables
+*
+*   @ex     : rhook.run.rlib( 'rcore_modules_storage_struct', mod_id )
+*
+*   @param  : tbl source
 */
 
 local function storage_struct_defs( mod_id )
 
     if not mod_id then
-        base:log( 2, 'cannot create def storage tables for module, bad mod id\n%s', debug.traceback( ) )
+        rlib:log( 2, 'cannot create def storage tables for module, bad mod id\n%s', debug.traceback( ) )
         return
     end
 
-    local source = rcore.modules
+    local source = base.modules
 
     /*
-        storage > sh > rcore
+    *   storage > sh > base
     */
 
     local storage_sh_b =
@@ -1040,7 +1175,6 @@ local function storage_struct_defs( mod_id )
         action              = { },
         usrdef              = { },
         cc                  = { },
-        rcc                 = { },
         ent                 = { },
         binds               = { },
         dev                 = { },
@@ -1057,7 +1191,7 @@ local function storage_struct_defs( mod_id )
     end
 
     /*
-        storage > cl > rcore
+    *   storage > cl > base
     */
 
     if CLIENT then
@@ -1074,7 +1208,7 @@ local function storage_struct_defs( mod_id )
     end
 
     /*
-        storage > sh > cfg
+    *   storage > sh > cfg
     */
 
     local storage_sh_c =
@@ -1134,19 +1268,32 @@ end
 rhook.new.rlib( 'rcore_modules_storage_struct', storage_struct_defs )
 
 /*
-    register module
+*   register module
+*
+*   registers a module with the gamemode
+*
+*   @ex     : path => modules/tools, mod => sh_tools_manifest.lua
+*
+*   @param  : str path
+*   @param  : str mod
+*   @param  : bool b_isext
 */
 
-function rcore:Register( path, mod, b_isext )
+function base:Register( path, mod, b_isext )
 
     if not isstring( path ) or not mod then
-        base:log( 2, lang( 'logs_rcore_mnfst_err' ) )
+        rlib:log( 2, lang( 'logs_rcore_mnfst_err' ) )
         sys.modules.err = sys.modules.err + 1
         return
     end
 
     /*
-        define > module
+    *   define > module
+    *
+    *   var( _ENV )         : blank table
+    *   var( manifest )     : modules/base/sh_env.lua
+    *   var( plugins )      : modules/base/plugins/sh_env.lua
+    *   var( tmp_id )       : sh_env
     */
 
     local _ENV              = { }
@@ -1155,7 +1302,7 @@ function rcore:Register( path, mod, b_isext )
     local tmp_id            = mod:gsub( '.lua', '' )
 
                             if not tmp_id then
-                                base:log( 2, lang( 'logs_rcore_id_err' ) )
+                                rlib:log( 2, lang( 'logs_rcore_id_err' ) )
                                 sys.modules.err = sys.modules.err + 1
                                 return
                             end
@@ -1164,49 +1311,51 @@ function rcore:Register( path, mod, b_isext )
     smt                     = setmetatable( _ENV, { __index = _G } )
 
                             if not smt or ( type( smt ) ~= 'table' ) then
-                                base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_err' ) )
+                                rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_err' ) )
                                 sys.modules.err = sys.modules.err + 1
                                 return
                             else
                                 if sys.modules.registered <= 0 then
-                                    base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_ok' ) )
+                                    rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mt_ok' ) )
                                 end
                             end
 
     /*
-        compile env / manifest
-
-        var( manifest )     : modules/base/sh_env.lua
+    *   compile env / manifest
+    *
+    *   var( manifest )     : modules/base/sh_env.lua
     */
 
     local module_exec       = CompileFile( manifest )
     sys.modules.total       = sys.modules.total + 1
 
-                            if not module_exec or not base:isfunc( module_exec ) then
+                            if not module_exec or not rlib:isfunc( module_exec ) then
                                 sys.modules.err = sys.modules.err + 1
-                                base:log( 2, lang( 'logs_rcore_func_err', mod ) )
+                                rlib:log( 2, lang( 'logs_rcore_func_err', mod ) )
                                 return
                             end
 
     /*
-        module not enabled
+    *   module not enabled
     */
 
     if not smt.MODULE.enabled then
-        base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mod_disabled', smt.MODULE.id ) )
+        rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mod_disabled', smt.MODULE.id ) )
         sys.modules.disabled = sys.modules.disabled + 1
         return
     end
 
     /*
-        set environment > MODULE
+    *   set environment > MODULE
+    *
+    *   must be executed before plugins can be registered
     */
 
     debug.setfenv( module_exec, _ENV )
     module_exec( )
 
     /*
-        plugins
+    *   plugins
     */
 
     if file.Exists( plugins, 'LUA' ) then
@@ -1218,15 +1367,14 @@ function rcore:Register( path, mod, b_isext )
     end
 
     /*
-        set module values
-
-        mod.modules[ 'module_id' ]
-        mod.modules[ 'lunera' ]
+    *   set module values
+    *
+    *   mod.modules[ 'module_id' ]
+    *   mod.modules[ 'lunera' ]
     */
 
     local mod_id                                = smt.MODULE.id
     self.modules[ mod_id ]                      = _ENV.MODULE
-    self.modules[ mod_id ].__                   = { }
     self.modules[ mod_id ].id                   = mod_id
     self.modules[ mod_id ].loadtime             = CurTime( )
     self.modules[ mod_id ].path                 = path
@@ -1237,33 +1385,33 @@ function rcore:Register( path, mod, b_isext )
     self.modules[ mod_id ]._cache               = { }
     self.modules[ mod_id ]._cache.mats          = { }
 
-    --base.l[ mod_id ]                    = smt.MODULE.language
+    --rlib.l[ mod_id ]                    = smt.MODULE.language
 
     sys.modules.registered = sys.modules.registered + 1
-    base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mnfst_ok', mod ) )
+    rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_mnfst_ok', mod ) )
 
     /*
-        require
+    *   require
     */
 
     if istable( smt.MODULE.req ) then
         for k, v in pairs( smt.MODULE.req ) do
             pcall( require, v )
-            base:log( RLIB_LOG_SYSTEM, '+ library %s', v )
+            rlib:log( RLIB_LOG_SYSTEM, '+ library %s', v )
         end
     elseif isstring( smt.MODULE.req ) then
         pcall( require, smt.MODULE.req )
-        base:log( RLIB_LOG_SYSTEM, '+ library %s', smt.MODULE.req )
+        rlib:log( RLIB_LOG_SYSTEM, '+ library %s', smt.MODULE.req )
     end
 
     /*
-        create storage tables > shared
+    *   create storage tables > shared
     */
 
     if smt.MODULE.storage and istable( smt.MODULE.storage ) then
         for k, v in pairs( smt.MODULE.storage ) do
             self.modules[ mod_id ][ k ] = v
-            base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
+            rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
         end
         storage.garbage( 'module_loader_storage', { smt.MODULE.storage } )
     else
@@ -1271,65 +1419,65 @@ function rcore:Register( path, mod, b_isext )
     end
 
     /*
-        create storage tables > client
+    *   create storage tables > client
     */
 
     if CLIENT and smt.MODULE.storage_cl and istable( smt.MODULE.storage_cl ) then
         for k, v in pairs( smt.MODULE.storage_cl ) do
             self.modules[ mod_id ][ k ] = v
-            base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
+            rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
         end
     end
 
     /*
-        create storage tables > server
+    *   create storage tables > server
     */
 
     if SERVER and istable( smt.MODULE.storage_sv ) then
         for k, v in pairs( smt.MODULE.storage_sv ) do
             self.modules[ mod_id ][ k ] = v
-            base:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
+            rlib:log( RLIB_LOG_DEBUG, lang( 'logs_rcore_storage_ok', smt.MODULE.id, tostring( k ) ) )
         end
     end
 
     /*
-        add single
+    *   add single
     */
 
     if SERVER and istable( smt.MODULE.addsingle ) then
         for k, v in ipairs( smt.MODULE.addsingle ) do
             resource.AddSingleFile( v )
-            base:log( RLIB_LOG_FASTDL, '+ file [ %s ]', v )
+            rlib:log( RLIB_LOG_FASTDL, '+ file [ %s ]', v )
         end
     end
 
     /*
-        addfile
+    *   addfile
     */
 
     if SERVER and istable( smt.MODULE.addfile ) then
         for k, v in ipairs( smt.MODULE.addfile ) do
             resource.AddFile( v )
-            base:log( RLIB_LOG_FASTDL, '+ single [ %s ]', v )
+            rlib:log( RLIB_LOG_FASTDL, '+ single [ %s ]', v )
         end
     end
 
     /*
-        create default storage tables
-        these tables will be automatically created for every module to help save
-        on repetitiveness of declaring these in the module manifest file
+    *   create default storage tables
+    *   these tables will be automatically created for every module to help save
+    *   on repetitiveness of declaring these in the module manifest file
     */
 
     rhook.run.rlib( 'rcore_modules_storage_struct', mod_id )
 
     /*
-        module sys tbl
+    *   module sys tbl
     */
 
     smt.MODULE.sys = smt.MODULE.sys or { }
 
     /*
-        create log folders
+    *   create log folders
     */
 
     if SERVER and smt.MODULE.logging then
@@ -1338,7 +1486,7 @@ function rcore:Register( path, mod, b_isext )
     end
 
     /*
-        create datafolders
+    *   create datafolders
     */
 
     if SERVER and smt.MODULE.datafolder and istable( smt.MODULE.datafolder ) then
@@ -1353,23 +1501,23 @@ function rcore:Register( path, mod, b_isext )
     end
 
     /*
-        register calls
+    *   register calls
     */
 
     if smt.MODULE.calls then
-        base.calls:register( rcore, smt.MODULE.calls )
+        rlib.calls:register( rcore, smt.MODULE.calls )
     end
 
     /*
-        register resources
+    *   register resources
     */
 
     if smt.MODULE.resources then
-        base.resources:register( rcore, mod_id, smt.MODULE.resources, smt.MODULE.precache or false )
+        rlib.resources:register( rcore, mod_id, smt.MODULE.resources, smt.MODULE.precache or false )
     end
 
     /*
-        sql tables
+    *   sql tables
     */
 
     if SERVER and ( smt.MODULE.ext or smt.MODULE.dbconn ) then
@@ -1378,7 +1526,7 @@ function rcore:Register( path, mod, b_isext )
     end
 
     /*
-        load other files in module after good manifest found
+    *   load other files in module after good manifest found
     */
 
     self:autoloader_configs( path, mod_id )
@@ -1389,7 +1537,7 @@ function rcore:Register( path, mod, b_isext )
     */
 
     if smt.MODULE.demo or smt.MODULE.demomode then
-        base:log( 3, lang( 'logs_rcore_demomode', smt.MODULE.id ) )
+        rlib:log( 3, lang( 'logs_rcore_demomode', smt.MODULE.id ) )
     end
 
     /*
@@ -1400,7 +1548,7 @@ function rcore:Register( path, mod, b_isext )
         timex.simple( 1, function( )
             local name = pid( 'rnet_register', mod_id )
             if not rhook.exists( name ) then
-                base:log( RLIB_LOG_ERR, 'missing rnet hook for module [ %s ] [ %s ]', mod_id, name )
+                rlib:log( RLIB_LOG_ERR, 'missing rnet hook for module [ %s ] [ %s ]', mod_id, name )
             end
             rhook.run.gmod( name )
         end )
@@ -1413,7 +1561,7 @@ function rcore:Register( path, mod, b_isext )
     */
 
     if CLIENT and smt.MODULE.materials then
-        base.m:register_v1( smt.MODULE.materials, mod_id )
+        rlib.m:register_v1( smt.MODULE.materials, mod_id )
     end
 
     /*
@@ -1421,7 +1569,7 @@ function rcore:Register( path, mod, b_isext )
     */
 
     if CLIENT and smt.MODULE.mats then
-        base.m:register( smt.MODULE )
+        rlib.m:register( smt.MODULE )
     end
 
     /*
@@ -1431,7 +1579,7 @@ function rcore:Register( path, mod, b_isext )
     if CLIENT then
         local name = pid( 'fonts_register', mod_id )
         if not rhook.exists( name ) then
-            base:log( RLIB_LOG_ERR, 'missing font registration hook for module [ %s ]', mod_id )
+            rlib:log( RLIB_LOG_ERR, 'missing font registration hook for module [ %s ]', mod_id )
         end
         rhook.run.rlib( name )
     end
@@ -1443,33 +1591,39 @@ function rcore:Register( path, mod, b_isext )
     _G[ mod_id ] = nil
 
 end
-rhook.new.rlib( 'rcore_modules_register', rcore.Register )
+rhook.new.rlib( 'rcore_modules_register', base.Register )
 
 /*
-    modules > initialize
+*   modules > initialize
+*
+*   start loading all required modules
 */
 
-function rcore:modules_initialize( pl )
+function base:modules_initialize( pl )
     if helper.ok.ply( pl ) or access:bIsConsole( pl ) then
-        base:log( RLIB_LOG_SYSTEM, 'Reloading modules, please wait ...' )
+        rlib:log( RLIB_LOG_SYSTEM, 'Reloading modules, please wait ...' )
     end
 
     rhook.run.rlib( 'rcore_modules_load_pre' )
 
     autoloader_manifest_modules( )
 
-    base.calls:load     (   )
+    rlib:log( 0 )
+    rlib.calls:load( )
+    rlib:log( 0 )
 
-    base:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_total',        sys.modules.total             ) )
-    base:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_active',       sys.modules.registered        ) )
-    base:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_err',          sys.modules.err               ) )
-    base:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_disabled',     sys.modules.disabled          ) )
-    base:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_loadtime',     timex.secs.ms( sys.loadtime ) ) )
+    rlib:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_total',        sys.modules.total             ) )
+    rlib:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_active',       sys.modules.registered        ) )
+    rlib:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_err',          sys.modules.err               ) )
+    rlib:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_disabled',     sys.modules.disabled          ) )
+    rlib:log( RLIB_LOG_SYSTEM, lang( 'logs_modules_loadtime',     timex.secs.ms( sys.loadtime ) ) )
 
-    rhook.run.rlib( 'rcore_modules_load_post', rcore.modules )
+    rlib:log( 0 )
+
+    rhook.run.rlib( 'rcore_modules_load_post', base.modules )
     rhook.run.rlib( 'rcore_onloaded' )
 
 end
-rhook.new.rlib( 'rcore_loader_post', 'rcore_modules_initialize', rcore.modules_initialize )
-rhook.new.gmod( 'OnReloaded', 'rcore_modules_onreload', rcore.modules_initialize )
-rcc.new.rlib( 'rlib_modules_reload', rcore.modules_initialize )
+rhook.new.rlib( 'rcore_loader_post', 'rcore_modules_initialize', base.modules_initialize )
+rhook.new.gmod( 'OnReloaded', 'rcore_modules_onreload', base.modules_initialize )
+rcc.new.rlib( 'rlib_modules_reload', base.modules_initialize )

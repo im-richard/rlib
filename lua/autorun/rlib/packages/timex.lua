@@ -40,7 +40,7 @@ local pf                    = mf.prefix
 local script                = mf.name
 
 /*
-    module declarations
+*   module declarations
 */
 
 local dcat                  = 9
@@ -108,14 +108,14 @@ end
 module( 'timex', package.seeall )
 
 /*
-    local declarations
+*   local declarations
 */
 
 local pkg                   = timex
 local pkg_name              = _NAME or 'timex'
 
 /*
-    pkg declarations
+*   pkg declarations
 */
 
 local manifest =
@@ -127,7 +127,7 @@ local manifest =
 }
 
 /*
-    required tables
+*   required tables
 */
 
 settings                    = settings  or { }
@@ -136,11 +136,9 @@ secs                        = secs      or { }
 ts                          = ts        or { }
 when                        = when      or { }
 bw                          = bw        or { }
-utime                       = utime     or { }
-dt                          = dt        or { }
 
 /*
- 	pf > getid
+*	pf > getid
 */
 
 local function gid( id )
@@ -224,12 +222,12 @@ end
 */
 
 /*
-    timex > exists
-
-    checks to see if a timer exists
-
-    @param  : str id
-    @return : bool
+*   timex > exists
+*
+*   checks to see if a timer exists
+*
+*   @param  : str id
+*   @return : bool
 */
 
 function exists( id )
@@ -239,11 +237,11 @@ end
 valid = exists
 
 /*
-    timex > expire
-
-    destroys a timer if it exists
-
-    @param  : str id
+*   timex > expire
+*
+*   destroys a timer if it exists
+*
+*   @param  : str id
 */
 
 function expire( id )
@@ -258,11 +256,11 @@ kill        = expire
 destroy     = expire
 
 /*
-    timex > pause
-
-    pauses a timer if it exists
-
-    @param  : str id
+*   timex > pause
+*
+*   pauses a timer if it exists
+*
+*   @param  : str id
 */
 
 function pause( id )
@@ -276,13 +274,13 @@ end
 stop = pause
 
 /*
-    timex > check paused
-
-    check if timer is currently paused.
-    by default, paused timers return negative values.
-    may not be the most technical way, but works
-
-    @param  : str id
+*   timex > check paused
+*
+*   check if timer is currently paused.
+*   by default, paused timers return negative values.
+*   may not be the most technical way, but works
+*
+*   @param  : str id
 */
 
 function paused( id )
@@ -296,14 +294,14 @@ function paused( id )
 end
 
 /*
-    timex > adjust
-
-    modifies a timer
-
-    @param  : str id
-    @param  : int delay
-    @param  : int reps
-    @param  : func fn
+*   timex > adjust
+*
+*   modifies a timer
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int reps
+*   @param  : func fn
 */
 
 function adjust( id, delay, reps, fn )
@@ -316,11 +314,11 @@ function adjust( id, delay, reps, fn )
 end
 
 /*
-    timex > resume
-
-    continues a timer where it left off
-
-    @param  : str id
+*   timex > resume
+*
+*   continues a timer where it left off
+*
+*   @param  : str id
 */
 
 function resume( id )
@@ -333,13 +331,13 @@ end
 start = resume
 
 /*
-    timex > remains
-
-    returns the time in seconds remaining on an existing timer
-
-    @param  : str id
-    @param  : bool b
-    @return : int
+*   timex > remains
+*
+*   returns the time in seconds remaining on an existing timer
+*
+*   @param  : str id
+*   @param  : bool b
+*   @return : int
 */
 
 function remains( id, b )
@@ -351,12 +349,12 @@ end
 left = remains
 
 /*
-    timex > reps
-
-    returns the number of reps left on a timer
-
-    @param  : str id
-    @return : int
+*   timex > reps
+*
+*   returns the number of reps left on a timer
+*
+*   @param  : str id
+*   @return : int
 */
 
 function reps( id )
@@ -368,15 +366,15 @@ end
 life = reps
 
 /*
-    timex > only
-
-    creates a timer. will force the timer to first expire if
-    one already exists with that same id
-
-    @param  : str id
-    @param  : int delay
-    @param  : int rep
-    @param  : func fn
+*   timex > only
+*
+*   creates a timer. will force the timer to first expire if
+*   one already exists with that same id
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int rep
+*   @param  : func fn
 */
 
 function only( id, delay, rep, fn )
@@ -395,16 +393,16 @@ function only( id, delay, rep, fn )
 end
 
 /*
-    timex > create
-
-    create a detailed timer
-
-    @todo   : add timer logging
-
-    @param  : str id
-    @param  : int delay
-    @param  : int repscnt
-    @param  : func fn
+*   timex > create
+*
+*   create a detailed timer
+*
+*   @todo   : add timer logging
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int repscnt
+*   @param  : func fn
 */
 
 function create( id, delay, repscnt, fn )
@@ -422,14 +420,14 @@ end
 new = create
 
 /*
-    timex > unique
-
-    create a detailed timer only if it currently doesnt exist
-
-    @param  : str id
-    @param  : int delay
-    @param  : int repscnt
-    @param  : func fn
+*   timex > unique
+*
+*   create a detailed timer only if it currently doesnt exist
+*
+*   @param  : str id
+*   @param  : int delay
+*   @param  : int repscnt
+*   @param  : func fn
 */
 
 function unique( id, delay, repscnt, fn )
@@ -450,18 +448,18 @@ end
 uni = unique
 
 /*
-    timex > simple
-
-    create a simple timer.
-    args a, b can be mixed to include or exclude a string id ( used for the lib calls function )
-
-    @usage  : timex.simple( pf .. 'action_name', 5, function( ) end )
-    @usage  : timex.simple( 5, function( ) end )
-
-    @todo   : add timer logging for c_id
-    @param  : str, int a
-    @param  : int b
-    @param  : func fn
+*   timex > simple
+*
+*   create a simple timer.
+*   args a, b can be mixed to include or exclude a string id ( used for the lib calls function )
+*
+*   @usage  : timex.simple( pf .. 'action_name', 5, function( ) end )
+*   @usage  : timex.simple( 5, function( ) end )
+*
+*   @todo   : add timer logging for c_id
+*   @param  : str, int a
+*   @param  : int b
+*   @param  : func fn
 */
 
 function simple( a, b, fn )
@@ -478,11 +476,11 @@ function simple( a, b, fn )
 end
 
 /*
-    rnet > source
-
-    returns source tbl for timers
-
-    @return : tbl
+*   rnet > source
+*
+*   returns source tbl for timers
+*
+*   @return : tbl
 */
 
 function source( )
@@ -490,13 +488,13 @@ function source( )
 end
 
 /*
-    timex > list
-
-    returns a list of registered timers that are active for a complete list of both active and non, use
-    the concommand rlib.calls
-
-    @param  : bool bActiveOnly
-    @return : tbl, int
+*   timex > list
+*
+*   returns a list of registered timers that are active for a complete list of both active and non, use
+*   the concommand rlib.calls
+*
+*   @param  : bool bActiveOnly
+*   @return : tbl, int
 */
 
 function list( bActiveOnly )
@@ -523,12 +521,12 @@ function list( bActiveOnly )
 end
 
 /*
-    timex > count
-
-    returns total number of timers
-
-    @param  : bool bActiveOnly
-    @return : int
+*   timex > count
+*
+*   returns total number of timers
+*
+*   @param  : bool bActiveOnly
+*   @return : int
 */
 
 function count( bActiveOnly )
@@ -545,15 +543,15 @@ function count( bActiveOnly )
 end
 
 /*
-    clean time
-
-    strips zeros out of the front of times displayed
-
-    @ex     : timex.cleantime( os.date( '%I:%M %p' ) )
-            :   06:50 am changes to 6:50 am
-
-    @param  : str str
-    @return : str
+*   clean time
+*
+*   strips zeros out of the front of times displayed
+*
+*   @ex     : timex.cleantime( os.date( '%I:%M %p' ) )
+*           :   06:50 am changes to 6:50 am
+*
+*   @param  : str str
+*   @return : str
 */
 
 function cleantime( str )
@@ -568,9 +566,9 @@ function cleantime( str )
 end
 
 /*
-    midnight
-
-    @ex     : timex.midnight( 1 )
+*   midnight
+*
+*   @ex     : timex.midnight( 1 )
 */
 
 function midnight( days )
@@ -579,14 +577,14 @@ end
 when.midnight = midnight
 
 /*
-    when > mins
-
-    returns the timestamp based on x number of minutes in the future
-
-    timex.when.mins( 5 )
-        >   returns time now + 5 minutes in the future
-
-    @ex     : timex.when.mins( 5 )
+*   when > mins
+*
+*   returns the timestamp based on x number of minutes in the future
+*
+*   timex.when.mins( 5 )
+*       >   returns time now + 5 minutes in the future
+*
+*   @ex     : timex.when.mins( 5 )
 */
 
 function when.mins( min )
@@ -597,16 +595,16 @@ function when.mins( min )
 end
 
 /*
-    when > mins > server
-
-    returns the timestamp based on x number of minutes in the future
-
-    @note   : This function returns utilizes SERVER TIME; not client.
-
-    timex.when.mins( 5 )
-        >   returns time now + 5 minutes in the future
-
-    @ex     : timex.when.mins( 5 )
+*   when > mins > server
+*
+*   returns the timestamp based on x number of minutes in the future
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   timex.when.mins( 5 )
+*       >   returns time now + 5 minutes in the future
+*
+*   @ex     : timex.when.mins( 5 )
 */
 
 function when.mins_sv( min )
@@ -618,11 +616,11 @@ function when.mins_sv( min )
 end
 
 /*
-    midnight > until
-
-    returns human readable structured time
-
-    @ex     : timex.midnight_until( 1 )
+*   midnight > until
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight_until( 1 )
 */
 
 function midnight_until( days )
@@ -634,12 +632,12 @@ function midnight_until( days )
 end
 
 /*
-    midnight > human
-
-    returns human readable structured time
-
-    @ex     : timex.midnight( 1 )
-                >  04:07:20     ( 4 hours, 7 minutes until server midnight )
+*   midnight > human
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight( 1 )
+*               >  04:07:20     ( 4 hours, 7 minutes until server midnight )
 */
 
 function midnight_human( days, bSecs )
@@ -654,12 +652,12 @@ function midnight_human( days, bSecs )
 end
 
 /*
-    midnight > human > client
-
-    returns human readable structured time
-
-    @ex     : timex.midnight( 1 )
-                >  04:07:20     ( 4 hours, 7 minutes until server midnight )
+*   midnight > human > client
+*
+*   returns human readable structured time
+*
+*   @ex     : timex.midnight( 1 )
+*               >  04:07:20     ( 4 hours, 7 minutes until server midnight )
 */
 
 function midnight_human_cl( days, bSecs )
@@ -667,19 +665,19 @@ function midnight_human_cl( days, bSecs )
     bSecs                   = helper:val2bool( bSecs )
 
     local daily_time        = rlib.sys.midnight
-    local ts_until          = timex.ts.remains_sv( daily_time or 0 )
+    local ts_until          = timex.ts.remains_sv( daily_time )
     local ts_human          = timex.secs.sh_hms( ts_until, bSecs )
 
     return ts_human
 end
 
 /*
-    seconds > curtime
-
-    compares stored curtime to current and returns time remaining
-
-    @param  : str str
-    @return : str
+*   seconds > curtime
+*
+*   compares stored curtime to current and returns time remaining
+*
+*   @param  : str str
+*   @return : str
 */
 
 function secs.curtime( num )
@@ -688,13 +686,13 @@ function secs.curtime( num )
 end
 
 /*
-    seconds > ctime
-
-    similar to timex.curtime but returns a string with the seconds appended
-
-    @param  : str str
-    @param  : bool bShort
-    @return : str
+*   seconds > ctime
+*
+*   similar to timex.curtime but returns a string with the seconds appended
+*
+*   @param  : str str
+*   @param  : bool bShort
+*   @return : str
 */
 
 function secs.ctime( num, bShort )
@@ -709,17 +707,17 @@ function secs.ctime( num, bShort )
 end
 
 /*
-    seconds > duration
-
-    converts seconds to a human readable format with various different parameters so you can decide
-    on what you want to see.
-
-    @ex     :   timex.secs.duration( 30 )
-    @out    :   20 seconds
-
-    @param  : int i
-    @param  : bool bSLabel
-    @return : str
+*   seconds > duration
+*
+*   converts seconds to a human readable format with various different parameters so you can decide
+*   on what you want to see.
+*
+*   @ex     :   timex.secs.duration( 30 )
+*   @out    :   20 seconds
+*
+*   @param  : int i
+*   @param  : bool bSLabel
+*   @return : str
 */
 
 function secs.duration( i, bSLabel )
@@ -729,22 +727,10 @@ function secs.duration( i, bSLabel )
     if i < 0 then i = 0 end
     i = math.Round( i )
 
-    local years     = floor( ( i - i % 31536000 ) / 31536000 )
-    local weeks     = floor( ( i - i % 604800 ) / 604800 )
     local days      = floor( ( i - i % 86400 ) / 86400 )
     local hours     = floor( ( i - i % 3600 ) / 3600 )
     local minutes   = floor( ( i - i % 60 ) / 60 )
     local seconds   = i
-
-    if weeks >= 52 then
-        local affix = ( not bSLabel and ( years == 1 and 'year' or 'years' ) or 'y' ) or ''
-        return years .. ' ' .. affix
-    end
-
-    if days >= 7 then
-        local affix = ( not bSLabel and ( weeks == 1 and 'week' or 'weeks' ) or 'w' ) or ''
-        return weeks .. ' ' .. affix
-    end
 
     if hours >= 24 then
         local affix = ( not bSLabel and ( days == 1 and 'day' or 'days' ) or 'd' ) or ''
@@ -770,80 +756,17 @@ function secs.duration( i, bSLabel )
 end
 
 /*
-    seconds > human descriptions
-
-    shows time slightly different than actual calculations.
-
-    3600 seconds will show as "60 minutes"
-    3601 seconds will show as "1 hour"
-
-    @ex     :   timex.secs.human( 60 )
-    @out    :   60 minutes
-
-    @param  : int i
-    @param  : bool bSLabel
-    @return : str
-*/
-
-function secs.human( i, bSLabel )
-    local str = ''
-
-    i = tonumber( i ) or 0
-    if i < 0 then i = 0 end
-    i = math.Round( i )
-
-    local years     = floor( ( i - i % 31536000 ) / 31536000 )
-    local weeks     = floor( ( i - i % 604800 ) / 604800 )
-    local days      = floor( ( i - i % 86400 ) / 86400 )
-    local hours     = floor( ( i - i % 3600 ) / 3600 )
-    local minutes   = floor( ( i - i % 60 ) / 60 )
-    local seconds   = i
-
-    if weeks >= 53 then
-        local affix = ( not bSLabel and ( years == 1 and 'year' or 'years' ) or 'y' ) or ''
-        return years .. ' ' .. affix
-    end
-
-    if days >= 8 then
-        local affix = ( not bSLabel and ( weeks == 1 and 'week' or 'weeks' ) or 'w' ) or ''
-        return weeks .. ' ' .. affix
-    end
-
-    if hours >= 25 then
-        local affix = ( not bSLabel and ( days == 1 and 'day' or 'days' ) or 'd' ) or ''
-        return days .. ' ' .. affix
-    end
-
-    if minutes >= 61 then
-        local affix = ( not bSLabel and ( hours == 1 and 'hour' or 'hours' ) or 'h' ) or ''
-        return hours .. ' ' .. affix
-    end
-
-    if seconds >= 61 then
-        local affix = ( not bSLabel and ( minutes == 1 and 'minute' or 'minutes' ) or 'm' ) or ''
-        return minutes .. ' ' .. affix
-    end
-
-    if seconds < 61 then
-        local affix = ( not bSLabel and ( seconds == 1 and 'second' or 'seconds' ) or 's' ) or ''
-        return seconds .. ' ' .. affix
-    end
-
-    return str
-end
-
-/*
-    seconds > merged
-
-    displays a human readable format from seconds which simply displays HH:MM:SS
-    does not support days
-
-    @ex     :   timex.secs.merged( 90 )
-    @out    :   1:30
-                m : s
-
-    @param  : int i
-    @return : str
+*   seconds > merged
+*
+*   displays a human readable format from seconds which simply displays HH:MM:SS
+*   does not support days
+*
+*   @ex     :   timex.secs.merged( 90 )
+*   @out    :   1:30
+*               m : s
+*
+*   @param  : int i
+*   @return : str
 */
 
 function secs.merged( i )
@@ -879,21 +802,21 @@ function secs.merged( i )
 end
 
 /*
-    seconds > shorthand > simple
-
-    calculates how many seconds are within the current timeframe.
-    with how the time is formatted, it the time exceeds a type, it will progress to the next one up
-
-    does not support hours or days, so only use it for clocks that need 60 minutes and less.
-
-    @ex     :   60      01:00
-                        displays as 1 min : 00 sec
-
-    @ex     :   3500    58:20
-                        displays as 58 min : 20 sec
-
-    @param  : int i
-    @return : str
+*   seconds > shorthand > simple
+*
+*   calculates how many seconds are within the current timeframe.
+*   with how the time is formatted, it the time exceeds a type, it will progress to the next one up
+*
+*   does not support hours or days, so only use it for clocks that need 60 minutes and less.
+*
+*   @ex     :   60      01:00
+*                       displays as 1 min : 00 sec
+*
+*   @ex     :   3500    58:20
+*                       displays as 58 min : 20 sec
+*
+*   @param  : int i
+*   @return : str
 */
 
 function secs.sh_simple( i )
@@ -913,21 +836,21 @@ function secs.sh_simple( i )
 end
 
 /*
-    seconds > shorthand > simple ( non leading zeros )
-
-    calculates how many seconds are within the current timeframe.
-    with how the time is formatted, it the time exceeds a type, it will progress to the next one up
-
-    does not support hours or days, so only use it for clocks that need 60 minutes and less.
-
-    @ex     :   60      1:00
-                        displays as 1 min : 00 sec
-
-    @ex     :   3500    58:20
-                        displays as 58 min : 20 sec
-
-    @param  : int i
-    @return : str
+*   seconds > shorthand > simple ( non leading zeros )
+*
+*   calculates how many seconds are within the current timeframe.
+*   with how the time is formatted, it the time exceeds a type, it will progress to the next one up
+*
+*   does not support hours or days, so only use it for clocks that need 60 minutes and less.
+*
+*   @ex     :   60      1:00
+*                       displays as 1 min : 00 sec
+*
+*   @ex     :   3500    58:20
+*                       displays as 58 min : 20 sec
+*
+*   @param  : int i
+*   @return : str
 */
 
 function secs.sh_simple_nz( i )
@@ -947,21 +870,21 @@ function secs.sh_simple_nz( i )
 end
 
 /*
-    seconds > shorthand > simple
-
-    calculates how many seconds are within the current timeframe.
-    with how the time is formatted, it the time exceeds a type, it will progress to the next one up
-
-    does not support hours or days, so only use it for clocks that need 60 minutes and less.
-
-    @ex     :   60      01:00
-                        displays as 1 min : 00 sec
-
-    @ex     :   3500    58:20
-                        displays as 58 min : 20 sec
-
-    @param  : int i
-    @return : str
+*   seconds > shorthand > simple
+*
+*   calculates how many seconds are within the current timeframe.
+*   with how the time is formatted, it the time exceeds a type, it will progress to the next one up
+*
+*   does not support hours or days, so only use it for clocks that need 60 minutes and less.
+*
+*   @ex     :   60      01:00
+*                       displays as 1 min : 00 sec
+*
+*   @ex     :   3500    58:20
+*                       displays as 58 min : 20 sec
+*
+*   @param  : int i
+*   @return : str
 */
 
 function secs.sh_hms( i, bSecs )
@@ -986,14 +909,14 @@ function secs.sh_hms( i, bSecs )
 end
 
 /*
-    seconds > shorthand > seconds only
-
-    @ex     :   timex.secs.sh_secsonly( 300 )
-    @out    :   300
-                s
-
-    @param  : int i
-    @return : str
+*   seconds > shorthand > seconds only
+*
+*   @ex     :   timex.secs.sh_secsonly( 300 )
+*   @out    :   300
+*               s
+*
+*   @param  : int i
+*   @return : str
 */
 
 function secs.sh_secsonly( i )
@@ -1007,21 +930,21 @@ function secs.sh_secsonly( i )
 end
 
 /*
-    seconds > shorthand > under hour
-
-    does not support hours or days, so only use it for clocks that need 60 minutes and less.
-
-    @ex     :   timex.secs.sh_uhour( 120, true )
-    @out    :   00:02:00
-                h : m : s
-
-    @ex     :   timex.secs.sh_uhour( 120 )
-    @out    :   00:02
-                h : m
-
-    @param  : int i
-    @param  : bool bSecs
-    @return : str
+*   seconds > shorthand > under hour
+*
+*   does not support hours or days, so only use it for clocks that need 60 minutes and less.
+*
+*   @ex     :   timex.secs.sh_uhour( 120, true )
+*   @out    :   00:02:00
+*               h : m : s
+*
+*   @ex     :   timex.secs.sh_uhour( 120 )
+*   @out    :   00:02
+*               h : m
+*
+*   @param  : int i
+*   @param  : bool bSecs
+*   @return : str
 */
 
 function secs.sh_uhour( i, bSecs )
@@ -1045,17 +968,17 @@ function secs.sh_uhour( i, bSecs )
 end
 
 /*
-    seconds > shorthand > columnized
-
-    format seconds to short-hand readable format
-
-    @ex     :   timex.secs.sh_uhour( 175 )
-    @out    :   00w 00d 00h 02m 55s
-                w : d : h : m : s
-
-    @param  : int i
-    @param  : bool bSecs
-    @return : str
+*   seconds > shorthand > columnized
+*
+*   format seconds to short-hand readable format
+*
+*   @ex     :   timex.secs.sh_uhour( 175 )
+*   @out    :   00w 00d 00h 02m 55s
+*               w : d : h : m : s
+*
+*   @param  : int i
+*   @param  : bool bSecs
+*   @return : str
 */
 
 function secs.sh_cols( i, bSecs )
@@ -1075,49 +998,43 @@ function secs.sh_cols( i, bSecs )
 end
 
 /*
-    seconds > shorthand > columnized > steps
-
-    converts seconds to a human readable format with various different parameters so you can decide
-    on what you want to see.
-
-    time displays in steps based on the higher type
-    does not display seconds until the final 60 seconds
-
-    @ex     :   timex.secs.sh_cols_steps( 175 )
-    @out    :   02m
-                m
-
-    @ex     :   timex.secs.sh_cols_steps( 32 )
-    @out    :   32s
-                s
-
-    :   ( bool ) bShowEmpty
-        will show all segments even if they are at 00.
-
-    :   ( bool ) bSeconds
-        displays the seconds value on the end
-
-    @param  : int i
-    @param  : bool bShowEmpty
-    @param  : bool bSeconds
-    @return : str
+*   seconds > shorthand > columnized > steps
+*
+*   converts seconds to a human readable format with various different parameters so you can decide
+*   on what you want to see.
+*
+*   time displays in steps based on the higher type
+*   does not display seconds until the final 60 seconds
+*
+*   @ex     :   timex.secs.sh_cols_steps( 175 )
+*   @out    :   02m
+*               m
+*
+*   @ex     :   timex.secs.sh_cols_steps( 32 )
+*   @out    :   32s
+*               s
+*
+*   :   ( bool ) bShowEmpty
+*       will show all segments even if they are at 00.
+*
+*   :   ( bool ) bSeconds
+*       displays the seconds value on the end
+*
+*   @param  : int i
+*   @param  : bool bShowEmpty
+*   @param  : bool bSeconds
+*   @return : str
 */
 
 function secs.sh_cols_steps( i, bShowEmpty, bSeconds )
     local str = ''
     local set_format = '%02.f'
 
-    local fl    = math.floor
-    local sf    = string.format
-
     i = tonumber( i ) or 0
     if i < 0 then i = 0 end
     i = math.Round( i )
 
     local bBelowMin = i < 60 and true or false
-
-    local weeks     = sf( set_format, fl( ( i - i % 604800 ) / 604800 ) )
-    i               = i - weeks * 604800
 
     local days      = sf( set_format, floor( ( i - i % 86400 ) / 86400 ) )
     i               = i - days * 86400
@@ -1147,24 +1064,20 @@ function secs.sh_cols_steps( i, bShowEmpty, bSeconds )
         str         = days .. 'd ' .. str
     end
 
-    if ( not bBelowMin and ( ( not bShowEmpty and tonumber( weeks ) ~= 0 ) or bShowEmpty ) ) then
-        str         = weeks .. 'w ' .. str
-    end
-
     return str
 end
 
 /*
-    seconds > milliseconds
-
-    uses os.clock( ) with a specified starting point to determine the ms that have passed.
-
-    @ex     : 0.5 =>  0.5ms
-    @ex     : 60  =>  60 s
-    @ex     : 130 =>  130 s
-
-    @param  : int began
-    @return : str
+*   seconds > milliseconds
+*
+*   uses os.clock( ) with a specified starting point to determine the ms that have passed.
+*
+*   @ex     : 0.5 =>  0.5ms
+*   @ex     : 60  =>  60 s
+*   @ex     : 130 =>  130 s
+*
+*   @param  : int began
+*   @return : str
 */
 
 function secs.ms( began )
@@ -1176,17 +1089,17 @@ function secs.ms( began )
 end
 
 /*
-    seconds > benchmark
-
-    returns only in seconds
-
-    @ex     : 0.5 =>  0.5ms
-    @ex     : 60  =>  60 s
-    @ex     : 130 =>  130 s
-
-    @param  : int i
-    @param  : int offset [ optional ]
-    @return : str
+*   seconds > benchmark
+*
+*   returns only in seconds
+*
+*   @ex     : 0.5 =>  0.5ms
+*   @ex     : 60  =>  60 s
+*   @ex     : 130 =>  130 s
+*
+*   @param  : int i
+*   @param  : int offset [ optional ]
+*   @return : str
 */
 
 function secs.benchmark( i, offset )
@@ -1205,15 +1118,15 @@ function secs.benchmark( i, offset )
 end
 
 /*
-    seconds > ago
-
-    returns how long in the past an event occured
-
-    @ex     : ts.remains( 1627113692 )
-              returns   56 minutes
-
-    @param  : int i
-    @return : int
+*   seconds > ago
+*
+*   returns how long in the past an event occured
+*
+*   @ex     : ts.remains( 1627113692 )
+*             returns   56 minutes
+*
+*   @param  : int i
+*   @return : int
 */
 
 function secs.ago( i, bAgo )
@@ -1232,15 +1145,15 @@ function secs.ago( i, bAgo )
 end
 
 /*
-    seconds > mins
-
-    converts seconds into seconds : minutes
-
-    @ex     : timex.secs.mins( 333 )
-              05:33
-
-    @param  : int i
-    @return : int
+*   seconds > mins
+*
+*   converts seconds into seconds : minutes
+*
+*   @ex     : timex.secs.mins( 333 )
+*             05:33
+*
+*   @param  : int i
+*   @return : int
 */
 
 function secs.mins( i )
@@ -1251,32 +1164,32 @@ function secs.mins( i )
 end
 
 /*
-    seconds > shorthand > columnized > steps > no leading zeros
-
-    converts seconds to a human readable format with various different parameters so you can decide
-    on what you want to see.
-
-    time displays in steps based on the higher type
-    does not display seconds until the final 60 seconds
-
-    @ex     :   timex.secs.sh_cols_steps( 175 )
-    @out    :   02m
-                m
-
-    @ex     :   timex.secs.sh_cols_steps( 32 )
-    @out    :   32s
-                s
-
-    :   ( bool ) bShowEmpty
-        will show all segments even if they are at 00.
-
-    :   ( bool ) bSeconds
-        displays the seconds value on the end
-
-    @param  : int i
-    @param  : bool bShowEmpty
-    @param  : bool bSeconds
-    @return : str
+*   seconds > shorthand > columnized > steps > no leading zeros
+*
+*   converts seconds to a human readable format with various different parameters so you can decide
+*   on what you want to see.
+*
+*   time displays in steps based on the higher type
+*   does not display seconds until the final 60 seconds
+*
+*   @ex     :   timex.secs.sh_cols_steps( 175 )
+*   @out    :   02m
+*               m
+*
+*   @ex     :   timex.secs.sh_cols_steps( 32 )
+*   @out    :   32s
+*               s
+*
+*   :   ( bool ) bShowEmpty
+*       will show all segments even if they are at 00.
+*
+*   :   ( bool ) bSeconds
+*       displays the seconds value on the end
+*
+*   @param  : int i
+*   @param  : bool bShowEmpty
+*   @param  : bool bSeconds
+*   @return : str
 */
 
 function secs.sh_cols_steps_nz( i, bShowEmpty, bSeconds )
@@ -1288,9 +1201,6 @@ function secs.sh_cols_steps_nz( i, bShowEmpty, bSeconds )
     i                       = math.Round( i )
 
     local bBelowMin = i < 60 and true or false
-
-    local weeks     = sf( set_format, fl( ( i - i % 604800 ) / 604800 ) )
-    i               = i - weeks * 604800
 
     local days      = sf( set_format, floor( ( i - i % 86400 ) / 86400 ) )
     i               = i - days * 86400
@@ -1320,21 +1230,17 @@ function secs.sh_cols_steps_nz( i, bShowEmpty, bSeconds )
         str         = days .. 'd ' .. str
     end
 
-    if ( not bBelowMin and ( ( not bShowEmpty and tonumber( weeks ) ~= 0 ) or bShowEmpty ) ) then
-        str         = weeks .. 'w ' .. str
-    end
-
     return str
 end
 
 /*
-    timestamp > past > days
-
-    returns how many days have past based on the timestamp provided.
-    used for activites that require checking last activity.
-
-    @param  : int i
-    @return : int
+*   timestamp > past > days
+*
+*   returns how many days have past based on the timestamp provided.
+*   used for activites that require checking last activity.
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.pastdays( i )
@@ -1349,16 +1255,16 @@ function ts.pastdays( i )
 end
 
 /*
-    timestamp > remains
-
-    gets difference between provided timestamp and current timestamp.
-    returns seconds
-
-    @ex     : ts.remains( 1627113692 )
-              returns   00:56:51
-
-    @param  : int i
-    @return : int
+*   timestamp > remains
+*
+*   gets difference between provided timestamp and current timestamp.
+*   returns seconds
+*
+*   @ex     : ts.remains( 1627113692 )
+*             returns   00:56:51
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.remains( i )
@@ -1366,18 +1272,18 @@ function ts.remains( i )
 end
 
 /*
-    timestamp > remains > server
-
-    gets difference between provided timestamp and current timestamp.
-    returns seconds
-
-    @note   : This function returns utilizes SERVER TIME; not client.
-
-    @ex     : ts.remains( 1627113692 )
-              returns   00:56:51
-
-    @param  : int i
-    @return : int
+*   timestamp > remains > server
+*
+*   gets difference between provided timestamp and current timestamp.
+*   returns seconds
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   @ex     : ts.remains( 1627113692 )
+*             returns   00:56:51
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.remains_sv( i )
@@ -1385,12 +1291,12 @@ function ts.remains_sv( i )
 end
 
 /*
-    timestamp > past
-
-    used for timestamp ages which are in the past
-
-    @param  : int i
-    @return : int
+*   timestamp > past
+*
+*   used for timestamp ages which are in the past
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.past( i )
@@ -1398,14 +1304,14 @@ function ts.past( i )
 end
 
 /*
-    timestamp > past > server
-
-    used for timestamp ages which are in the past.
-
-    @note   : This function returns utilizes SERVER TIME; not client.
-
-    @param  : int i
-    @return : int
+*   timestamp > past > server
+*
+*   used for timestamp ages which are in the past.
+*
+*   @note   : This function returns utilizes SERVER TIME; not client.
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.past_sv( i )
@@ -1413,13 +1319,13 @@ function ts.past_sv( i )
 end
 
 /*
-    timestamp > past > hours
-
-    returns how many hours have past based on the timestamp provided.
-    used for activites that require checking last activity.
-
-    @param  : int i
-    @return : int
+*   timestamp > past > hours
+*
+*   returns how many hours have past based on the timestamp provided.
+*   used for activites that require checking last activity.
+*
+*   @param  : int i
+*   @return : int
 */
 
 function ts.pasthours( i )
@@ -1434,16 +1340,16 @@ function ts.pasthours( i )
 end
 
 /*
-    timestamp > past > hours > dev
-
-    returns how many hours have past based on the timestamp provided.
-    used for activites that require checking last activity.
-
-    developer
-
-    @param  : int i
-    @param  : int now
-    @return : int
+*   timestamp > past > hours > dev
+*
+*   returns how many hours have past based on the timestamp provided.
+*   used for activites that require checking last activity.
+*
+*   developer
+*
+*   @param  : int i
+*   @param  : int now
+*   @return : int
 */
 
 function ts.pasthours_d( i, now )
@@ -1458,19 +1364,19 @@ function ts.pasthours_d( i, now )
 end
 
 /*
-    basewars > structure time
-
-    gamemode specific func that displays basewars playtime
-    for player.
-
-    formats table for playtime into human readable format
-
-    @ex     : timex.bw.structtime( { h = 0, m = 0, s = 52 } )
-    @out    : 52s
-
-    @param  : tbl tbl
-    @param  : bool bLong
-    @return : str
+*   basewars > structure time
+*
+*   gamemode specific func that displays basewars playtime
+*   for player.
+*
+*   formats table for playtime into human readable format
+*
+*   @ex     : timex.bw.structtime( { h = 0, m = 0, s = 52 } )
+*   @out    : 52s
+*
+*   @param  : tbl tbl
+*   @param  : bool bLong
+*   @return : str
 */
 
 function bw.structtime( tbl, bLong )
@@ -1491,21 +1397,21 @@ function bw.structtime( tbl, bLong )
 end
 
 /*
-    basewars > playtime
-
-    gamemode specific func that displays basewars playtime
-    for player.
-
-    gets player current playtime as int
-
-    @assoc  : bw.structtime( tbl )
-
-    @ex     : timex.bw.playtime( pl )
-    @out    : 4m 39s
-
-    @param  : ply pl
-    @param  : bool bLong
-    @return : str
+*   basewars > playtime
+*
+*   gamemode specific func that displays basewars playtime
+*   for player.
+*
+*   gets player current playtime as int
+*
+*   @assoc  : bw.structtime( tbl )
+*
+*   @ex     : timex.bw.playtime( pl )
+*   @out    : 4m 39s
+*
+*   @param  : ply pl
+*   @param  : bool bLong
+*   @return : str
 */
 
 function bw.playtime( pl, bLong )
@@ -1513,98 +1419,6 @@ function bw.playtime( pl, bLong )
     if not helper.ok.ply( pl ) then return def end
     local playtime = pl.GetPlayTimeTable and pl:GetPlayTimeTable( ) or def
     return bw.structtime( playtime, bLong )
-end
-
-/*
-    utime > get
-
-    returns various types of data for utime.
-    originally used in script HudHive for Session / Total time
-
-    @ex     : timex.utime.get( LocalPlayer( ), cfg.utime.mode, cfg.utime.units )
-              timex.utime.get( LocalPlayer( ), 'total', 'full' )
-*/
-
-function utime.get( pl, utype, unit )
-
-    if not pl.GetUTimeTotalTime or not pl.GetUTimeSessionTime then return end
-
-    local i         = 0
-    local conv      = 1
-    unit            = isstring( unit ) and unit or 'seconds'
-
-    if utype == 2 || utype =='session' then
-        i = pl:GetUTimeSessionTime( )   // session
-    else
-        i = pl:GetUTimeTotalTime( )     // total
-    end
-
-    if unit == 'm' || unit == 'minutes' then
-        conv    = floor( ( i - i % 60 ) / 60 )
-        unit    = helper.str:plural( 'minutes', conv )
-    elseif unit == 'h' || unit == 'hours' then
-        conv    = floor( ( i - i % 3600 ) / 3600 )
-        unit    = helper.str:plural( 'hours', conv )
-    elseif unit == 'd' || unit == 'days' then
-        conv    = floor( ( i - i % 86400 ) / 86400 )
-        unit    = helper.str:plural( 'days', conv )
-    elseif unit == 'w' || unit == 'weeks' then
-        conv    = floor( ( i - i % 604800 ) / 604800 )
-        unit    = helper.str:plural( 'weeks', conv )
-    elseif unit =='f' || unit == 'full' then
-        if utype == 2 || utype =='session' then
-            local ut_start  = pl.GetUTimeStart and pl:GetUTimeStart( ) or 0
-            conv            = secs.sh_cols_steps( CurTime( ) - ut_start, false, true )
-        else
-            local ut_start  = pl.GetUTimeStart and pl:GetUTimeStart( ) or 0
-            local ut_get    = pl.GetUTime and pl:GetUTime( ) or 0
-            conv            = secs.sh_cols_steps( ut_get + CurTime( ) - ut_start, false, true )
-        end
-    else
-        conv    = 1
-    end
-
-    if isnumber( conv ) then
-        conv = math.floor( conv )
-    end
-
-    local lbl       = unit ~= 'full' and unit or ''
-    local output    = conv
-    output          = string.format( '%s %s', output, lbl )
-
-
-    return output
-end
-
-/*
-    datetime
-
-    converts mysql datetime to a table.
-    table can then be used to convert to timestamp
-
-    local dt            = handle:datetime( '2022/14/4 02:32:14' )
-    local last_seen     = secs.ago( dt, false )
-
-    @param  : str date
-    @return : tbl
-*/
-
-function dt.convert( date )
-    local year, month, day, hours, minutes, seconds = date:match( '^(%d%d%d%d)-(%d%d)-(%d%d) (%d%d):(%d%d):(%d%d)$' )
-
-    if not year then
-        error( 'could not parse date "' .. date .. '"' )
-    end
-
-    return os.time(
-        {
-            year = year,
-            month = month,
-            day = day,
-            hour = hours,
-            min = minutes,
-            sec = seconds
-        } )
 end
 
 /*
@@ -1624,15 +1438,15 @@ local function g_RccID( str )
 end
 
 /*
-    rcc > base
-
-    base package command
+*   rcc > base
+*
+*   base package command
 */
 
 local function rcc_timex_base( pl, cmd, args )
 
     /*
-        permissions
+    *   permissions
     */
 
     local ccmd = base.calls:get( 'commands', 'timex' )
@@ -1648,7 +1462,7 @@ local function rcc_timex_base( pl, cmd, args )
     end
 
     /*
-        output
+    *   output
     */
 
     con( pl, 1 )
@@ -1674,9 +1488,9 @@ local function rcc_timex_base( pl, cmd, args )
 end
 
 /*
-    rcc > list registered timers
-
-    returns a list of registered timers within package
+*   rcc > list registered timers
+*
+*   returns a list of registered timers within package
 */
 
 local function rcc_timex_list( pl, cmd, args )
@@ -1713,9 +1527,9 @@ local function rcc_timex_list( pl, cmd, args )
     local gcf_active        = base.calls:gcflag( 'timex_list', 'active' )
 
     /*
-        bActiveOnly
-            >  true returns only a list of active timers running
-            >  false returns all timers registered
+    *   bActiveOnly
+    *       >  true returns only a list of active timers running
+    *       >  false returns all timers registered
     */
 
     local bActiveOnly = false
@@ -1880,7 +1694,7 @@ end
 hook.Add( pid( 'cmd.register' ), pid( '__timex.cmd.register' ), RegisterRCC )
 
 /*
-    register package
+*   register package
 */
 
 local function register_pkg( )
@@ -1890,7 +1704,7 @@ end
 hook.Add( pid( 'pkg.register' ), pid( '__timex.pkg.register' ), register_pkg )
 
 /*
-    module info > manifest
+*   module info > manifest
 */
 
 function pkg:manifest( )
@@ -1898,7 +1712,7 @@ function pkg:manifest( )
 end
 
 /*
-    __tostring
+*   __tostring
 */
 
 function pkg:__tostring( )
@@ -1906,7 +1720,7 @@ function pkg:__tostring( )
 end
 
 /*
-    create new class
+*   create new class
 */
 
 function pkg:loader( class )
@@ -1916,7 +1730,7 @@ function pkg:loader( class )
 end
 
 /*
-    __index / manifest declarations
+*   __index / manifest declarations
 */
 
 pkg.__manifest =

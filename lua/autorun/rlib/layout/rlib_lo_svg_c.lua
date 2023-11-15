@@ -33,7 +33,7 @@ local design                = base.d
 local ui                    = base.i
 
 /*
-    localization > misc
+*   localization > misc
 */
 
 local cfg                   = base.settings
@@ -48,7 +48,7 @@ local function lang( ... )
 end
 
 /*
- 	prefix ids
+*	prefix ids
 */
 
 local function pref( str, suffix )
@@ -57,23 +57,23 @@ local function pref( str, suffix )
 end
 
 /*
-    declare panel
+*   declare panel
 */
 
 local PANEL = { }
 
 /*
-    Init
+*   Init
 */
 
 function PANEL:Init( )
 
-    self:SetSize            ( 300, 25 )
+    self:SetSize            ( 200, 25 )
 
     self.bIsPopulated       = false
 
     self.svgimg             = ui.new( 'dhtml', self     )
-    :fill                   ( 'm', 0                    )
+    :static                 ( FILL                      )
     :sbar                   ( false                     )
     :svg                    ( self:GetImg( ), true      )
 
@@ -82,7 +82,7 @@ function PANEL:Init( )
 end
 
 /*
-    GetImg
+*   GetImg
 */
 
 function PANEL:GetImg( )
@@ -90,9 +90,9 @@ function PANEL:GetImg( )
 end
 
 /*
-    SetImg
-
-    @param  : str uri
+*   SetImg
+*
+*   @param  : str uri
 */
 
 function PANEL:SetImg( uri )
@@ -100,13 +100,13 @@ function PANEL:SetImg( uri )
 end
 
 /*
-    Think
+*   Think
 */
 
 function PANEL:Think( )
 
     /*
-        bIsPopulated
+    *   bIsPopulated
     */
 
     if not self.bIsPopulated and self.svgimg then
@@ -118,13 +118,16 @@ function PANEL:Think( )
 end
 
 /*
-    Paint
+*   Paint
+*
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:Paint( w, h ) end
 
 /*
-    Destroy
+*   Destroy
 */
 
 function PANEL:Destroy( )
@@ -132,7 +135,7 @@ function PANEL:Destroy( )
 end
 
 /*
-    register
+*   register
 */
 
 vgui.Register( 'rlib.lo.svg.c', PANEL, 'DPanel' )

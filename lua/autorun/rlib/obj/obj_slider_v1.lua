@@ -32,7 +32,7 @@ local design                = base.d
 local ui                    = base.i
 
 /*
-    localization > misc
+*   localization > misc
 */
 
 local cfg                   = base.settings
@@ -40,19 +40,19 @@ local mf                    = base.manifest
 local pf                    = mf.prefix
 
 /*
-    fonts
+*   fonts
 */
 
 surface.CreateFont( pf .. 'ui.slider.hovertip', { font = 'Roboto', size = 20, weight = 100, antialias = true } )
 
 /*
-    PANEL
+*   PANEL
 */
 
 local PANEL = { }
 
 /*
-    AccessorFunc
+*   AccessorFunc
 */
 
 AccessorFunc( PANEL, 'm_iMin',          'Min'           )
@@ -63,36 +63,36 @@ AccessorFunc( PANEL, 'm_iDecimals',     'Decimals'      )
 AccessorFunc( PANEL, 'm_fFloatValue',   'FloatValue'    )
 
 /*
-    initialize
+*   initialize
 */
 
 function PANEL:Init( )
+    self:SetMin             ( 2 )
+    self:SetMax             ( 10 )
+    self:SetDecimals        ( 0 )
 
+    local minVal            = self:GetMin( )
+    self.Dragging           = true
+    self.Knob.Depressed     = true
+    self.KnobColor          = Color( 255, 255, 255, 255 )
 
-    self                            = ui.get( self                          )
-    :setup                          (                                       )
-    :minmax                         ( 2, 10                                 )
-    :dec                            ( 0                                     )
-    :val                            ( self:GetMin( )                        )
-    :slide_x                        ( self:GetFraction( )                   )
-    :knobstate                      ( false                                 )
+    self:SetValue           ( minVal )
+    self:SetSlideX          ( self:GetFraction( ) )
 
-    self.KnobColor                  = Color( 255, 255, 255, 255 )
-    self.Knob:SetSize               ( 16, 16 )
+    self.Dragging           = false
+    self.Knob.Depressed     = false
+    self.Knob:SetSize       ( 12, 16 )
 
     function self.Knob:Paint( w, h )
-        local par                   = self:GetParent( )
-        par.sz_bullet_h             = h / par:GetKnobSize( )
-
-        design.circle( w - par.i_pad, ( h / 2 ) + ( par.sz_bullet_h / 2 ) - ( par.sz_bullet_h / 2 ), par.sz_bullet_h, self.i_smooth, par:GetKnobColor( ) or Color( 255, 255, 255, 255 ) )
+        draw.RoundedBox( 4, 1, ( h / 2 ) - ( ( h - 5 ) / 2 ) + 3, w - 2, h - 5, self:GetParent( ):GetKnobColor( ) )
     end
 end
 
 /*
-    SetMinMax
-
-    @param int min
-    @param int max
+*   SetMinMax
+*
+*   @param int min
+*   @param int max
 */
 
 function PANEL:SetMinMax( min, max )
@@ -101,7 +101,7 @@ function PANEL:SetMinMax( min, max )
 end
 
 /*
-    SetValue
+*   SetValue
 */
 
 function PANEL:SetValue( value )
@@ -119,7 +119,7 @@ function PANEL:SetValue( value )
 end
 
 /*
-    GetFraction
+*   GetFraction
 */
 
 function PANEL:GetFraction( )
@@ -127,7 +127,7 @@ function PANEL:GetFraction( )
 end
 
 /*
-    GetRange
+*   GetRange
 */
 
 function PANEL:GetRange( )
@@ -135,10 +135,10 @@ function PANEL:GetRange( )
 end
 
 /*
-    TranslateValues
-
-    @param int x
-    @param int y
+*   TranslateValues
+*
+*   @param int x
+*   @param int y
 */
 
 function PANEL:TranslateValues( x, y )
@@ -147,13 +147,13 @@ function PANEL:TranslateValues( x, y )
 end
 
 /*
-    OnValueChanged
+*   OnValueChanged
 */
 
 function PANEL:OnValueChanged( value ) end
 
 /*
-    GetKnobColor
+*   GetKnobColor
 */
 
 function PANEL:GetKnobColor( )
@@ -161,9 +161,9 @@ function PANEL:GetKnobColor( )
 end
 
 /*
-    SetKnobColor
-
-    @param clr clr
+*   SetKnobColor
+*
+*   @param clr clr
 */
 
 function PANEL:SetKnobColor( clr )
@@ -171,7 +171,7 @@ function PANEL:SetKnobColor( clr )
 end
 
 /*
-    GetBarColor
+*   GetBarColor
 */
 
 function PANEL:GetBarColor( )
@@ -179,103 +179,41 @@ function PANEL:GetBarColor( )
 end
 
 /*
-    SetBarColor
-
-    @param clr clr
+*   SetBarColor
+*
+*   @param clr clr
 */
 
 function PANEL:SetBarColor( clr )
-    local color         = IsColor( clr ) and clr or self.clr_def_bar
-    self.BarColor       = color
+    local color = IsColor( clr ) and clr or Color( 255, 255, 255, 100 )
+    self.BarColor = color
 end
 
 /*
-    size > set
-
-    @param  :   int             i
-*/
-
-function PANEL:SetKnobSize( i )
-    self.sz_knob = i
-end
-
-/*
-    width > get
-
-    @return :   int
-*/
-
-function PANEL:GetKnobSize( )
-    return self.sz_knob or 3
-end
-
-/*
-    bar height > set
-
-    @param  :   int             i
-*/
-
-function PANEL:SetBarHeight( i )
-    self.sz_bar = i
-end
-
-/*
-    bar height > get
-
-    @return :   int
-*/
-
-function PANEL:GetBarHeight( )
-    return self.sz_bar or 2
-end
-
-/*
-    Paint
-
-    @param int w
-    @param int h
+*   Paint
+*
+*   @param int w
+*   @param int h
 */
 
 function PANEL:Paint( w, h )
-    local barcolor  = self:GetBarColor( )
-    local sz_bar_h  = self:GetBarHeight( )
-
-    design.obox( 0, ( h / 2 ) - sz_bar_h, w, sz_bar_h, barcolor, barcolor )
+    local barcolor = self:GetBarColor( )
+    design.obox( 0, ( h / 2 ) - ( 2 / 2 ) + 3, w, 2, Color( 0, 0, 0, 0 ), barcolor )
 end
 
 /*
-    PaintOver
-
-    @param int w
-    @param int h
+*   PaintOver
+*
+*   @param int w
+*   @param int h
 */
 
 function PANEL:PaintOver( w, h )
     if ( self.Hovered or self.Knob.Hovered or self.Knob.Depressed ) and self:GetValue( ) and isnumber( self:GetValue( ) ) then
-        self.sz_bullet_h            = h / self:GetKnobSize( )
-        surface.DisableClipping     ( true )
-        draw.SimpleText             ( self:GetValue( ), 'rlib_ui_slider_hovertip', self.Knob.x + ( self.Knob:GetWide( ) / 2 ) - ( self.Knob:GetWide( ) / 2 ), self.Knob.y - ( self.Knob:GetTall( ) ) - 5, self.clr_def_txt_tip, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        surface.DisableClipping     ( false )
+        surface.DisableClipping( true )
+        draw.SimpleText( self:GetValue( ), pf .. 'ui.slider.hovertip', self.Knob.x + self.Knob:GetWide( ) / 2, self.Knob.y - 10, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        surface.DisableClipping( false )
     end
-end
-
-/*
-    declare
-*/
-
-function PANEL:_Declare( )
-    self.i_smooth                   = 30
-    self.i_pad                      = 13
-    self.sz_bullet_h                = 0
-end
-
-/*
-    colorize
-*/
-
-function PANEL:_Colorize( )
-    self.clr_def_bar                = rclr.Hex( 'FFFFFF' )
-    self.clr_def_txt_tip            = rclr.Hex( 'FFFFFF' )
 end
 
 derma.DefineControl( 'rlib.ui.slider.v1', 'rlib slider', PANEL, 'DSlider' )

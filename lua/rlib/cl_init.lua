@@ -111,17 +111,13 @@ net.Receive( 'rlib.sms.bubble', rn_sms_bubble )
 
     sends a bubble msg that displays to the bottom right of the
     players screen
-
-    @ex     :   design:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
-                pl:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
-                rlib:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
 */
 
 local function rn_sms_rbubble( len, pl )
-    local data      = net.ReadTable( )
-    local msg       = data and data[ 1 ] or 'error'
+    local args      = net.ReadTable( )
+    local data      = args and args[ 1 ] or ''
 
-    design:rbubble( msg )
+    design:rbubble( data )
 end
 net.Receive( 'rlib.sms.rbubble', rn_sms_rbubble )
 
@@ -130,9 +126,6 @@ net.Receive( 'rlib.sms.rbubble', rn_sms_rbubble )
 
     notification supports icons; slides in from middle right.
     previously known as 'notifcator'
-
-    @ex     :   pl:push( { 'Example message', Color( 255, 0, 0 ), ' text in red' }, 'Title', '' )
-                base:push( { 'Example message', Color( 255, 0, 0 ), ' text in red' }, 'Title', '' )
 */
 
 local function rn_sms_push( len, pl )

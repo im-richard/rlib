@@ -124,7 +124,7 @@ function PANEL:Init( )
 
     self.btnClose = vgui.Create( 'DButton', self )
     self.btnClose:SetText( '' )
-    self.btnClose:SetTooltip( lang( 'tip_close_window' ) )
+    self.btnClose:SetTooltip( lang( 'tooltip_close' ) )
     self.btnClose.OnCursorEntered = function( s ) s.hover = true end
     self.btnClose.OnCursorExited = function( s ) s.hover = false end
     self.btnClose.DoClick = function( s )

@@ -104,7 +104,7 @@ function PANEL:Init( )
     */
 
     self                            = ui.get( self                          )
-    :sz                             ( 15                                    )
+    :size                           ( 15                                    )
     :param                          ( 'SetHideButtons', false               )
 
                                     :draw( function( s, w, h )

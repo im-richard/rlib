@@ -55,6 +55,109 @@ local base                  = rlib
 
 base.c.commands =
 {
+    [ 'rlib' ] =
+    {
+        enabled             = true,
+        is_base             = true,
+        id                  = 'rlib',
+        desc                = 'base command, displays top-level help',
+        args                = '[ <command> ], [ <-flag> <search_keyword> ]',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib',
+            'rlib rlib.version',
+            'rlib -a',
+            'rlib -f rlib.version',
+            'rlib -h rlib.version'
+        },
+        flags =
+        {
+            [ 'all' ]       = { flag = '-a',        desc = 'displays all cmds in console regardless of scope' },
+            [ 'simple' ]    = { flag = '-s',        desc = 'get a more simplified command list' },
+            [ 'filter' ]    = { flag = '-f',        desc = 'filter search results' },
+            [ 'help' ]      = { flag = '-h',        desc = 'view help on specific command' },
+            [ 'break' ]     = { flag = '-b',        desc = 'add breaks after each command' },
+            [ 'modules' ]   = { flag = '-m',        desc = 'displays module commands only' },
+        },
+        notes =
+        {
+            'This command is the base command to all sub-levels'
+        },
+    },
+    [ 'rlib_access' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.access',
+        name                = 'Access',
+        desc                = 'users access to lib',
+        pubc                = '!access',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_admins' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.admins',
+        name                = 'Admins',
+        desc                = 'list of steamids with access to lib',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_asay' ] =
+    {
+        enabled             = true,
+        warn                = true,
+        no_console          = false,
+        id                  = 'rlib.asay',
+        name                = 'Tools » ASay',
+        desc                = 'Send msgs using asay',
+        args                = '[ <msg> ]',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib.asay hello',
+        },
+    },
+    [ 'rlib_calls' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.calls',
+        name                = 'Calls',
+        desc                = 'list of registered calls',
+        args                = '[ <-flag> <search_keyword> ]',
+        scope               = 1,
+        official            = true,
+        ex =
+        {
+            'rlib.calls',
+            'rlib.calls -r',
+            'rlib.calls -s rlib',
+        },
+        flags =
+        {
+            [ 'search' ]    = { flag = '-s', desc = 'search results' },
+            [ 'raw' ]       = { flag = '-r', desc = 'raw simple output' },
+        },
+    },
+    [ 'rlib_changelog' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.changelog',
+        name                = 'Changelog',
+        desc                = 'displays the lib changelog',
+        scope               = 2,
+        official            = true,
+        flags =
+        {
+            [ 'search' ]    = { flag = '-s', desc = 'search results' },
+        },
+    },
     [ 'rlib_cs_new' ] =
     {
         enabled             = true,
@@ -101,6 +204,110 @@ base.c.commands =
             'rlib.cs.obf',
         },
     },
+    [ 'rlib_sap_encode' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.sap.encode',
+        name                = 'SAP » Encode',
+        desc                = 'Encode SAP string',
+        scope               = 1,
+        official            = true,
+        ex =
+        {
+            'rlib.sap.encode',
+        },
+    },
+    [ 'rlib_clear' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.clear',
+        alias               = 'clr',
+        name                = 'Clear console',
+        desc                = 'clears the console so you can start fresh',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_connections' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.connections',
+        name                = 'Connections',
+        desc                = 'total connections since last restart',
+        pubc                = '!connections',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_debug' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.debug',
+        name                = 'Debug',
+        desc                = 'toggles debug mode on and off',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_debug_status' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.debug.status',
+        name                = 'Debug » Status',
+        desc                = 'status of debug mode',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_debug_clean' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.debug.clean',
+        name                = 'Debug » Clean',
+        desc                = 'erases all debug logs from server',
+        scope               = 1,
+        official            = true,
+        ex =
+        {
+            'rlib.debug.clean',
+            'rlib.debug.clean -c',
+        },
+        flags =
+        {
+            [ 'cancel' ]    = { flag = '-c', desc = 'cancel cleaning action' },
+        },
+    },
+    [ 'rlib_debug_diag' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.debug.diag',
+        name                = 'Debug » Diagnostic',
+        desc                = 'dev => production preparation',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib.debug.diag',
+        },
+    },
+    [ 'rlib_debug_devop' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.debug.devop',
+        name                = 'Debug » DevOP',
+        desc                = 'devop hook (dev only)',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_help' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.help',
+        name                = 'Help',
+        desc                = 'help info for lib',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
     [ 'rlib_languages' ] =
     {
         enabled             = true,
@@ -108,6 +315,42 @@ base.c.commands =
         name                = 'Languages',
         desc                = 'language info',
         scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_license' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.license',
+        name                = 'License',
+        desc                = 'license for lib',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_manifest' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.manifest',
+        name                = 'Manifest',
+        desc                = 'lib manifest',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_map_ents' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.map.ents',
+        name                = 'Map ents',
+        desc                = 'returns list of map ents',
+        scope               = 2,
+        official            = true,
+    },
+    [ 'rlib_mats' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.mats',
+        name                = 'Material List',
+        desc                = 'registered mats',
+        scope               = 3,
         official            = true,
     },
     [ 'rlib_modules' ] =
@@ -129,6 +372,253 @@ base.c.commands =
             [ 'paths' ]     = { flag = '-p', desc = 'display module install paths' },
         },
     },
+    [ 'rlib_modules_reload' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.modules.reload',
+        name                = 'reload rcore modules',
+        desc                = 'reload all rcore modules',
+        scope               = 1,
+        official            = true,
+        ex =
+        {
+            'rlib.modules.reload',
+        },
+    },
+    [ 'rlib_modules_errlog' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.modules.errlog',
+        name                = 'errlogs',
+        desc                = 'displays errlog for modules',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib.modules.errlog',
+        },
+    },
+    [ 'rlib_oort' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.oort',
+        name                = 'Oort Engine',
+        desc                = 'manage rlib oort services',
+        scope               = 1,
+        showsetup           = false,
+        official            = true,
+        ex =
+        {
+            'rlib.oort',
+            'rlib.oort -s debug 1',
+            'rlib.oort -s debug off',
+        },
+        flags =
+        {
+            [ 'set' ]     = { flag = '-s', desc = 'sets the status of oort debugging' },
+        },
+    },
+    [ 'rlib_oort_update' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.oort.update',
+        name                = 'Oort » Update',
+        desc                = 'updates oort engine',
+        scope               = 1,
+        showsetup           = false,
+        official            = true,
+    },
+    [ 'rlib_packages' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.packages',
+        name                = 'Packages',
+        desc                = 'list of running packages',
+        scope               = 1,
+        official            = true,
+    },
+    [ 'rlib_panels' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.panels',
+        name                = 'Panels » Registered',
+        desc                = 'list of registered panels',
+        args                = '[ <-flag> <search_keyword> ]',
+        scope               = 3,
+        official            = true,
+        ex =
+        {
+            'rlib.panels',
+            'rlib.panels -s rlib',
+        },
+        flags =
+        {
+            [ 'search' ]    = { flag = '-s', desc = 'search results' },
+        },
+    },
+    [ 'rlib_terms' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.terms',
+        name                = 'Terms',
+        desc                = 'displays terms / intro panel',
+        scope               = 3,
+        official            = true,
+        ex =
+        {
+            'rlib.terms',
+        },
+    },
+    [ 'rlib_rcc_rehash' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.rcc.rehash',
+        name                = 'Rehash RCC',
+        desc                = 'refreshes registered command calls',
+        scope               = 2,
+        official            = true,
+        ex =
+        {
+            'rlib.rcc.rehash',
+        },
+    },
+    [ 'rlib_reload' ] =
+    {
+        enabled             = true,
+        warn                = true,
+        id                  = 'rlib.reload',
+        name                = 'Reload',
+        desc                = 'reloads lib on server',
+        scope               = 1,
+        official            = true,
+    },
+    [ 'rlib_restart' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.restart',
+        name                = 'Restart',
+        desc                = 'server restart | Def: 30s',
+        args                = '[ <seconds> ]',
+        scope               = 1,
+        official            = true,
+        flags =
+        {
+            [ 'cancel' ]    = { flag = { '-c', 'cancel', '-cancel' }, desc = 'cancel restart' },
+            [ 'instant' ]   = { flag = { '-i', 'instant', '-instant' }, desc = 'instant restart' },
+        },
+        ex =
+        {
+            'rlib.restart',
+            'rlib.restart -c',
+            'rlib.restart -i',
+        },
+        notes =
+        {
+            'Can be cancelled with the command [ rlib.restart -c ]',
+            'Default: 30 seconds',
+            'Use rlib.restart -i for instant restart'
+        },
+    },
+    [ 'rlib_rpm' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.rpm',
+        name                = 'Rlib Package Manager',
+        desc                = 'loads an external package from rpm server',
+        args                = '[ <-flag> <package]> ]',
+        scope               = 1,
+        official            = true,
+        flags =
+        {
+            [ 'install' ]   = { flag = '-i' },
+            [ 'list' ]      = { flag = '-l' },
+        },
+        ex =
+        {
+            'rlib.rpm',
+            'rlib.rpm -l',
+            'rlib.rpm -i package',
+        },
+    },
+    [ 'rlib_running' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.running',
+        name                = 'Running',
+        desc                = 'current modules installed on server',
+        pubc                = '!running',
+        scope               = 2,
+        showsetup           = false,
+        official            = true,
+    },
+    [ 'rlib_services' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.services',
+        name                = 'Services » Status',
+        desc                = 'list of services and status',
+        args                = '[ <-flag> <search_keyword> ]',
+        scope               = 2,
+        official            = true,
+        ex =
+        {
+            'rlib.services',
+            'rlib.services -s pco',
+        },
+        flags =
+        {
+            [ 'search' ]    = { flag = '-s', desc = 'search results' },
+        },
+    },
+    [ 'rlib_tools_pco' ] =
+    {
+        enabled             = true,
+        warn                = true,
+        no_console          = true,
+        id                  = 'rlib.tools.pco',
+        name                = 'Tools » PCO',
+        desc                = '(player client optimization), return / set status of pco',
+        args                = '[ <state> ]',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib.tools.pco',
+            'rlib.tools.pco enable',
+            'rlib.tools.pco disable',
+        },
+    },
+    [ 'rlib_tools_rdo' ] =
+    {
+        enabled             = true,
+        warn                = true,
+        id                  = 'rlib.tools.rdo',
+        name                = 'Tools » RDO',
+        desc                = '(render distance optimization), return / set status of rdo',
+        args                = '[ <state> ]',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+        ex =
+        {
+            'rlib.tools.rdo',
+            'rlib.tools.rdo enable',
+            'rlib.tools.rdo disable',
+        },
+    },
+    [ 'rlib_session' ] =
+    {
+        enabled             = true,
+        warn                = true,
+        id                  = 'rlib.session',
+        name                = 'Session',
+        desc                = 'your current sess id',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
     [ 'rlib_setup' ] =
     {
         enabled             = true,
@@ -139,6 +629,72 @@ base.c.commands =
         scope               = 1,
         official            = true,
     },
+    [ 'rlib_status' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.status',
+        name                = 'Status',
+        desc                = 'stats and data for the lib',
+        scope               = 1,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_udm' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.udm',
+        name                = 'Update Manager',
+        desc                = 'Check for updates',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_uptime' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.uptime',
+        name                = 'Uptime',
+        desc                = 'uptime of the server',
+        pubc                = '!uptime',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_user' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.user',
+        name                = 'Manage User',
+        desc                = 'manages player perms for lib',
+        scope               = 1,
+        official            = true,
+        ex =
+        {
+            'rlib.user add player',
+            'rlib.user remove player',
+            'rlib.user status player',
+            'rlib.user -a player',
+            'rlib.user -r player',
+            'rlib.user -s player',
+        },
+        flags =
+        {
+            [ 'add' ]       = { flag = '-a', desc = 'adds a player to rlib access' },
+            [ 'remove' ]    = { flag = '-r', desc = 'removes a player from rlib access' },
+            [ 'status' ]    = { flag = '-s', desc = 'checks a players access to rlib' },
+        },
+    },
+    [ 'rlib_version' ] =
+    {
+        enabled             = true,
+        id                  = 'rlib.version',
+        name                = 'Version',
+        desc                = 'current running ver of lib',
+        pubc                = '!version',
+        scope               = 2,
+        showsetup           = true,
+        official            = true,
+    },
     [ 'rlib_workshops' ] =
     {
         enabled             = true,
@@ -147,6 +703,17 @@ base.c.commands =
         desc                = 'workshop ids loaded between modules / lib',
         scope               = 2,
         showsetup           = true,
+        official            = true,
+    },
+    [ 'rlib_rnet_reload' ] =
+    {
+        bInternal           = true,
+        enabled             = true,
+        id                  = 'rlib.rnet.reload',
+        name                = 'Reload RNet',
+        desc                = 'reload all registered rnet entries',
+        scope               = 1,
+        showsetup           = false,
         official            = true,
     },
 }

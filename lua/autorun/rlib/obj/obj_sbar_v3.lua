@@ -62,7 +62,7 @@ function PANEL:Init( )
     */
 
     self                            = ui.get( self                          )
-    :sz                             ( 4                                     )
+    :size                           ( 4                                     )
     :param                          ( 'SetAlwaysVisible', false             )
 
 end

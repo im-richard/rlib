@@ -50,16 +50,12 @@ local function ln( ... )
 end
 
 /*
-    log
+    localize output functions
 */
 
 local function log( ... )
     base:log( ... )
 end
-
-/*
-    route
-*/
 
 local function route( ... )
     base.msg:route( ... )
@@ -124,7 +120,7 @@ function base:s_Debug( b )
 end
 
 /*
-    alias > add
+    alias :: add
 
     creates an alias for an object
 
@@ -146,7 +142,7 @@ function base:addalias( src, alias, desc )
 end
 
 /*
-    alias > get
+    alias :: get
 
     gets a defined alias
 
@@ -166,7 +162,7 @@ function base:getalias( alias )
 end
 
 /*
-    alias > rem
+    alias :: rem
 
     removes a defined alias
 
@@ -183,7 +179,6 @@ end
 /*
     checks if the provide arg is a num (int)
 
-    @note   : to deprecate
     @param  : mix obj
     @return : bool
 */
@@ -195,7 +190,6 @@ end
 /*
     checks if the provide arg is a function
 
-    @note   : to deprecate
     @param  : mix obj
     @return : bool
 */
@@ -207,7 +201,6 @@ end
 /*
     checks if the provide arg is a table
 
-    @note   : to deprecate
     @param  : mix obj
     @return : bool
 */
@@ -325,7 +318,6 @@ function base:log( cat, msg, ... )
     */
 
     if not self:g_Debug( ) then
-        if cat == RLIB_LOG_PERM then return end
         if cat == RLIB_LOG_DEBUG then return end
         if cat == RLIB_LOG_CACHE then return end
         if cat == RLIB_LOG_FONT then return end
@@ -355,7 +347,7 @@ function base:log( cat, msg, ... )
 end
 
 /*
-    log > network
+    log :: network
 
     always sends a copy of a message to the server console for view
     use this to track any issues players may have client-side and send them to the console
@@ -385,7 +377,7 @@ function base:log_net( cat, msg, ... )
 end
 
 /*
-    base > isconsole
+    base :: isconsole
 
     checks to see if an action was done by console instead of a player
 
@@ -401,7 +393,7 @@ function base.con:Is( pl )
 end
 
 /*
-    base > console > allow > throw
+    base :: console :: allow :: throw
 
     checks to see if an action was done by console instead of a player
     returns error
@@ -424,7 +416,7 @@ function base.con:ThrowAllow( pl )
 end
 
 /*
-    base > console > allow > block
+    base :: console :: allow :: block
 
     checks to see if an action was done by console instead of a player
     returns error
@@ -447,7 +439,7 @@ function base.con:ThrowBlock( pl )
 end
 
 /*
-    base > console
+    base :: console
 
     can determine if either the console or a player is executing a console command and then return
     output back to that console
@@ -484,7 +476,7 @@ function base:console( pl, ... )
 end
 
 /*
-    base > console > guided
+    base :: console :: guided
 
     displays a message in the players console
     used in conjunction with base.rsay
@@ -556,7 +548,7 @@ function base:resource( mod, t, s, ... )
 end
 
 /*
-    base > translate
+    base :: translate
 
     pulls the proper translation for a specified string
     checks both the specified module and the actual lib language files for the proper translation string
@@ -596,7 +588,7 @@ function base:translate( mod, str, ... )
 end
 
 /*
-    base > language
+    base :: language
 
     provides direct access to rlibs language entries without checking modules first
 
@@ -614,7 +606,7 @@ function base:lang( str, ... )
 end
 
 /*
-    base > language > valid
+    base :: language :: valid
 
     simply checks to see if a provided str may be a possible language match
 
@@ -630,7 +622,7 @@ function base:bValidLanguage( str )
 end
 
 /*
-    base > command
+    base :: command
 
     fetches the base command utilized for the library
 
@@ -642,7 +634,7 @@ function base.get:BaseCmd( )
 end
 
 /*
-    base > rpm > packages
+    base :: rpm :: packages
 
     mounts a package to rlib
 
@@ -664,7 +656,7 @@ function base.get:Rpm( pkg )
 end
 
 /*
-    sys > get connections
+    sys :: get connections
 
     returns number of total connections to server
 
@@ -676,7 +668,7 @@ function base.sys:GetConnections( )
 end
 
 /*
-    sys > get startups
+    sys :: get startups
 
     returns number of startups
 
@@ -688,7 +680,7 @@ function base.sys:GetStartups( )
 end
 
 /*
-    sys > get start time
+    sys :: get start time
 
     returns number of seconds taken to startup server
 
@@ -700,7 +692,7 @@ function base.sys:StartupTime( )
 end
 
 /*
-    sys > fps
+    sys :: fps
 
     returns fps
 
@@ -729,7 +721,7 @@ function base.sys:ThrowErr( pl, msg )
 end
 
 /*
-    sys > debug
+    sys :: debug
 
     toggles debug mode
 
@@ -828,7 +820,7 @@ function base.sys:Debug( ... )
 end
 
 /*
-    rlib > xcr > run
+    rlib :: xcr :: run
 
     executes numerous processes both client and server
 

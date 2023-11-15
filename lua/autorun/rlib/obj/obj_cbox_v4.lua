@@ -46,7 +46,7 @@ function PANEL:Init( )
     self                            = ui.get( self                          )
     :setup                          (                                       )
     :sz                             ( 40, 15                                )
-    :cur                            ( 'hand'                                )
+    :cursor                         ( 'hand'                                )
 end
 
 /*

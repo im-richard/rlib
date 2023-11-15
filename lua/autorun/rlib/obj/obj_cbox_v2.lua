@@ -32,42 +32,40 @@ local design                = base.d
 local ui                    = base.i
 
 /*
-    localization > misc
+*   localization > misc
 */
 
 local cfg                   = base.settings
 local mf                    = base.manifest
 
 /*
-    declarations
-*/
-
-local state, r, g, b, a     = 0, 0, 0, 0, 255
-
-/*
-    PANEL
+*   PANEL
 */
 
 local PANEL = { }
 
 /*
-    Init
+*   Init
 */
 
 function PANEL:Init( )
 
     /*
-        declarations
+    *   declarations
     */
 
-    self                            = ui.get( self                          )
-    :setup                          (                                       )
-    :sz                             ( 50, 40                                )
-    :cur                            ( 'hand'                                )
+    self:Declarations( )
+
+    /*
+    *   parent
+    */
+
+    self:SetSize                    ( 40, 15 )
+    self:SetCursor                  ( 'hand' )
 end
 
 /*
-    FirstRun
+*   FirstRun
 */
 
 function PANEL:FirstRun( )
@@ -79,9 +77,9 @@ function PANEL:FirstRun( )
 end
 
 /*
-    bEnabled
+*   bEnabled
 *
-    @return : bool
+*   @return : bool
 */
 
 function PANEL:bEnabled( )
@@ -89,7 +87,7 @@ function PANEL:bEnabled( )
 end
 
 /*
-    OnMousePressed
+*   OnMousePressed
 */
 
 function PANEL:OnMousePressed( )
@@ -99,7 +97,7 @@ function PANEL:OnMousePressed( )
 end
 
 /*
-    onOptionChanged
+*   onOptionChanged
 */
 
 function PANEL:onOptionChanged( )
@@ -110,64 +108,52 @@ function PANEL:onOptionChanged( )
 end
 
 /*
-    PerformLayout
+*   PerformLayout
 */
 
 function PANEL:PerformLayout( )
 
     /*
-        initialize only
+    *   initialize only
     */
 
     if not self.bInitialized then
         self:FirstRun( )
     end
-
-    self:SetWide( self:GetWidth( ) )
-    self:SetTall( self:GetHeight( ) )
 end
 
 /*
-    Paint
-
-    @param  : int w
-    @param  : int h
+*   Paint
+*
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:Paint( w, h )
-    state, r, g, b          = design.rgb( state, r, g, b )
-    local clr_main          = self.hover and self:GetClrBGHover( ) or self:GetClrBG( )
-    local clr_togg_n        = ( self:bEnabled( ) and self:GetClrEnabled( ) ) or self:GetClrDisabled( )
 
-    if ( self:bEnabled( ) and self:GetRGB( ) ) then
-        clr_togg_n          = Color( r, g, b, 255 )
-    end
-
-    local clr_togg_h        = self.clr_togg_h
+    local clr_main      = self.hover and self.clr_main_h or self.clr_main_n
+    local clr_togg_n    = ( self:bEnabled( ) and self.clr_togg_e ) or self.clr_togg_n
+    local clr_togg_h    = self.clr_togg_h
 
     design.rbox( 8, 0, 0, w, h, clr_main )
 
-    local sz_bullet_h       = h / 3
-    local i_smooth          = 30
-    local i_pad             = 13
-
     if self:bEnabled( ) then
-        design.circle( w - i_pad, ( h / 2 ) + ( sz_bullet_h / 2 ) - ( sz_bullet_h / 2 ), sz_bullet_h, i_smooth, clr_togg_n )
+        design.circle( w - 10, 10, 7, 25, clr_togg_n )
         if self.hover then
-            design.circle( w - i_pad, ( h / 2 ) + ( sz_bullet_h / 2 ) - ( sz_bullet_h / 2 ), sz_bullet_h, i_smooth, clr_togg_h )
+            design.circle( w - 10, 10, 7, 25, clr_togg_h )
         end
     else
-        design.circle( i_pad, ( h / 2 ) + ( sz_bullet_h / 2 ) - ( sz_bullet_h / 2 ), sz_bullet_h, i_smooth, clr_togg_n )
+        design.circle( 10, 10, 7, 25, clr_togg_n )
         if self.hover then
-            design.circle( i_pad, ( h / 2 ) + ( sz_bullet_h / 2 ) - ( sz_bullet_h / 2 ), sz_bullet_h, i_smooth, clr_togg_h )
+            design.circle( 10, 10, 7, 25, clr_togg_h )
         end
     end
 end
 
 /*
-    cvar > set
-
-    @param  : str cvar
+*   cvar > set
+*
+*   @param  : str cvar
 */
 
 function PANEL:SetCVar( cvar )
@@ -175,9 +161,9 @@ function PANEL:SetCVar( cvar )
 end
 
 /*
-    cvar > get
-
-    @return : str
+*   cvar > get
+*
+*   @return : str
 */
 
 function PANEL:GetCVar( )
@@ -185,169 +171,26 @@ function PANEL:GetCVar( )
 end
 
 /*
-    width > set
-
-    @param  :   int             i
+*   Declarations
 */
 
-function PANEL:SetWidth( i )
-    self.sz_w = i
-end
+function PANEL:Declarations( )
 
-/*
-    width > get
-
-    @return :   int
-*/
-
-function PANEL:GetWidth( )
-    return self.sz_w or 50
-end
-
-/*
-    height > set
-
-    @param  :   int             i
-*/
-
-function PANEL:SetHeight( i )
-    self.sz_h = i
-end
-
-/*
-    height > get
-
-    @return :   int
-*/
-
-function PANEL:GetHeight( )
-    return self.sz_h or 40
-end
-
-/*
-    background > color > set
-
-    @param  :   clr             clr
-*/
-
-function PANEL:SetClrBG( clr )
-    self.clr_bg_n = clr
-end
-
-/*
-    background > color > get
-
-    @param  :   clr             clr
-*/
-
-function PANEL:GetClrBG( )
-    return self.clr_bg_n or self.clr_main_n
-end
-
-/*
-    background > normal > color > set
-
-    @param  :   clr             clr
-*/
-
-function PANEL:SetClrBGHover( clr )
-    self.clr_bg_h = clr
-end
-
-/*
-    background > hover > color > get
-
-    @param  :   clr             clr
-*/
-
-function PANEL:GetClrBGHover( )
-    return self.clr_bg_h or self.clr_main_h
-end
-
-/*
-    enabled > color > set
-
-    @param  :   clr             clr
-*/
-
-function PANEL:SetClrEnabled( clr )
-    self.clr_enabled = clr
-end
-
-/*
-    enabled > color > get
-
-    @param  :   clr             clr
-*/
-
-function PANEL:GetClrEnabled( )
-    return self.clr_enabled or self.clr_togg_e
-end
-
-/*
-    disabled > color > set
-
-    @param  :   clr             clr
-*/
-
-function PANEL:SetClrDisabled( clr )
-    self.clr_disabled = clr
-end
-
-/*
-    disabled > color > get
-
-    @param  :   clr             clr
-*/
-
-function PANEL:GetClrDisabled( )
-    return self.clr_disabled or self.clr_togg_n
-end
-
-/*
-    rgb > set
-
-    @param  :   clr             clr
-*/
-
-function PANEL:SetRGB( b )
-    self.bRgb = helper:val2bool( b )
-end
-
-/*
-    rgb > get
-
-    @param  :   clr             clr
-*/
-
-function PANEL:GetRGB( )
-    return self.bRgb or false
-end
-
-
-
-/*
-    Declarations
-*/
-
-function PANEL:_Declare( )
     self.bInitialized               = false
+
+    /*
+    *   declare > colors
+    */
+
+    self.clr_main_n                 = Color( 255, 255, 255, 5 )
+    self.clr_main_h                 = Color( 255, 255, 255, 9 )
+    self.clr_togg_n                 = Color( 214, 103, 144 )
+    self.clr_togg_e                 = Color( 103, 136, 214 )
+    self.clr_togg_h                 = Color( 255, 255, 255, 30 )
 end
 
 /*
-    colorize
-*/
-
-function PANEL:_Colorize( )
-    self.clr_main_n                 = rclr.Hex( 'FFFFFF', 5 )
-    self.clr_main_h                 = rclr.Hex( 'FFFFFF', 9 )
-    self.clr_togg_n                 = rclr.Hex( 'bd3567' )
-    self.clr_togg_e                 = rclr.Hex( '6788d6' )
-    self.clr_togg_h                 = rclr.Hex( 'FFFFFF', 30 )
-end
-
-/*
-    register
+*   register
 */
 
 vgui.Register( 'rlib.ui.cbox.v2', PANEL, 'EditablePanel' )

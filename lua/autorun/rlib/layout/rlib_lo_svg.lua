@@ -69,12 +69,12 @@ local PANEL = { }
 function PANEL:Init( )
     if not mf.astra.svg.stats then return end
 
-    self:SetSize                    ( 1, 1 )
+    self:SetSize            ( 1, 1 )
 
-    self.svg                        = ui.new( 'dhtml', self                 )
-    :fill                           ( 'm', 0, 0, 0, 0                       )
-    :sbar                           ( false                                 )
-    :svg                            ( mf.astra.svg.stats                    )
+    self.svg                = ui.new( 'dhtml', self     )
+    :static                 ( FILL                      )
+    :sbar                   ( false                     )
+    :svg                    ( mf.astra.svg.stats        )
 
 end
 

@@ -62,17 +62,23 @@ function PANEL:Init( )
 
     self                            = ui.get( self                          )
     :setup                          (                                       )
-    :minmax                         ( 1, 10                                 )
-    :dec                            ( 0                                     )
-    :val                            ( self:GetMin( )                        )
-    :slide_x                        ( self:GetFraction( )                   )
-    :knobstate                      ( false                                 )
+
+    self:SetMin                     ( 1 )
+    self:SetMax                     ( 10 )
+    self:SetDecimals                ( 0 )
+
+    self.Dragging                   = true
+    self.Knob.Depressed             = true
+
+    self:SetValue                   ( self:GetMin( ) )
+    self:SetSlideX                  ( self:GetFraction( ) )
+
+    self.Dragging                   = false
+    self.Knob.Depressed             = false
 
     function self.Knob:Paint( w, h )
-        local par                   = self:GetParent( )
-        par.sz_bullet_h             = h / par:GetKnobSize( )
-
-        design.circle( w - par.i_pad, ( h / 2 ) + ( par.sz_bullet_h / 2 ) - ( par.sz_bullet_h / 2 ), par.sz_bullet_h, self.i_smooth, par:GetKnobColor( ) or Color( 255, 255, 255, 255 ) )
+        design.circle( ( w / 2 ), ( h / 2 ) + 3, 8, 25, self:GetParent( ).clr_knob_o )
+        design.circle( ( w / 2 ), ( h / 2 ) + 3, 6, 25, self:GetParent( ):GetKnobColor( ) )
     end
 end
 
@@ -177,46 +183,6 @@ function PANEL:SetBarColor( clr )
 end
 
 /*
-    size > set
-
-    @param  :   int             i
-*/
-
-function PANEL:SetKnobSize( i )
-    self.sz_knob = i
-end
-
-/*
-    width > get
-
-    @return :   int
-*/
-
-function PANEL:GetKnobSize( )
-    return self.sz_knob or 3
-end
-
-/*
-    bar height > set
-
-    @param  :   int             i
-*/
-
-function PANEL:SetBarHeight( i )
-    self.sz_bar = i
-end
-
-/*
-    bar height > get
-
-    @return :   int
-*/
-
-function PANEL:GetBarHeight( )
-    return self.sz_bar or 2
-end
-
-/*
     Paint
 
     @param  : int w
@@ -224,10 +190,8 @@ end
 */
 
 function PANEL:Paint( w, h )
-    local barcolor  = self:GetBarColor( )
-    local sz_bar_h  = self:GetBarHeight( )
-
-    design.obox( 0, ( h / 2 ) - sz_bar_h, w, sz_bar_h, barcolor, barcolor )
+    local barcolor = self:GetBarColor( )
+    design.obox( 0, ( h / 2 ) - ( 2 / 2 ) + 3, w, 2, Color( 0, 0, 0, 0 ), barcolor )
 end
 
 /*
@@ -239,10 +203,9 @@ end
 
 function PANEL:PaintOver( w, h )
     if ( self.Hovered or self.Knob.Hovered or self.Knob.Depressed ) and self:GetValue( ) and isnumber( self:GetValue( ) ) then
-        self.sz_bullet_h            = h / self:GetKnobSize( )
-        surface.DisableClipping     ( true )
-        draw.SimpleText             ( self:GetValue( ), 'rlib_ui_slider_hovertip', self.Knob.x + ( self.Knob:GetWide( ) / 2 ) - ( self.Knob:GetWide( ) / 2 ), self.Knob.y - ( self.Knob:GetTall( ) ) - 5, self.clr_text_h, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        surface.DisableClipping     ( false )
+        surface.DisableClipping( true )
+        draw.SimpleText( self:GetValue( ), 'rlib_ui_slider_hovertip', self.Knob.x + self.Knob:GetWide( ) / 2 - 2, self.Knob.y - 10, self.clr_text_h, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        surface.DisableClipping( false )
     end
 end
 
@@ -251,9 +214,7 @@ end
 */
 
 function PANEL:_Declare( )
-    self.i_smooth                   = 30
-    self.i_pad                      = 13
-    self.sz_bullet_h                = 0
+
 end
 
 /*
@@ -261,10 +222,10 @@ end
 */
 
 function PANEL:_Colorize( )
-    self.clr_knob_o                 = rclr.Hex( 'FFFFFF' )
-    self.clr_knob_i                 = rclr.Hex( 'FFFFFF' )
-    self.clr_bar                    = rclr.Hex( 'FFFFFF' )
-    self.clr_text_h                 = rclr.Hex( 'FFFFFF' )
+    self.clr_knob_o         = rclr.Hex( 'FFFFFF' )
+    self.clr_knob_i         = rclr.Hex( 'FFFFFF' )
+    self.clr_bar            = rclr.Hex( 'FFFFFF' )
+    self.clr_text_h         = rclr.Hex( 'FFFFFF' )
 end
 
 /*

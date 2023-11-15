@@ -118,10 +118,11 @@ function PANEL:Init( )
     */
 
     self.ticker                 = ui.new( 'lbl', self           )
-    :top                        ( 'm', 0                        )
+    :static                     ( TOP                           )
+    :margin                     ( 0, 0, 0                       )
     :textadv                    ( clr, pref( 'welcome_ticker' ), entry, true )
 
-                                :logic( function( s )
+                                :think( function( s )
                                     if not self.bInitialized then
                                         expire( 'rlib_ticker' )
                                     end

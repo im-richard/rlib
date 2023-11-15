@@ -38,218 +38,211 @@ local cfg                   = base.settings
     language
 */
 
-local function ln( ... )
+local function lang( ... )
     return base:lang( ... )
 end
 
 /*
-    prefix ids
+*	prefix ids
 */
 
-local function pid( str, suffix )
+local function pref( str, suffix )
     local state = ( isstring( suffix ) and suffix ) or ( base and base.manifest.prefix ) or false
     return base.get:pref( str, state )
 end
 
 /*
-    panel
+*   panel
 */
 
-local X = { }
+local PANEL = { }
 
 /*
-    accessorfunc
+*   accessorfunc
 */
 
-AccessorFunc( X, 'm_bDraggable', 'Draggable', FORCE_BOOL )
+AccessorFunc( PANEL, 'm_bDraggable', 'Draggable', FORCE_BOOL )
 
 /*
     _Declare
 */
 
-function X:_Declare( )
-    self._w, self._h                = 450 * rfs.w( ), 200 * rfs.h( )
-    self.sz_min                     = 0.85
-    self.sz_desc                    = 70 * rfs.h( )
-    self.sz_cbo_h                   = 43 * rfs.h( )
-    self.sz_hdr_h                   = 40 * rfs.h( )
+function PANEL:_Declare( )
+    self.sz_desc                    = RSH( ) *  0.065
+    self.sz_cbo_h                   = RSH( ) *  0.038
 end
 
 /*
     _Call
 */
 
-function X:_Call( )
+function PANEL:_Call( )
     self.cv_lang                    = cvar:GetStr( 'rlib_language' )
     self.cv_lang_hu                 = cfg.langlst[ self.cv_lang ] or self.cv_lang
-
-    /*
-        localized declarations
-    */
-
-    self.bIsPopulated               = false
-    self.bNoFocus                   = false
-
 end
 
 /*
     _Colorize
 */
 
-function X:_Colorize( )
-    self.clr_cbo_box_h              = rclr.Hex( 'FFFFFF', 2 )
-    self.clr_cbo_item_n             = rclr.Hex( '191919' )
-    self.clr_cbo_item_h             = rclr.Hex( 'FFFFFF', 2 )
-    self.clr_cbo_txt_n              = rclr.Hex( '#FFFFFF' )
-
-    self.clr_cbo_box_n_o            = rclr.Hex( '434343' )
-    self.clr_cbo_box_n_i            = rclr.Hex( '141414' )
-
-    self.clr_box_body               = rclr.Hex( '282828' )
-    self.clr_box_header             = rclr.Hex( '1e1e1e' )
-    self.clr_box_outline            = rclr.Hex( '4a4a4a', 255 )
-    self.clr_btn_exit_n             = rclr.Hex( 'ededed' )
-    self.clr_btn_exit_h             = rclr.Hex( 'c83737' )
-    self.clr_txt                    = rclr.Hex( 'FFFFFF' )
-    self.clr_title                  = rclr.Hex( 'f9456a' )
-    self.clr_ico                    = rclr.Hex( 'f9456a' )
-    self.clr_dt_txt                 = rclr.Hex( '#FFFFFF' )
-    self.clr_dt_cur                 = rclr.Hex( '#e31d6e' )
-    self.clr_dt_hli                 = rclr.Hex( '#9b2052' )
+function PANEL:_Colorize( )
+    self.clr_cbo_box_h              = Color( 255, 255, 255, 2 )
+    self.clr_cbo_item_n             = Color( 25, 25, 25, 255 )
+    self.clr_cbo_item_h             = Color( 255, 255, 255, 2 )
+    self.clr_cgo_txt_n              = Color( 255, 255, 255, 255 )
 end
 
 /*
-    initialize
+*   initialize
 */
 
-function X:Init( )
+function PANEL:Init( )
 
     /*
-        parent pnl
+    *   sizing
+    */
+
+    local sc_w, sc_h                = ui:scalesimple( 0.85, 0.85, 0.90 ), ui:scalesimple( 0.85, 0.85, 0.90 )
+    local pnl_w, pnl_h              = 500, 200
+    local ui_w, ui_h                = sc_w * pnl_w, sc_h * pnl_h
+    local min_sz                    = 0.85
+
+    /*
+    *   localized colorization
+    */
+
+    local clr_cur                   = Color( 200, 200, 200, self.Alpha )
+    local clr_text                  = Color( 255, 255, 255, self.Alpha )
+    local clr_hl                    = Color( 25, 25, 25, self.Alpha )
+
+    /*
+    *   parent pnl
     */
 
     self                            = ui.get( self                          )
     :setup                          (                                       )
     :shadow                         ( true                                  )
-    :sz                             ( self._w, self._h                      )
-    :wmin                           ( self._w * self.sz_min                 )
-    :hmin                           ( self._h * self.sz_min                 )
+    :sz                             ( ui_w, ui_h                            )
+    :minwide                        ( ui_w * min_sz                         )
+    :mintall                        ( ui_h * min_sz                         )
     :popup                          (                                       )
     :notitle                        (                                       )
-    :canresize                      ( false                                 )
     :showclose                      ( false                                 )
-    :scrlock                        ( true                                  )
-    :padding                        ( 2, 34, 2, 3                           )
-    :anim_fadein                    (                                       )
 
     /*
-        titlebar
+    *   localized declarations
     */
 
-    self.lblTitle                   = ui.new( 'lbl', self                   )
-    :notext                         (                                       )
-    :font                           ( pid( 'elm_hdr_title' )                )
-    :clr                            ( self.clr_title                        )
+    self.bIsPopulated               = false
+    self.bNoFocus                   = false
+
+    /*
+    *   display parent :: static || animated
+    */
+
+    if cvar:GetBool( 'rlib_animations_enabled' ) then
+        self:SetPos( ( ScrW( ) / 2 ) - ( ui_w / 2 ), ScrH( ) + ui_h )
+        self:MoveTo( ( ScrW( ) / 2 ) - ( ui_w / 2 ), ( ScrH( ) / 2 ) - (  ui_h / 2 ), 0.4, 0, -1 )
+    else
+        self:SetPos( ( ScrW( ) / 2 ) - ( ui_w / 2 ), ( ScrH( ) / 2 ) - (  ui_h / 2 ) )
+    end
+
+    /*
+    *   titlebar
+    */
+
+    self.lblTitle                   = ui.new( 'lbl', self               )
+    :notext                         (                                   )
+    :font                           ( pref( 'lang_title' )              )
+    :clr                            ( Color( 255, 255, 255, 255 )       )
 
                                     :draw( function( s, w, h )
-                                        draw.SimpleText( helper.get:utf8( 'title' ), pid( 'elm_hdr_icon' ), 0, h / 2, self.clr_ico, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
-                                        draw.SimpleText( self:GetEpithet( ), pid( 'elm_hdr_title' ), 28, h / 2 + 2, self.clr_title, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        if not self.title or self.title == '' then return end
+                                        draw.SimpleText( utf8.char( 9930 ), pref( 'lang_icon' ), 0, 8, Color( 240, 72, 133, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+                                        draw.SimpleText( self.title, pref( 'lang_title' ), 25, h / 2, Color( 237, 237, 237, 255 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-        close button
-
-        to overwrite existing properties from the skin; do not change this
-        buttons name to anything other than btnClose otherwise it wont
-        inherit position/size properties
+    *   close button
+    *
+    *   to overwrite existing properties from the skin; do not change this
+    *   buttons name to anything other than btnClose otherwise it wont
+    *   inherit position/size properties
     */
 
-    self.btnClose                   = ui.obj( 'btn', self                   )
+    self.btnClose                   = ui.new( 'btn', self                   )
     :bsetup                         (                                       )
     :notext                         (                                       )
-    :tooltip                        ( ln( 'tip_close_window' )              )
+    :tooltip                        ( lang( 'tooltip_close' )               )
     :ocr                            ( self                                  )
 
                                     :draw( function( s, w, h )
-                                        local clr_txt = s.hover and self.clr_btn_exit_h or self.clr_btn_exit_n
-                                        draw.SimpleText( helper.get:utf8( 'close' ), pid( 'elm_hdr_exit' ), w / 2 - 5, h / 2 + 8, clr_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                                        local clr_txt = s.hover and Color( 200, 55, 55, 255 ) or Color( 237, 237, 237, 255 )
+                                        draw.SimpleText( helper.get:utf8( 'close' ), pref( 'lang_close' ), w / 2, h / 2 + 4, clr_txt, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
                                     end )
 
     /*
-        sub
+    *   subparent pnl
     */
 
-    self.sub                        = ui.obj( 'pnl', self, 1                )
+    self.p_subparent                = ui.new( 'pnl', self                   )
+    :nodraw                         (                                       )
     :fill                           ( 'm', 0, 10, 0                         )
 
     /*
-        body
+    *   body
     */
 
-    self.body                       = ui.obj( 'pnl', self.sub, 1            )
+    self.p_body                     = ui.new( 'pnl', self.p_subparent       )
+    :nodraw                         (                                       )
     :fill                           ( 'm', 10, 5, 10, 5                     )
 
     /*
-        txt > body
+    *   dtxt_desc
     */
 
-    self.dt_body                    = ui.obj( 'pnl', self.body, 1           )
-    :fill                           ( 'm', 0, 5, 0, 5                       )
-
-    /*
-        txt > body > sub
-    */
-
-    self.dt_sub                     = ui.obj( 'pnl', self.dt_body, 1        )
-    :fill                           ( 'm', 8, 5, 8, 5                       )
-
-    /*
-        txt > desc
-    */
-
-    self.dt_desc                    = ui.obj( 'dt', self.dt_sub             )
-    :top                            ( 'm', 0                                )
+    self.dtxt_desc                  = ui.new( 'entry', self.p_body          )
+    :top                            ( 'm', 3                                )
     :tall                           ( self.sz_desc                          )
     :drawbg                         ( false                                 )
     :mline	                        ( true 				                    )
     :canedit                        ( true                                  )
-    :txt	                        ( ln( 'lang_sel_desc' ), self.clr_txt, pid( 'lang_desc' ) )
-    :drawentry                      ( self.clr_text, self.clr_cur, self.clr_hl )
+    :scur	                        ( Color( 255, 255, 255, 255 ), 'beam'   )
+    :txt	                        ( lang( 'lang_sel_desc' ), Color( 255, 255, 255, 255 ), pref( 'lang_desc' ) )
+    :drawentry                      ( clr_text, clr_cur, clr_hl             )
     :canedit                        (                                       )
 
     /*
-        dcbox :: languages
+    *   dcbox :: languages
     */
 
-    self.cbo_lang                   = ui.obj( 'rlib.ui.cbo', self.dt_sub    )
+    self.dcb_combine                = ui.new( 'rlib.ui.cbo', self.p_body    )
     :top                            ( 'm', 0, 3, 0, 3                       )
     :tall                           ( self.sz_cbo_h                         )
-    :val                            ( self.cv_lang_hu                       )
-    :font                           ( pid( 'lang_item' )                    )
+    :value                          ( self.cv_lang_hu                       )
+    :font                           ( pref( 'lang_item' )                   )
     :param                          ( 'SetOptionHeight', 32                 )
-    :param                          ( 'SetDefault', 'en'                    )
-    :param                          ( 'SetConvar', 'rlib_language'          )
 
                                     :draw( function( s, w, h )
-                                        design.rbox( 4, 0, 0, w, h, self.clr_cbo_box_n_o )
+                                        design.rbox( 4, 0, 0, w, h, Color( 67, 67, 67, 255 ) )
 
-                                        local clr_box = self.clr_cbo_box_n_i
+                                        local clr_box = Color( 20, 20, 20, 255 )
                                         design.rbox( 4, 1, 1, w - 2, h - 2, clr_box )
 
-                                        if s.hover then
+                                        if s:IsHovered( ) then
                                             design.box( 0, 0, w, h, self.clr_cbo_box_h )
                                         end
 
-                                        s:SetFont       ( pid( 'lang_cbo_sel' ) )
-                                        s:SetTextColor  ( self.clr_cbo_txt_n    )
-                                        s:SetTextInset  ( 10, 0                 )
+                                        s:SetFont       ( pref( 'lang_cbo_sel' ) )
+                                        s:SetTextColor  ( self.clr_cgo_txt_n )
+                                        s:SetTextInset  ( 10, 0 )
                                     end )
 
     /*
-        dcbox :: populate values
+    *   dcbox :: populate values
     *
-        will display all available languages based on the translations provided
-        only shows the language itself, which is only valid if in a table structure
+    *   will display all available languages based on the translations provided
+    *   only shows the language itself, which is only valid if in a table structure
     */
 
     local sel_langs = { }
@@ -263,24 +256,85 @@ function X:Init( )
 
     for i in helper.get.data( sel_langs ) do
         local lang = cfg.langlst[ i ] or i
-        self.cbo_lang:AddChoice( lang, i )
+        self.dcb_combine:AddChoice( lang, i )
     end
+
+    /*
+    *   dcbox :: set cvar id
+    */
+
+    self.dcb_combine.convarname = 'rlib_language'
+    self.dcb_combine.OnSelect = function( s, index, value, data )
+        data = data ~= nil and data or 'en'
+        local getcvar = GetConVar( s.convarname )
+        getcvar:SetString( data )
+    end
+
+    /*
+    *   dcbox :: doclick
+    */
+
+    self.dcb_combine.DoClick = function( s )
+        if s:IsMenuOpen( ) then return s:CloseMenu( ) end
+        s:OpenMenu( )
+
+        for _, v in pairs( s.Menu:GetChildren( )[ 1 ]:GetChildren( ) ) do
+            v.Paint = function( a, b, c )
+                design.box( 0, 0, b, c, self.clr_cbo_item_n )
+
+                if not a.m_bNoHover and a.Hovered then
+                    design.box( 0, 0, b, c, self.clr_cbo_item_h )
+                end
+            end
+        end
+    end
+
+    /*
+    *   dcbox :: action :: openmenu
+    */
+
+    self.dcb_combine.OpenMenu = function( s, pControlOpener )
+        if ( pControlOpener and pControlOpener == self.TextEntry ) then return end
+        if ( #s.Choices == 0 ) then return end
+
+        if ui:ok( s.Menu ) then
+            s.Menu:Remove( )
+            s.Menu = nil
+        end
+
+        s.Menu = DermaMenu( false, s )
+
+        /*
+        *   sort all combo options and add to list
+        */
+
+        local sorted = { }
+        for k, v in pairs( s.Choices ) do table.insert( sorted, { id = k, data = v } ) end
+        for k, v in SortedPairsByMemberValue( sorted, 'data' ) do
+            local p             = s.Menu:AddOption( v.data, function( ) s:ChooseOption( v.data, v.id ) end )
+            p:SetFont           ( pref( 'lang_cbo_opt' ) )
+            p:SetTextColor      ( self.clr_cgo_txt_n )
+        end
+
+        local x, y = s:LocalToScreen( 0, s:GetTall( ) )
+        s.Menu:SetMinimumWidth( s:GetWide( ) )
+        s.Menu:Open( x, y, false, s )
+    end
+
 end
 
 /*
-    Think
+*   Think
 */
 
-function X:Think( )
+function PANEL:Think( )
     self.BaseClass.Think( self )
 
-    self.allow_resize = self:GetSizable( ) or false
-
     /*
-        check focus and react accordingly
-        if console is open and interface doesnt have focus, mouse cursor can disappear and make the
-        activating player stuck. setting populated false will wait for dialog to have focus again and
-        then make cursor re-appear
+    *   check focus and react accordingly
+    *   if console is open and interface doesnt have focus, mouse cursor can disappear and make the
+    *   activating player stuck. setting populated false will wait for dialog to have focus again and
+    *   then make cursor re-appear
     */
 
     if input.IsKeyDown( KEY_ESCAPE ) or gui.IsGameUIVisible( ) then
@@ -290,7 +344,7 @@ function X:Think( )
     end
 
     /*
-        initial population
+    *   initial population
     */
 
     if not self.bIsPopulated then
@@ -298,34 +352,25 @@ function X:Think( )
         self.bIsPopulated = true
     end
 
-    self:MoveToFront( )
-
     local mousex = math.Clamp( gui.MouseX( ), 1, ScrW( ) - 1 )
     local mousey = math.Clamp( gui.MouseY( ), 1, ScrH( ) - 1 )
 
     if self.Dragging then
-        local x         = mousex - self.Dragging[ 1 ]
-        local y         = mousey - self.Dragging[ 2 ]
-        local pos_s     = 0
-
-        local clamping =
-        {
-            x = 0,
-            y = ScrH( ) - self:GetTall( ),
-        }
+        local x = mousex - self.Dragging[ 1 ]
+        local y = mousey - self.Dragging[ 2 ]
 
         if self:GetScreenLock( ) then
             x = math.Clamp( x, 0, ScrW( ) - self:GetWide( ) )
-            y = math.Clamp( y, pos_s, clamping.y )
+            y = math.Clamp( y, 0, ScrH( ) - self:GetTall( ) )
         end
 
         self:SetPos( x, y )
     end
 
     if self.Sizing then
-        local x         = mousex - self.Sizing[ 1 ]
-        local y         = mousey - self.Sizing[ 2 ]
-        local px, py    = self:GetPos( )
+        local x = mousex - self.Sizing[ 1 ]
+        local y = mousey - self.Sizing[ 2 ]
+        local px, py = self:GetPos( )
 
         if ( x < self.m_iMinWidth ) then x = self.m_iMinWidth elseif ( x > ScrW( ) - px and self:GetScreenLock( ) ) then x = ScrW( ) - px end
         if ( y < self.m_iMinHeight ) then y = self.m_iMinHeight elseif ( y > ScrH( ) - py and self:GetScreenLock( ) ) then y = ScrH( ) - py end
@@ -340,7 +385,7 @@ function X:Think( )
         return
     end
 
-    if ( self.Hovered and self:GetDraggable( ) and mousey < ( self.y + 24 + self.sz_hdr_h ) ) then
+    if ( self.Hovered and self:GetDraggable( ) and mousey < ( self.y + 24 ) ) then
         self:SetCursor( 'sizeall' )
         return
     end
@@ -352,10 +397,10 @@ function X:Think( )
 end
 
 /*
-    OnMousePressed
+*   OnMousePressed
 */
 
-function X:OnMousePressed( )
+function PANEL:OnMousePressed( )
     if ( self.m_bSizable and gui.MouseX( ) > ( self.x + self:GetWide( ) - 20 ) and gui.MouseY( ) > ( self.y + self:GetTall( ) - 20 ) ) then
         self.Sizing =
         {
@@ -366,7 +411,7 @@ function X:OnMousePressed( )
         return
     end
 
-    if ( self:GetDraggable( ) and gui.MouseY( ) < ( self.y + self.sz_hdr_h ) ) then
+    if ( self:GetDraggable( ) and gui.MouseY( ) < ( self.y + 24 ) ) then
         self.Dragging =
         {
             gui.MouseX( ) - self.x,
@@ -378,105 +423,87 @@ function X:OnMousePressed( )
 end
 
 /*
-    OnMouseReleased
+*   OnMouseReleased
 */
 
-function X:OnMouseReleased( )
-    self.Dragging   = nil
-    self.Sizing     = nil
+function PANEL:OnMouseReleased( )
+    self.Dragging = nil
+    self.Sizing = nil
     self:MouseCapture( false )
 end
 
 /*
-    PerformLayout
+*   PerformLayout
 */
 
-function X:PerformLayout( )
-    local pos = 0
+function PANEL:PerformLayout( )
+    local titlePush = 0
     self.BaseClass.PerformLayout( self )
 
-    self.lblTitle:SetPos    ( 15 + pos, 0 )
-    self.lblTitle:SetSize   ( self:GetWide( ) - 25 - pos, self.sz_hdr_h + 4 )
-    self.btnClose:SetSize   ( 29, 29 )
-    self.btnClose:SetPos    ( self:GetWide( ) - 40 , 2 )
+    self.lblTitle:SetPos( 11 + titlePush, 7 )
+    self.lblTitle:SetSize( self:GetWide( ) - 25 - titlePush, 20 )
 end
 
 /*
-    Paint
+*   Paint
 */
 
-function X:Paint( w, h )
-
-    /*
-        background blur
-    */
-
-    Derma_DrawBackgroundBlur( self, self.m_fCreateTime )
-
-    /*
-        interface
-    */
-
-    design.rbox_adv( 4, 0, 0, w, h, self.clr_box_outline, true, true, true, true )
-    design.rbox( 4, 4, 4, w - 8, h - 8, self.clr_box_body )
-    design.rbox_adv( 4, 6, 6, w - 12, self.sz_hdr_h, self.clr_box_header, true, true, false, false )
+function PANEL:Paint( w, h )
+    design.rbox( 4, 0, 0, w, h, Color( 40, 40, 40, 255 ) )
+    design.rbox_adv( 4, 2, 2, w - 4, 34 - 4, Color( 30, 30, 30, 255 ), true, true, false, false )
 end
 
 /*
-    epithet > set
-
-    @param      :   str         str
+*   ActionHide
 */
 
-function X:SetEpithet( str )
-    self.epithet_name = str
-    self.lblTitle:SetText( '' )
-end
-
-/*
-    epithet > get
-
-    @return     :   str
-*/
-
-function X:GetEpithet( )
-    return ( not helper.str:isempty( self.epithet_name ) and self.epithet_name ) or ln( 'lang_sel_title' )
-end
-
-/*
-    ActionHide
-*/
-
-function X:ActionHide( )
+function PANEL:ActionHide( )
     self:SetMouseInputEnabled( false )
     self:SetKeyboardInputEnabled( false )
 end
 
 /*
-    ActionShow
+*   ActionShow
 */
 
-function X:ActionShow( )
+function PANEL:ActionShow( )
     self:SetMouseInputEnabled( true )
     self:SetKeyboardInputEnabled( true )
 end
 
 /*
-    Destroy
+*   GetTitle
 */
 
-function X:Destroy( )
+function PANEL:GetTitle( )
+    return self.title
+end
+
+/*
+*   SetTitle
+*/
+
+function PANEL:SetTitle( strTitle )
+    self.lblTitle:SetText( '' )
+    self.title = strTitle
+end
+
+/*
+*   Destroy
+*/
+
+function PANEL:Destroy( )
     ui:destroy( self, true, true )
 end
 
 /*
-    SetState
+*   SetState
 *
-    @param  : bool bVisible
+*   @param  : bool bVisible
 */
 
-function X:SetState( b )
-    if b then
+function PANEL:SetState( bVisible )
+    if bVisible then
         ui:show( self, true )
         self:ActionShow( )
     else
@@ -486,7 +513,7 @@ function X:SetState( b )
 end
 
 /*
-    register
+*   register
 */
 
-vgui.Register( 'rlib.lo.language', X, 'DFrame' )
+vgui.Register( 'rlib.lo.language', PANEL, 'DFrame' )

@@ -32,7 +32,7 @@ local design                = base.d
 local ui                    = base.i
 
 /*
-    loalization > misc
+*   loalization > misc
 */
 
 local mf                    = base.manifest
@@ -48,13 +48,77 @@ local function pref( str, suffix )
 end
 
 /*
-    panels
+*	panels
 */
 
 local PANEL = { }
 
 /*
-    FirstRun
+*	init
+*/
+
+function PANEL:Init( )
+
+    /*
+    *	parent
+    */
+
+    self:DockMargin                 ( 0, 0, 0, 0                            )
+
+    /*
+    *	scroll
+    */
+
+    self.Scroll                     = ui.new( 'rlib.elm.sp.v2', self        )
+    :fill                           (                                       )
+    :param                          ( 'SetbElastic', true                   )
+    :param                          ( 'SetGripColor', self:GetGripColor( )  )
+    :param                          ( 'SetAlwaysVisible', true )
+
+end
+
+/*
+*   data > set
+*
+*   @param  : str txt
+*/
+
+function PANEL:SetData( txt, ir )
+
+    /*
+    *   data > define
+    */
+
+    local content                   = self:SetContent( txt )
+    local clr                       = self:GetTextColor( )
+    local font                      = self:GetFont( )
+    ir                              = isnumber( ir ) and ir or 0
+
+    /*
+    *   data > container
+    */
+
+    self.ct                         = ui.new( 'pnl', self.Scroll, 1         )
+    :fill                           (                                       )
+
+    /*
+    *   data > entry
+    */
+
+    self.entry                      = ui.new( 'entry', self.ct              )
+    :fill                           ( 'm', 0, 0, ir, 0                      )
+    :text                           ( self.content                          )
+    :mline                          ( true                                  )
+    :drawbg                         ( false                                 )
+    :enabled                        ( true                                  )
+    :font                           ( font                                  )
+    :textclr                        ( clr                                   )
+    :canedit                        ( false                                 )
+
+end
+
+/*
+*   FirstRun
 */
 
 function PANEL:FirstRun( )
@@ -66,80 +130,15 @@ function PANEL:FirstRun( )
 end
 
 /*
-    init
-*/
-
-function PANEL:Init( )
-
-    /*
-        parent
-    */
-
-    self:DockMargin                 ( 0, 0, 0, 0 )
-
-    /*
-        scroll
-    */
-
-    self.Scroll                     = ui.new( 'rlib.elm.sp.v2', self        )
-    :fill                           (                                       )
-    :param                          ( 'SetbElastic', true                   )
-    :param                          ( 'SetGripColor', self:GetGripColor( )  )
-    :param                          ( 'SetTrackColor', self:GetTrackColor( ) )
-    :param                          ( 'SetAlwaysVisible', true              )
-
-end
-
-/*
-    data > set
-
-    @param  : str txt
-*/
-
-function PANEL:SetData( txt, ir )
-
-    /*
-        data > define
-    */
-
-    local content                   = self:SetContent( txt )
-    local clr                       = self:GetTextColor( )
-    local font                      = self:GetFont( )
-    ir                              = isnumber( ir ) and ir or 0
-
-    /*
-        data > container
-    */
-
-    self.ct                         = ui.new( 'pnl', self.Scroll, 1         )
-    :fill                           (                                       )
-
-    /*
-        data > entry
-    */
-
-    self.entry                      = ui.new( 'entry', self.ct              )
-    :fill                           ( 'm', 0, 0, ir, 0                      )
-    :text                           ( self:GetContent( )                    )
-    :mline                          ( true                                  )
-    :drawbg                         ( false                                 )
-    :enabled                        ( true                                  )
-    :font                           ( font                                  )
-    :textclr                        ( clr                                   )
-    :canedit                        ( false                                 )
-
-end
-
-/*
-    HoverFill
-
-    animation to make buttons appear as if they are being filled
-    with color when player hovers over
-
-    @param  : pnl s
-    @param  : int w
-    @param  : int h
-    @param  : clr clr
+*   HoverFill
+*
+*   animation to make buttons appear as if they are being filled
+*   with color when player hovers over
+*
+*   @param  : pnl s
+*   @param  : int w
+*   @param  : int h
+*   @param  : clr clr
 */
 
 function PANEL:HoverFill( s, w, h, clr )
@@ -148,35 +147,31 @@ function PANEL:HoverFill( s, w, h, clr )
 end
 
 /*
-    PerformLayout
-
-    welcome to the hackiest way of screwing with a DTextEntry and
-    that stupid vscrollbar.
-
-    working on something more 'offical' with a new dtextentry element.
-    kinda see why developers dont really try to "reinvent it" now.
-
-    @param  : int w
-    @param  : int h
+*   PerformLayout
+*
+*   welcome to the hackiest way of screwing with a DTextEntry and
+*   that stupid vscrollbar.
+*
+*   working on something more 'offical' with a new dtextentry element.
+*   kinda see why developers dont really try to "reinvent it" now.
+*
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:PerformLayout( w, h )
 
     /*
-        initialize only
+    *   initialize only
     */
 
     if not self.bInitialized then
         self:FirstRun( )
-        self.Scroll:SetbElastic         ( self:GetbElastic( ) )
-        self.Scroll:SetTrackColor       ( self:GetTrackColor( ) )
-        self.Scroll:SetGripColor        ( self:GetGripColor( ) )
-        self.Scroll:SetAlwaysVisible    ( self:GetAlwaysVisible( ) )
         return
     end
 
     /*
-        calc sizes
+    *   calc sizes
     */
 
     surface.SetFont( self:GetFont( ) )
@@ -190,9 +185,9 @@ function PANEL:PerformLayout( w, h )
 end
 
 /*
-    GetOffsetTall
-
-    @return : int
+*   GetOffsetTall
+*
+*   @return : int
 */
 
 function PANEL:GetOffsetTall( )
@@ -200,9 +195,9 @@ function PANEL:GetOffsetTall( )
 end
 
 /*
-    SetOffsetTall
-
-    @param  : int i
+*   SetOffsetTall
+*
+*   @param  : int i
 */
 
 function PANEL:SetOffsetTall( i )
@@ -210,9 +205,9 @@ function PANEL:SetOffsetTall( i )
 end
 
 /*
-    GetFont
-
-    @return : str
+*   GetFont
+*
+*   @return : str
 */
 
 function PANEL:GetFont( )
@@ -220,9 +215,9 @@ function PANEL:GetFont( )
 end
 
 /*
-    SetFont
-
-    @param  : str str
+*   SetFont
+*
+*   @param  : str str
 */
 
 function PANEL:SetFont( str )
@@ -230,9 +225,9 @@ function PANEL:SetFont( str )
 end
 
 /*
-    GetTextColor
-
-    @return : clr
+*   GetTextColor
+*
+*   @return : clr
 */
 
 function PANEL:GetTextColor( )
@@ -240,9 +235,9 @@ function PANEL:GetTextColor( )
 end
 
 /*
-    SetTextColor
-
-    @param  : clr clr
+*   SetTextColor
+*
+*   @param  : clr clr
 */
 
 function PANEL:SetTextColor( clr )
@@ -250,29 +245,23 @@ function PANEL:SetTextColor( clr )
 end
 
 /*
-    SetGripColor
-
-    defines the slider ( grip ) color for scrollbar
-
-    @param  : clr clr
+*   SetGripColor
+*
+*   defines the slider ( grip ) color for scrollbar
+*
+*   @param  : clr clr
 */
 
 function PANEL:SetGripColor( clr )
-    if IsColor( clr ) then
-        self.clr_grip = clr
-    elseif rclr.bHex( clr ) then
-        self.clr_grip = rclr.Hex( clr )
-    else
-        self.clr_grip = cfg.elm.clrs.sbar_grip_v2
-    end
+    self.clr_grip = IsColor( clr ) and clr or cfg.elm.clrs.sbar_grip_v2
 end
 
 /*
-    GetGripColor
-
-    returns current scrollbar slider ( grip ) color
-
-    @return : clr
+*   GetGripColor
+*
+*   returns current scrollbar slider ( grip ) color
+*
+*   @return : clr
 */
 
 function PANEL:GetGripColor( )
@@ -280,39 +269,9 @@ function PANEL:GetGripColor( )
 end
 
 /*
-    SetTrackColor
-
-    defines the slider ( grip ) color for scrollbar
-
-    @param  : clr clr
-*/
-
-function PANEL:SetTrackColor( clr )
-    if IsColor( clr ) then
-        self.clr_track = clr
-    elseif rclr.bHex( clr ) then
-        self.clr_track = rclr.Hex( clr )
-    else
-        self.clr_track = cfg.elm.clrs.sbar_grip_v2
-    end
-end
-
-/*
-    GetGripColor
-
-    returns current scrollbar slider ( grip ) color
-
-    @return : clr
-*/
-
-function PANEL:GetTrackColor( )
-    return IsColor( self.clr_track ) and self.clr_track or cfg.elm.clrs.sbar_grip_v2
-end
-
-/*
-    SetContent
-
-    @param  : str
+*   SetContent
+*
+*   @param  : str
 */
 
 function PANEL:SetContent( str )
@@ -320,9 +279,9 @@ function PANEL:SetContent( str )
 end
 
 /*
-    GetContent
-
-    @return : str
+*   GetContent
+*
+*   @return : str
 */
 
 function PANEL:GetContent( )
@@ -330,12 +289,12 @@ function PANEL:GetContent( )
 end
 
 /*
-    SetAlwaysVisible
-
-    sets if scrollbar will always be visible, even if
-    not enough content to scroll
-
-    @param  : bool b
+*   SetAlwaysVisible
+*
+*   sets if scrollbar will always be visible, even if
+*   not enough content to scroll
+*
+*   @param  : bool b
 */
 
 function PANEL:SetAlwaysVisible( b )
@@ -343,9 +302,9 @@ function PANEL:SetAlwaysVisible( b )
 end
 
 /*
-    GetAlwaysVisible
-
-    @return : bool
+*   GetAlwaysVisible
+*
+*   @return : bool
 */
 
 function PANEL:GetAlwaysVisible( )
@@ -353,40 +312,16 @@ function PANEL:GetAlwaysVisible( )
 end
 
 /*
-    SetbElastic
-
-    determines if scrollbar will use elastic scrolling
-
-    @param  : bool b
-*/
-
-function PANEL:SetbElastic( b )
-    self.bElastic = helper:val2bool( b )
-end
-
-/*
-    GetbElastic
-
-    returns if scrollbar will use elastic scrolling
-
-    @return : bool
-*/
-
-function PANEL:GetbElastic( )
-    return self.bElastic or false
-end
-
-/*
-    Paint
-
-    @param  : int w
-    @param  : int h
+*   Paint
+*
+*   @param  : int w
+*   @param  : int h
 */
 
 function PANEL:Paint( w, h ) end
 
 /*
-    register
+*	register
 */
 
 vgui.Register( 'rlib.elm.text', PANEL )

@@ -42,27 +42,14 @@ local cfg                   = base.settings
 local mf                    = base.manifest
 local pf                    = mf.prefix
 local script                = mf.name
+
+/*
+    lua > localize
+*/
+
 local sf                    = string.format
 local ts                    = tostring
 local execq                 = RunString
-
-/*
-    localize clrs
-*/
-
-local clr_r                 = Color( 255, 0, 0 )
-local clr_y                 = Color( 255, 255, 0 )
-local clr_w                 = Color( 255, 255, 255 )
-local clr_g                 = Color( 0, 255, 0 )
-local clr_p                 = Color( 255, 0, 255 )
-
-/*
-    languages
-*/
-
-local function ln( ... )
-    return base:lang( ... )
-end
 
 /*
     localize output functions
@@ -85,6 +72,16 @@ local function direct( ... )
 end
 
 /*
+    debug paths
+*/
+
+local path_alogs            = mf.paths[ 'dir_alogs' ]
+local path_logs             = mf.paths[ 'dir_logs' ]
+local path_uconn            = mf.paths[ 'dir_uconn' ]
+local path_server           = mf.paths[ 'dir_server' ]
+local path_obf              = mf.paths[ 'dir_obf' ]
+
+/*
     oort > fetch
 */
 
@@ -101,22 +98,12 @@ local function oort_post( ... )
 end
 
 /*
-    debug paths
+    languages
 */
 
-local path_alogs            = mf.paths[ 'dir_alogs' ]
-local path_logs             = mf.paths[ 'dir_logs' ]
-local path_uconn            = mf.paths[ 'dir_uconn' ]
-local path_server           = mf.paths[ 'dir_server' ]
-local path_obf              = mf.paths[ 'dir_obf' ]
-
-/*
-    command prefix
-*/
-
-local _p                    = sf( '%s_', mf.basecmd )
-local _c                    = sf( '%s.', mf.basecmd )
-local _n                    = sf( '%s', mf.basecmd )
+local function ln( ... )
+    return base:lang( ... )
+end
 
 /*
     prefix > create id
@@ -337,12 +324,10 @@ end
 /*
     player > rbubble
 
-    sends a bubble msg that displays to the bottom right of the
-    players screen
+    notification in bottom right.
+    supports richtext
 
-    @ex     :   design:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
-                pl:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
-                rlib:rbubble( { 'Example message', Color( 255, 0, 0 ), ' text in red' } )
+    similar to bubble
 */
 
 function pmeta:rbubble( ... )
@@ -357,9 +342,6 @@ end
 
     notification supports icons; slides in from middle right.
     previously known as 'notifcator'
-
-    @ex     :   pl:push( { 'Example message', Color( 255, 0, 0 ), ' text in red' }, 'Title', '' )
-                base:push( { 'Example message', Color( 255, 0, 0 ), ' text in red' }, 'Title', '' )
 */
 
 function pmeta:push( ... )
@@ -840,95 +822,95 @@ end
             : true    :   returns data from checksum generated and also writes it to /data/rlib/checksum.txt
 */
 
-function base.checksum:new( bWrite, alg, ... )
+function base.checksum:new( bWrite )
 
     /*
-        inc sha2 module
+        inc sha1 module
     */
 
-    if not file.Find( 'includes/modules/sha2.lua', 'LUA' ) then
-        log( 2, 'aborting checksum -- missing module sha2' )
+    if not file.Find( 'includes/modules/sha1.lua', 'LUA' ) then
+        log( 2, 'aborting checksum -- missing module sha1' )
         return
     end
 
-    include( 'includes/modules/sha2.lua' )
+    include( 'includes/modules/sha1.lua' )
 
     /*
         verify module
     */
 
-    if not sha2 then return false end
+    if not sha1 then return false end
 
     /*
         declarations
     */
 
-    local path_ar               = mf.folder
-    local path_libs             = sf( '%s', path_ar )
-    local mdata                 = { }
+    local path_ar       = 'autorun'
+    local path_libs     = sf( '%s/rlib', path_ar )
+    local mdata         = { }
 
     /*
         autorun/
     */
 
-    alg                         = alg or 'sha256'
-    local sha_func              = base._def.algorithms[ alg ]
-    local sha_run               = sha2[ sha_func ]
-
-    local sha_size_bytes        = isnumber( size ) and size or 64
-
     local i = 0
-    local files, dirs           = file.Find( path_ar .. '/*', 'LUA' )
+    local files, dirs = file.Find( path_ar .. '/*', 'LUA' )
+    for k, v in pairs( files ) do
+        if v ~= '_rcore_loader.lua' then continue end
+        local dpath = sf( '%s/%s', path_ar, v )
 
-    for k, v in SortedPairs( files ) do
-        local file_to_hash      = sf( '%s/%s', path_ar, v )
-                                if not file.Exists( file_to_hash, 'LUA' ) then continue end
+        if not file.Exists( dpath, 'LUA' ) then continue end
 
-        local fpath             = file.Read( file_to_hash, 'LUA' )
-        local sha               = sha_run( fpath, ... )
-        //local sha             = sha1.encrypt( fpath )
+        local fpath     = file.Read( dpath, 'LUA' )
+        local sha       = sha1.encrypt( fpath )
 
-        mdata[ file_to_hash ]  = sha
+        mdata[ dpath ]  = sha
 
-    end
+        /*
+            autorun/libs/
+        */
 
-    for l, m in SortedPairs( dirs ) do
-        if not file.Exists( path_libs .. '/' .. m, 'LUA' ) then continue end
+        for l, m in pairs( dirs ) do
+            if m ~= 'rlib' then continue end
+            if not file.Exists( path_libs, 'LUA' ) then continue end
 
-        local fil, dirs2        = file.Find( path_libs .. '/' .. m .. '/*', 'LUA' )
+            local fil, dirs = file.Find( path_libs .. '/*', 'LUA' )
+            for f, File in pairs( fil ) do
+                if File == '_autoloader.lua' then continue end
+                if File == 'cfg.lua' or File == 'config.lua' then continue end
+                dpath = sf( '%s/%s', path_libs, File )
+                if not file.Exists( dpath, 'LUA' ) then continue end
 
-        for f, File in SortedPairs( fil ) do
-            file_to_hash        = sf( '%s/%s/%s', path_libs, m, File )
-                                if not file.Exists( file_to_hash, 'LUA' ) then continue end
+                fpath   = file.Read( dpath, 'LUA' )
+                sha     = sha1.encrypt( fpath )
 
-            fpath               = file.Read( file_to_hash, 'LUA' )
-            sha                 = sha2.sha256( fpath, ... )
-            //sha               = sha1.encrypt( fpath )
-
-            mdata[ file_to_hash ]      = sha
-
-            i = i + 1
-        end
-
-        for d, di in SortedPairs( dirs2 ) do
-            local _path         = sf( '%s/%s/%s', path_libs, m, di )
-                                if not file.Exists( _path, 'LUA' ) then continue end
-
-            local fil3, dirs3   = file.Find( _path .. '/*', 'LUA' )
-
-            for a, b in SortedPairs( fil3 ) do
-                file_to_hash    = sf( '%s/%s/%s/%s', path_libs, m, di, b )
-                                if not file.Exists( file_to_hash, 'LUA' ) then continue end
-
-                fpath           = file.Read( file_to_hash, 'LUA' )
-                sha             = sha2.sha256( fpath, ... )
-                //sha           = sha1.encrypt( fpath )
-
-                mdata[ file_to_hash ]  = sha
+                mdata[ dpath ]  = sha
 
                 i = i + 1
             end
 
+            /*
+                autorun/libs/calls/
+                autorun/libs/interface/
+                autorun/libs/ui/
+                autorun/libs/languages/
+            */
+
+            for _, subdirs in pairs( dirs ) do
+                if subdirs == 'languages' then continue end
+
+                local subfile, subdir = file.Find( path_libs .. '/' .. subdirs .. '/*', 'LUA' )
+                for _, subf in pairs( subfile ) do
+                    dpath   = sf( '%s/%s/%s', path_libs, subdirs, subf )
+                    if not file.Exists( dpath, 'LUA' ) then continue end
+
+                    fpath   = file.Read( dpath, 'LUA' )
+                    sha     = sha1.encrypt( fpath )
+
+                    mdata[ dpath ] = sha
+                    i = i + 1
+                end
+            end
         end
     end
 
@@ -940,12 +922,11 @@ function base.checksum:new( bWrite, alg, ... )
         file.Write( storage.mft:getpath( 'data_checksum' ), util.TableToJSON( mdata ) )
 
         /*
-            get checksum result sha2
+            get checksum result sha1
         */
 
-        local cs_src            = file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' )
-        local cs_sha1           = sha2.sha256( cs_src )
-        //local cs_sha1         = sha1.encrypt( cs_src )
+        local cs_src    = file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' )
+        local cs_sha1   = sha1.encrypt( cs_src )
 
         /*
             output to console
@@ -977,15 +958,9 @@ function base.checksum:new( bWrite, alg, ... )
 
         con( 'c',       Color( 255, 255, 0 ), a1_3, Color( 255, 255, 255 ), a2_3, a3_3 )
 
-        local a1_4              = sf( '%-15s',  ln( 'lib_cs_col_hash' ) )
+        local a1_4              = sf( '%-15s',  ln( 'lib_cs_col_sha1' ) )
         local a2_4              = sf( '%-5s',   '»'   )
         local a3_4              = sf( '%-35s',  cs_sha1 )
-
-        con( 'c',       Color( 255, 255, 0 ), a1_4, Color( 255, 255, 255 ), a2_4, a3_4 )
-
-        local a1_4              = sf( '%-15s',  ln( 'lib_cs_col_algorithm' ) )
-        local a2_4              = sf( '%-5s',   '»'   )
-        local a3_4              = sf( '%-35s',  alg )
 
         con( 'c',       Color( 255, 255, 0 ), a1_4, Color( 255, 255, 255 ), a2_4, a3_4 )
 
@@ -999,31 +974,6 @@ function base.checksum:new( bWrite, alg, ... )
     */
 
     return mdata or { }
-end
-
-/*
-    checksum > Get App Json
-
-    returns a list of verified checksums
-
-    @call   : base.checksum:GetAppJson( true )
-            : base.checksum:GetAppJson( )
-
-    @param  : bool bVerified
-            : false   :   returns checksum from /data/rlib/checksum.txt
-            : true    :   returns checksum from /addon/rlib/checksum.json
-    @return : tbl
-*/
-
-function base.checksum:GetAppJson( bVerified )
-    local app_existing  = storage.get.json( '.app/checksum.json' )
-
-    if bVerified then
-        return app_existing or { }
-    end
-
-    return ( storage.exists( storage.mft:getpath( 'data_checksum' ) ) and util.JSONToTable( file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' ) ) )
-    or { }
 end
 
 /*
@@ -1041,14 +991,7 @@ end
 */
 
 function base.checksum:get( bVerified )
-    local app_existing  = storage.get.json( '.app/checksum.json' )
-
-    if bVerified then
-        return app_existing or { }
-    end
-
-    return ( storage.exists( storage.mft:getpath( 'data_checksum' ) ) and util.JSONToTable( file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' ) ) )
-    or { }
+    return ( bVerified and storage.get.json( 'checksum.json' ) ) or ( storage.exists( storage.mft:getpath( 'data_checksum' ) ) and util.JSONToTable( file.Read( storage.mft:getpath( 'data_checksum' ), 'DATA' ) ) ) or { }
 end
 
 /*
@@ -1065,17 +1008,6 @@ end
 function base.checksum:verify( )
     local verified  = self:get( true )
     local current   = self:new( false )
-
-    local data, i = { }, 0
-    if table.IsEmpty( verified ) then
-        for k, v in pairs( verified ) do
-
-            data[ k ] = { }
-            i = i + 1
-        end
-
-        return data, i
-    end
 
     local data, i = { }, 0
     for v, k in pairs( verified ) do
@@ -1405,28 +1337,14 @@ end
 */
 
 function base:SetupKillTask( pl )
-    timex.expire            ( 'rlib_noroot_notice' )
-    rhook.drop.gmod         ( 'Think', 'rlib_noroot_notice' )
+    timex.expire( 'rlib_noroot_notice' )
+    rhook.drop.gmod( 'Think', 'rlib_noroot_notice' )
 
-    base.oort:Authorize     ( true )
+    base.oort:Authorize( true )
 
     timex.simple( 1, function( )
         pl:ConCommand( pid( 'welcome' ) )
     end )
-
-    /*
-        check > already has root usr
-    */
-
-    local bHasRoot, rootuser = access:root( )
-    if bHasRoot then
-
-        local msg 		    = ln( 'setup_root_exists_msg', ( rootuser and rootuser.name ) or 'none' )
-        local out 		    = base.msg:prepare( msg )
-        pl:push             ( out, ln( 'setup_root_new_title' ) )
-
-        return
-    end
 end
 
 /*
@@ -1513,25 +1431,6 @@ local function bInitialized( data )
                     rhook.run.rlib( 'rlib_server_onload' )
                     rhook.run.rlib( 'rlib_server_fjoin' )
                     rhook.run.rlib( 'rlib_server_welcome' )
-
-                    /*
-                        detect crash
-                    */
-
-                    local mdata             = helper.get.now( )
-
-                    local mdata             = { }
-                    mdata.boot              = { }
-                    mdata.os                = base.get:os( )
-                    mdata.startups          = sys.startups
-                    mdata.starttime         = sys.starttime or 0
-                    mdata.rnet_id           = GetGlobalString( 'rlib_sess' ) or 0
-                    mdata.sess_id           = mf.astra.oort.sess_id or 'null'
-                    mdata.auth_id           = mf.astra.oort.auth_id or 'null'
-                    mdata.gamemode          = base.get:gm( true )
-
-                    file.Write( storage.mft:getpath( 'data_crash' ), util.TableToJSON( mdata ) )
-
                 end
             end )
         end )
@@ -1567,14 +1466,14 @@ local function __lib_initpostentity( )
     */
 
     base.cfg                = { }
-    base.cfg.steamapi       = storage.get.ext( '.app/steamapi.cfg' )
+    base.cfg.steamapi       = storage.get.ext( 'steamapi.cfg' )
 
     /*
         throw error if steamapi config missing
     */
 
     if not base.cfg.steamapi then
-        base:log( RLIB_LOG_WARN, '[ %s ] .app/steamapi.cfg file missing', mf.name )
+        base:log( RLIB_LOG_WARN, '[ %s ] steamapi.cfg file missing', mf.name )
     end
 
     /*
@@ -1595,32 +1494,7 @@ hook.Add( 'InitPostEntity', pid( '__lib_initpostentity' ), __lib_initpostentity 
 
 local function lib_initialize_checksum( )
 
-    /*
-        reads the current .app/checksum.json file.
-        checks if result is not table or an empty table.
-    */
-
-    local checksum_file     = base.checksum:GetAppJson( true )
-
-    if istable( checksum_file ) and table.IsEmpty( checksum_file ) then
-        con( pl, 1 )
-        log( RLIB_LOG_SYSTEM, ln( 'checksum_json_missing' ) )
-        con( pl, 1 )
-        return
-    end
-
-    /*
-        verifies .app/checksums.json file.
-    */
-
-    local checksums, i          = base.checksum:verify( )
-
-    if not istable( checksums ) then
-        con( pl, 1 )
-        con( pl, clr_r, ln( 'checksum_validate_fail' ) )
-        con( pl, 1 )
-        return
-    end
+    local checksums = base.checksum:verify( )
 
     local i = 0
     for k, v in pairs( checksums ) do
@@ -1629,7 +1503,6 @@ local function lib_initialize_checksum( )
     end
 
     if i > 0 then
-        con( nil, 3 )
         con( nil, 0 )
         con( nil, 1 )
         con( nil, Color( 255, 255, 0 ), ln( 'lib_integrity_title', mf.name:upper( ) ) .. ' \n' )
@@ -1639,7 +1512,7 @@ local function lib_initialize_checksum( )
         con( nil, Color( 255, 0, 0 ), ln( 'lib_integrity_cnt', i ) )
         con( nil, 1 )
         con( nil, 0 )
-        con( nil, 3 )
+        con( nil, 1 )
 
         return
     end
@@ -1731,11 +1604,7 @@ local function psay_setup( pl, text )
 
     local bHasRoot, rootuser = access:root( )
     if bHasRoot then
-
-        local msg 		= ln( 'setup_root_exists_msg', ( rootuser and rootuser.name ) or 'none' )
-        local out 		= base.msg:prepare( msg )
-        pl:push         ( out, ln( 'setup_root_exists_title' ) )
-
+        direct( pl, script, ln( 'setup_root_exists' ), Color( 255, 255, 0 ), ( rootuser and rootuser.name ) or 'none' )
         return
     end
 
@@ -1829,8 +1698,6 @@ hook.Add( 'PlayerSay', pid( 'calls.commands.pub' ), calls_commands_pub )
 local function shutdown( )
     log( RLIB_LOG_DEBUG, ln( 'server_shutdown' ) )
     base:ulog( 'debug', 'System', 'SERVER SHUTDOWN\n\n' )
-
-    storage.file.del( 'data_crash' )
 end
 hook.Add( 'ShutDown', pid( '__lib_server_shutdown' ), shutdown )
 
@@ -2539,37 +2406,6 @@ function base:ulog( path, cat, data )
 end
 
 /*
-*   calls > catalog
-*
-*   loads library calls catalog
-*
-*   :   (bool) bPrefix
-*       true adds lib prefix at front of all network entries
-*       'rlib.network_string_id'
-*
-*   :   (str) affix
-*       bPrefix must be true, determines what prefix to add to
-*       the front of a netnw string. if none provided, lib prefix
-*       will be used
-*
-*   @param  : bool bPrefix
-*   @param  : str affix
-*/
-
-function base.calls:Catalog( bPrefix, affix )
-    for v in helper.get.data( base._rcalls[ 'net' ] ) do
-        local aff       = isstring( affix ) and affix or mf.prefix
-        local id        = bPrefix and tostring( aff .. v[ 1 ] ) or tostring( v[ 1 ] )
-
-        local nid       = GetGlobalString( ('rlib_sess'), 0 )
-        local i         = string.format( '%s', id )
-
-        util.AddNetworkString( i )
-        base:log( RLIB_LOG_RNET, ln( 'rnet_added', i ) )
-    end
-end
-
-/*
     tools > rdo > run
 
     called within gmod hook InitPostEntity which is after all steps related to rlib and rcore should
@@ -3034,79 +2870,6 @@ end
 hook.Add( 'PlayerSay', pid( 'tools.lang.psay.toggle' ), tools_lang_ps_toggle )
 
 /*
-    psay > dc > toggle
-
-    allows a pl to execute the disconnect interface
-
-    @param  : ply pl
-    @param  : str text
-*/
-
-local function tools_dc_ps_toggle( pl, text )
-    local comp_args     = string.Split( text, ' ' )
-    local msg           = comp_args[ 1 ]:lower( )
-
-    if not cfg.dc.binds.enabled then return end
-    if not cfg.dc.binds.chat[ msg ] then return end
-
-    net.Start   ( 'rlib.tools.dc'       )
-    net.Send    ( pl                    )
-
-    return ''
-end
-hook.Add( 'PlayerSay', pid( 'tools.dc.psay.toggle' ), tools_dc_ps_toggle )
-
-/*
-    psay > rlib > toggle
-
-    allows a pl to execute the main rlib interface
-
-    @param  : ply pl
-    @param  : str text
-*/
-
-local function tools_rlib_ps_toggle( pl, text )
-    local comp_args     = string.Split( text, ' ' )
-    local msg           = comp_args[ 1 ]:lower( )
-
-    if not cfg.rlib.binds.enabled then return end
-    if not cfg.rlib.binds.chat[ msg ] then return end
-
-    net.Start   ( 'rlib.tools.rlib'     )
-    net.Send    ( pl                    )
-
-    return ''
-end
-hook.Add( 'PlayerSay', pid( 'tools.rlib.psay.toggle' ), tools_rlib_ps_toggle )
-
-/*
-*   psay > rcfg > toggle
-*
-*   allows a pl to execute the rcfg interface
-*
-*   @param  : ply pl
-*   @param  : str text
-*/
-
-local function tools_rcfg_ps_toggle( pl, text )
-    local comp_args     = string.Split( text, ' ' )
-    local msg           = comp_args[ 1 ]:lower( )
-
-    if not cfg.rcfg.binds.enabled then return end
-    if not cfg.rcfg.binds.chat[ msg ] then return end
-
-    route( pl, false, rlib.manifest.name, ln( 'lib_addons_opening' ) )
-
-    timex.simple( 0.5, function( )
-        net.Start   ( 'rlib.tools.rcfg'     )
-        net.Send    ( pl                    )
-    end )
-
-    return ''
-end
-hook.Add( 'PlayerSay', pid( 'tools.rcfg.psay.toggle' ), tools_rcfg_ps_toggle )
-
-/*
     psay > mdlv > toggle
 
     allows a pl to execute the mdlv interface
@@ -3153,922 +2916,61 @@ end
 hook.Add( 'PlayerSay', pid( 'tools.diag.psay.toggle' ), tools_diag_ps_toggle )
 
 /*
-    psay > base > toggle
+    rcc > dev > notification demo
 
-    @param  : ply pl
-    @param  : str text
+    shows a demo of the different notification options
 */
 
-local function tools_base_ps_toggle( pl, text )
-    local comp_args     = string.Split( text, ' ' )
-    local msg           = comp_args[ 1 ]:lower( )
-
-    if not cfg.rlib.binds.enabled then return end
-    if not cfg.rlib.binds.chat[ msg ] then return end
-
-    net.Start   ( 'rlib.welcome'        )
-    net.Send    ( pl                    )
-
-    return ''
-end
-hook.Add( 'PlayerSay', pid( 'tools.base.psay.toggle' ), tools_base_ps_toggle )
-
-/*
-    rcc > checksum > new
-
-    writes the lib checksums to data/rlib/checksum.txt
-*/
-
-local function rcc_checksum_new( pl, cmd, args, str )
+local function rcc_dev_msg_test( pl )
 
     /*
-        define command
+        type > notificator
     */
 
-    local ccmd = base.calls:get( 'commands', _p .. 'cs_new' )
+    local msg               = { 'This is a demo message' }
+    pl:push                 ( msg, 'Demo', '' )
 
     /*
-        scope
+        type > sos
     */
 
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
+    --local msg               = { 'This is a demo message' }
+    --pl:sos                  ( msg, 'Demo Notification', '*' )
 
     /*
-        perms
+        type > nms
     */
 
-    if not access:bIsDev( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    con( pl, 3 )
+    --local msg               = 'This is a demo message'
+    --pl:nms                  ( msg, '*', '*' )
 
     /*
-        params
+        type > bubble
     */
 
-    local arg_flag          = args and args[ 1 ] or false
-    local arg_alg           = args and args[ 2 ] or nil
+    --local msg               = 'This is a demo message'
+    --pl:bubble               ( msg )
 
     /*
-        flags
+        type > rbubble
     */
 
-    local gcf_a             = base.calls:gcflag( _p .. 'cs_new', 'algorithm' )
+    --local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --pl:rbubble              ( msg )
 
     /*
-        -a flag provided, but no algorithm string
+        type > rbubble
     */
 
-    if ( arg_flag and arg_flag == gcf_a ) and not arg_alg then
-        con( pl, clr_w, 'No value provided for ', clr_y, 'algorithm' )
-        con( pl, 0 )
-        return
-    end
-
-
-    local alg = false
-
-    if arg_alg and arg_flag and ( arg_flag == gcf_a ) then
-        if not base._def.algorithms[ arg_alg ] then
-            con( pl, 2 )
-            con( pl, 0 )
-            con( pl, clr_w, 'No valid algorithm specified' )
-            con( pl, 0 )
-            con( pl, 1 )
-            con( pl, clr_g, 'Select one:' )
-            con( pl, 1 )
-            for k, v in SortedPairs( base._def.algorithms ) do
-                con( pl, clr_y, '              ' .. v )
-            end
-            con( pl, 1 )
-            con( pl, 0 )
-            con( pl, 2 )
-            return
-        end
-    end
-
-    alg = arg_alg
+    --local msg               = { Color( 255, 0, 0 ), 'This is a demo message' }
+    --pl:rbubble              ( msg )
 
     /*
-        generate new hash file
+        type > notify
     */
 
-    local deploy            = base.checksum:new( true, alg )
+    pl:notify               ( 'Demo message', 2, 3 )
 
-    /*
-        confirm msg to pl
-    */
-
-    if pl and not access:bIsConsole( pl ) then
-        base.msg:direct( pl, script, not deploy and ln( 'checksum_write_err' ) or ln( 'checksum_write_success' ) )
-    end
-
-    log( RLIB_LOG_SYSTEM, not deploy and ln( 'checksum_write_err' ) or ln( 'checksum_write_success' ) )
-
-    con( pl, 3 )
 
 end
-rcc.register( _p .. 'cs_new', rcc_checksum_new )
-
-/*
-    rcc > checksum > verify
-
-    verifies released lib checksums with any files that may be modified on the server
-    and reports the differences
-*/
-
-local function rcc_checksum_verify( pl, cmd, args, str )
-
-    /*
-        define command
-    */
-
-    local ccmd = base.calls:get( 'commands', _p .. 'cs_verify' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsDev( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    con( pl, 3 )
-
-    /*
-        reads the current .app/checksum.json file.
-        checks if result is not table or an empty table.
-    */
-
-    local checksum_file     = base.checksum:GetAppJson( true )
-
-    if istable( checksum_file ) and table.IsEmpty( checksum_file ) then
-        con( pl, 1 )
-        log( RLIB_LOG_SYSTEM, ln( 'checksum_json_missing' ) )
-        con( pl, 1 )
-        return
-    end
-
-    /*
-        verifies .app/checksums.json file.
-
-    */
-
-    local checksums, i          = base.checksum:verify( )
-
-    if not istable( checksums ) then
-        con( pl, 1 )
-        con( pl, clr_r, ln( 'checksum_validate_fail' ) )
-        con( pl, 1 )
-        return
-    end
-
-    /*
-        output > header
-    */
-
-    con( pl, 1 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, ln( 'con_checksum_verify' ) )
-    con( pl, 0 )
-
-    /*
-        output > check > files verified
-    */
-
-    if i == 0 then
-        con( pl, clr_w, ln( 'files_modified_none' ) )
-        con( pl, 0 )
-        return
-    end
-
-    /*
-        output > subheader
-    */
-
-    con( pl, 1 )
-    con( pl, clr_w, ln( 'files_listed_have_been_modified' ) )
-    con( pl, 1 )
-    con( pl, clr_w, ln( 'cs_verify_algorithm' , base._def.algorithms[ 'sha256' ]) )
-    con( pl, 1 )
-    con( pl, 0 )
-
-    /*
-        columns
-    */
-
-    local l1_l      = sf( '%-60s',    ln( 'col_file'        ) )
-    local l2_l      = sf( '%-30s',    ln( 'col_verified'    ) )
-    local l3_l      = sf( '%-5s',     ln( 'sym_arrow'       ) )
-    local l4_l      = sf( '%-30s',    ln( 'col_current'     ) )
-
-    con( pl, clr_w, l1_l, Color( 0, 255, 0 ), l2_l, clr_w, l3_l, clr_r, l4_l )
-    con( pl )
-
-    local i = 0
-    for k, v in pairs( checksums ) do
-        if not v.verified or not v.current then continue end
-
-        local verified  = v.verified:sub( 1, 25 )
-        local current   = v.current:sub( 1, 25 )
-
-        local l1_d      = sf( '%-60s',  k           )
-        local l2_d      = sf( '%-30s',  current     )
-        local l3_d      = sf( '%-5s',   '»'         )
-        local l4_d      = sf( '%-30s',  verified    )
-
-        con( pl, clr_y, l1_d, Color( 0, 255, 0 ), l2_d, clr_w, l3_d, clr_r, l4_d )
-
-        i = i + 1
-    end
-
-    if i > 0 then
-        con( pl, 0 )
-        con( pl, 1 )
-        con( pl, clr_r, i, ' ', clr_r, ln( 'files_modified_count' ) )
-        con( pl, 1 )
-        con( pl, clr_w, ln( 'files_modified_instructions_1' ), ' ', clr_g, mf.name, clr_w, ' at ', clr_g, mf.site )
-        con( pl, clr_w, ln( 'files_modified_instructions_2', mf.name ) )
-    end
-
-    con( pl, 3 )
-
-end
-rcc.register( _p .. 'cs_verify', rcc_checksum_verify )
-
-/*
-    rcc > checksum > now
-
-    shows current checksums
-*/
-
-local function rcc_checksum_now( pl, cmd, args, str )
-
-    /*
-        define command
-    */
-
-    local ccmd = base.calls:get( 'commands', _p .. 'cs_now' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsDev( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        reads the current .app/checksum.json file.
-        checks if result is not table or an empty table.
-    */
-
-    local checksum_file             = base.checksum:GetAppJson( true )
-
-    if not istable( checksum_file ) and table.IsEmpty( checksum_file ) then
-        con( pl, 1 )
-        con( pl, clr_r, ln( 'checksum_json_missing' ) )
-        con( pl, 1 )
-        return
-    end
-
-    /*
-        generates a temp list of the actual checksums for all library files.
-        compares this list to one used in .app/checksum.json
-    */
-
-    local checksums, i              = base.checksum:new( )
-
-    /*
-        output > header
-    */
-
-    con( pl, 1 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, ln( 'con_checksum_now' ) )
-    con( pl, 0 )
-
-    /*
-        output > check > files verified
-    */
-
-    if i == 0 then
-        con( pl, clr_w, ln( 'files_none' ) )
-        con( pl, 0 )
-        return
-    end
-
-    /*
-        output > subheader
-    */
-
-    con( pl, clr_w, ln( 'files_checksum_now' ) )
-    con( pl, 1 )
-    con( pl, 0 )
-
-    /*
-        columns
-    */
-
-    local l1_l      = sf( '%-60s',      ln( 'col_file'          ) )
-    local l2_l      = sf( '%-10s',      ln( 'sym_arrow'         ) )
-    local l3_l      = sf( '%-60s',      ln( 'col_current'       ) )
-
-    con( pl, clr_w, l1_l, Color( 0, 255, 0 ), l2_l, clr_g, l3_l )
-    con( pl )
-
-    local i = 0
-    for k, v in pairs( checksums ) do
-        local l1_d      = sf( '%-60s',  k           )
-        local l2_d      = sf( '%-10s',  '»'         )
-        local l3_d      = sf( '%-60s',   v          )
-
-        con( pl, clr_y, l1_d, Color( 0, 255, 0 ), l2_d, clr_g, l3_d )
-
-        i = i + 1
-    end
-
-    if i > 0 then
-        con( pl, 0 )
-        con( pl, 1 )
-        con( pl, clr_w, ln( 'files_registered_count', i ) )
-    end
-
-    con( pl, 1 )
-
-end
-rcc.register( _p .. 'cs_now', rcc_checksum_now )
-
-/*
-    rcc > checksum > obf
-
-    release prepwork
-*/
-
-local function rcc_checksum_obf( pl, cmd, args, str )
-
-    /*
-        define command
-    */
-
-    local ccmd = base.calls:get( 'commands', _p .. 'cs_obf' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsDev( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        data > read
-    */
-
-    con( pl, 1 )
-    con( pl, clr_y, script, clr_p, ' » ', clr_w, ln( 'con_checksum_obf' ) )
-    con( pl, 0 )
-
-    /*
-        data > define
-    */
-
-    local _r                = string.format( '%s/dec.txt', mf.paths[ 'dir_obf' ] )
-    local _w                = string.format( '%s/enc.txt', mf.paths[ 'dir_obf' ] )
-    local _r_data           = file.Read( _r, 'DATA' )
-
-    /*
-        data > dec not found
-    */
-
-    if not _r_data then
-        con( pl, clr_r, 'No data found in ', clr_y, _r )
-        con( pl, 1 )
-        return
-    end
-
-    /*
-        data > enc
-    */
-
-    local enc               = _r_data:gsub( '.', function( bb ) return '\\' .. bb:byte( ) end ) or _r_data .. '\''
-
-    /*
-        data > write enc
-    */
-
-    file.Write( _w, enc )
-
-    /*
-        data > response
-    */
-
-    con( pl, clr_w, 'Wrote obf data to ', clr_y, _w )
-    con( pl, 1 )
-
-end
-rcc.register( _p .. 'cs_obf', rcc_checksum_obf )
-
-/*
-    rcc > modules > reroute
-
-    lists all installed modules
-*/
-
-local function rcc_modules( pl, cmd, args )
-
-    /*
-        define command
-    */
-
-    local ccmd = rlib.calls:get( 'commands', _p .. 'modules' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not rlib.con:Is( pl ) ) then
-        access:deny_consoleonly( pl, base.manifest.name, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, base.manifest.name, ccmd.id )
-        return
-    end
-
-    /*
-        declarations
-    */
-
-    local arg_flag  = args and args[ 1 ] or false
-    local gcf_path  = rlib.calls:gcflag( _p .. 'modules', 'paths' )
-
-    /*
-        functionality
-    */
-
-    con             ( pl, '\n\n [' .. base.manifest.name .. '] Active Modules' )
-    con             ( pl, 0 )
-
-    local c1_l      = sf( '%-20s', 'Module'      )
-    local c2_l      = sf( '%-17s', 'Version'     )
-    local c3_l      = sf( '%-15s', 'Author'      )
-    local c4_l      = sf( '%-20s', ( arg_flag == gcf_path and 'Path' ) or 'Description' )
-
-    con             ( pl, sf( ' %s %s %s %s', c1_l, c2_l, c3_l, c4_l ) )
-    con             ( pl, 0 )
-
-    for v in helper.get.data( rcore.modules, true ) do
-        local l1_d  = sf( '%-20s', tostring( helper.str:truncate( v.name, 20, '...' ) or 'err' ) )
-        local l2_d  = sf( '%-17s', tostring( rlib.modules:ver2str( v ) or 'err' ) )
-        local l3_d  = sf( '%-15s', tostring( v.author or 'err' ) )
-        local l4_d  = sf( '%-20s', tostring( helper.str:truncate( ( arg_flag == gcf_path and v.path ) or v.desc, 40, '...' ) or 'err' ) )
-        local resp  = sf( ' %s %s %s %s', l1_d, l2_d, l3_d, l4_d )
-
-        con( pl, clr_y, resp )
-    end
-
-    con( pl, 0 )
-
-end
-rcc.register( _p .. 'modules', rcc_modules )
-
-/*
-    restart > action > cancel
-
-    allows for a player/console to cancel a server restart
-    using either the restart concommand or timed.
-*/
-
-local function rs_cancel( pl )
-    local bIsActive = false
-    local timers =
-    {
-        'rlib_rs',
-        'rlib_rs_signal_cl',
-        'rlib_rs_signal',
-        'rlib_rs_delay_s2',
-        'rlib_rs_delay_s3',
-    }
-
-    for v in helper.get.data( timers ) do
-        if not timex.exists( v ) then continue end
-        timex.expire( v )
-        bIsActive = true
-    end
-
-    rhook.drop.gmod( 'Tick', 'rlib_rs' )
-
-    rnet.send.all( 'rlib_rs_broadcast', { active = false, remains = 0 } )
-
-    if not bIsActive then
-        log( 1, ln( 'restart_none_active' ) )
-        return false
-    end
-
-    local admin_name = access:bIsConsole( pl ) and ln( 'console' ) or pl:Name( )
-
-    route( nil, true, script, 'Server restart', cfg.cmsg.clrs.target_tri, 'CANCELLED' )
-    --storage:log( 7, false, '[ %s ] » cancelled an active server restart', admin_name )
-    log( RLIB_LOG_OK, 'server restart cancelled by player [ %s ]', admin_name )
-
-    return false
-end
-
-/*
-    action > restart
-*/
-
-local function restart_action( )
-    base:log( RLIB_LOG_OK, ln( 'restart_now' ) )
-    rhook.drop.gmod( 'Tick', 'rlib_rs' )
-
-    base:push( 'A server restart has been activated' )
-
-    local cmd = string.format( '_restart%s', '\n' )
-    game.ConsoleCommand( cmd )
-end
-
-/*
-    rcc > restart
-
-    gives a counter in public chat which forces a server restart after timer expires
-    yes we know the method of used to restart is 'hacky', but most servers utilize some type of hosting
-    that auto-detects a downed server and restarts it. this method basically crashes the server and then
-    the hosting servers take over.
-*/
-
-local function rcc_restart( pl, cmd, args )
-
-    /*
-        get command
-    */
-
-    local ccmd = base.calls:get( 'commands', _p .. 'restart' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        params
-    */
-
-    local arg_a             = args and args[ 1 ] or 60
-    local arg_flag          = arg_a or false
-    arg_flag                = helper.str:ok( arg_flag ) and arg_flag:lower( ) or false
-
-    /*
-        params
-    */
-
-    local gcf_cancel        = base.calls:gcflag( ccmd.call, 'cancel' )
-    local gcf_instant       = base.calls:gcflag( ccmd.call, 'instant' )
-
-    /*
-        params > cancel
-
-        @ex     : rlib.restart -c
-    */
-
-    if base.calls:gcflagMatch( gcf_cancel, arg_flag ) then
-        rs_cancel( pl )
-        return false
-    end
-
-    /*
-        params > instant
-
-        @ex     : rlib.restart -i
-    */
-
-    if base.calls:gcflagMatch( gcf_instant, arg_flag ) then
-        restart_action( )
-        return false
-    end
-
-    /*
-        unknown argument
-    */
-
-    if not helper:bIsNum( arg_a ) then
-
-        con( pl, 3  )
-        con( pl, 0  )
-        con( pl, clr_y, sf( '%s » %s', script, ccmd.name ) )
-        con( pl, 1  )
-        con( pl, 'Unknown flag   ', clr_y, arg_a )
-        con( pl, 1  )
-        con( pl, clr_y, 'Help » ', clr_w, 'Type ', clr_r, sf( ' %s ', ccmd.id:gsub( '[%p]', ' ' ) ), clr_w, ' for information about this command'  )
-        con( pl, 0  )
-        con( pl, 3  )
-
-        return
-    end
-
-    /*
-        argument should be duration at this point; convert to number
-    */
-
-    arg_a = tonumber( arg_a )
-
-    /*
-        declare > times
-    */
-
-    local i_step2           = arg_a / 2      -- half of original arg time
-    local i_last10          = 10                -- when to start the second-by-second last countdown
-    local i_max             = 300               -- max allowed time
-    local bStep2, bStep3    = false, false
-
-    /*
-        if delay greater than max allowed
-    */
-
-    if tonumber( arg_a ) > i_max then
-        base:log( RLIB_LOG_ERR, 'Restart time cannot exceed %s', i_max )
-        return
-    end
-
-    /*
-        disallow starting a timed restart if one already active
-    */
-
-    if timex.exists( 'rlib_rs_signal' ) then
-        base:log( RLIB_LOG_ERR, ln( 'rs_exists' ) )
-        return
-    end
-
-    /*
-        overall timer action to execute when timer runs out
-        holds the final code to run when the restart takes place
-    */
-
-    timex.create( 'rlib_rs_signal', arg_a, 1, function( )
-        restart_action( )
-    end )
-
-    /*
-        tracking the remaining time client-side makes things too unreliable, especially on a laggy server.
-        create timer with # of reps equal to restart time and broadcast to players
-    */
-
-    timex.create( 'rlib_rs_signal_cl', 1, arg_a, function( )
-        local remains = timex.reps( 'rlib_rs_signal_cl' )
-        rnet.send.all( 'rlib_rs_broadcast', { active = true, remains = remains }, true )
-    end )
-
-    /*
-        restart > countdown from 10
-
-        executes when the final 10 seconds are remaining in the countdown
-    */
-
-    local function rs_count10( )
-        local i_remains = i_last10
-        if timex.exists( 'rlib_rs' ) then return end
-
-        timex.create( 'rlib_rs', 1, i_last10, function( )
-            if i_remains ~= ( i_last10 + 1 ) then
-                term = helper.str:plural( ln( 'time_sec_ln' ), i_remains )
-
-                if ULib then ULib.csay( _, ln( 'rs_msg_ulx', i_remains, term ) ) end
-
-                route( nil, true, 'RESTART', 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( i_remains ), cfg.cmsg.clrs.msg, term )
-                base:log( RLIB_LOG_OK, ln( 'rs_msg', i_remains, term ) )
-            end
-            i_remains = i_remains - 1
-        end )
-    end
-
-    /*
-        tick :: track restart progress
-    */
-
-    rhook.new.gmod( 'Tick', 'rlib_rs', function( )
-        local rs_remains    = timex.remains( 'rlib_rs_signal' )
-        rs_remains          = math.Round( rs_remains )
-
-        /*
-            restart > step 2
-
-            shows a notification in chat when the restart hits the half-way mark
-        */
-
-        if ( rs_remains == i_step2 and not bStep2 ) and not timex.exists( 'rlib_rs_delay_s2' ) then
-            timex.create( 'rlib_rs_delay_s2', 0.01, 1, function( )
-                term = helper.str:plural( ln( 'time_sec_ln' ), i_remains )
-
-                route( nil, true, 'RESTART', 'Server restart in', cfg.cmsg.clrs.target_tri, tostring( i_step2 ), cfg.cmsg.clrs.msg, 'seconds' )
-                base:log( RLIB_LOG_OK, ln( 'rs_msg', i_step2, term ) )
-
-                bStep2 = true
-            end )
-        end
-
-        /*
-            restart > step 3
-
-            starts a 10 second countdown
-        */
-
-        if ( rs_remains == i_last10 and not bStep3 ) and not timex.exists( 'rlib_rs_delay_s3' ) then
-            timex.create( 'rlib_rs_delay_s3', 0.01, 1, function( )
-                rhook.drop.gmod( 'Tick', 'rlib_rs' )
-                rs_count10( )
-
-                bStep3 = true
-            end )
-        end
-    end )
-
-end
-rcc.register( _p .. 'restart', rcc_restart )
-
-/*
-    rcc > setup
-
-    sets up rlib after the initial install
-*/
-
-local function rcc_setup( pl, cmd, args )
-
-    /*
-        define command
-    */
-
-    local ccmd = base.calls:get( 'commands', _p .. 'setup' )
-
-    /*
-        scope
-    */
-
-    if ( ccmd.scope == 1 and not access:bIsConsole( pl ) ) then
-        access:deny_consoleonly( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        perms
-    */
-
-    if not access:bIsRoot( pl ) then
-        access:deny_permission( pl, script, ccmd.id )
-        return
-    end
-
-    /*
-        check > command disabled
-    */
-
-    if not ccmd.enabled then
-        log( 3, ln( 'setup_cmd_disabled' ) )
-        return
-    end
-
-    /*
-        check > already has root usr
-    */
-
-    local bHasRoot, rootuser = access:root( )
-    if bHasRoot then
-        route( pl, false, script, ln( 'setup_root_exists' ), clr_y, ( rootuser and rootuser.name ) or 'none' )
-
-        return
-    end
-
-    /*
-        check > server initialized
-    */
-
-    if not base:bInitialized( ) then
-        route( pl, false, script, ln( 'lib_initialized' ) )
-        return
-    end
-
-    /*
-        functionality
-    */
-
-    local target = args and args[ 1 ] or false
-
-    if not target then
-        route( pl, false, script, ln( 'user_find_errmsg' ) )
-        return
-    end
-
-    local c_results, result = helper.who:name_wc( target )
-
-    if c_results > 1 then
-        route( pl, false, script, ln( 'user_find_multires' ), cfg.cmsg.clrs.target, ln( 'user_find_quotes_ex' ) )
-        return
-    elseif not c_results or c_results < 1 then
-        if sys.connections == 1 then
-            route( pl, false, script, ln( 'user_find_nores_one' ) )
-        else
-            route( pl, false, script, ln( 'user_find_nores' ), cfg.cmsg.clrs.target, ln( 'user_find_quotes_ex' ) )
-        end
-        return
-    else
-        if not helper.ok.ply( result[ 0 ] ) then
-            if sys.connections == 1 then
-                route( pl, false, script, ln( 'user_find_noply_one' ) )
-            else
-                route( pl, false, script, ln( 'user_find_noply' ) )
-            end
-            return
-        else
-            result          = result[ 0 ]
-            local bExists   = access:writeuser( result )
-
-            if bExists then return end
-
-            con( pl, 2 )
-            con( pl, 0 )
-            con( pl, clr_y, '» Library Setup' )
-            con( pl, 0 )
-            con( pl, 1 )
-            con( pl, clr_w, 'User ', clr_p, result:Name( ), color_white, ' has been added with ', Color( 0, 255, 0 ), 'root access', color_white, ' and is protected.' )
-            con( pl, clr_w, 'With root, you have access to all admin-based privledges and abilities that rlib utilizes.\n' )
-            con( pl, clr_w, 'For more info; type ', Color( 0, 255, 0 ), 'rlib.manifest', color_white, ' in con and visit the docs URL\n' )
-            con( pl, 0 )
-            con( pl, 1 )
-            con( pl, clr_w, 'Review the list of useful commands below to get started\n\n' )
-
-            /*
-                loop > setup > useful commands
-            */
-
-            for v in helper.get.data( rlib.calls:get( 'commands' ), true ) do
-                if not v.enabled or not v.showsetup then continue end
-
-                con( pl, clr_y, '   ' .. v.id )
-            end
-
-            con( pl, 1 )
-            con( pl, 0 )
-
-            -- update admins list for perms
-            net.Start       ( 'rlib.user' )
-            net.WriteTable  ( access.admins )
-            net.Broadcast   ( )
-
-            base:SetupKillTask( result )
-
-        end
-    end
-
-end
-rcc.register( _p .. 'setup', rcc_setup )
+rcc.new.gmod( 'rlib_dev_msgtest', rcc_dev_msg_test )
