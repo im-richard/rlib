@@ -6803,6 +6803,14 @@ function ui.gmod( class, panel, a1, a2 )
         return
     end
 
+    /*
+        deprecate old functionality
+    */
+
+    if isnumber( panel ) then
+        panel = nil
+    end
+
     class           = ui.element( class ) or class
 
     /*

@@ -1300,6 +1300,7 @@ function base:setup( )
     local bHasRoot, rootuser = access:root( )
     if bHasRoot then return end
 
+    /*
     con( 'c', 2 )
     con( 'c', 0 )
     con( 'c',       Color( 255, 255, 0 ), ln( 'lib_setup_title', script ) )
@@ -1314,7 +1315,8 @@ function base:setup( )
     con( 'c', 1 )
     con( 'c', 0 )
     con( 'c', 2 )
-
+    */
+    
     /*
         rlib > setup > sends an occasional message in chat that the root user has not been registered yet
     */
@@ -1520,7 +1522,8 @@ local function lib_initialize_checksum( )
     log( RLIB_LOG_SYSTEM, ln( 'lib_integirty_ok', 'OK' ) )
 
 end
-hook.Add( pid( 'initialize.post' ), pid( 'initialize_checksum' ), lib_initialize_checksum )
+--  deprecate 11/14
+--  hook.Add( pid( 'initialize.post' ), pid( 'initialize_checksum' ), lib_initialize_checksum )
 
 /*
     database > check validation
